@@ -19,9 +19,7 @@ const BackGround = styled.div`
 function UserMainPage(){
     return(
         <BackGround>
-            
-
-
+            <h1>메인페이지 입니다.</h1>
             <Waves></Waves>
         </BackGround>
     )
