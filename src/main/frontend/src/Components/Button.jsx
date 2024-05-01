@@ -12,9 +12,16 @@ text-align: center;
 text-decoration: none;
 display: inline-block;
 font-size: 16px;
+font-family: 'Arial', sans-serif;
 margin: 4px 2px;
 cursor: pointer;
 border-radius: 8px;
+transition: background-color 0.5s ease;
+box-shadow: 0.5px 0.5px 2px black;
+  &:hover {
+    background-color: White;
+    color:black;
+  }
 `;
 
 function Button(props) {

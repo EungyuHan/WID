@@ -1,10 +1,19 @@
 import React from "react";
 import Loginpage from "./Pages/Loginpage";
-
+import UserMainPage from "./Pages/UserMainPage";
+import { BrowserRouter ,Route, Routes} from 'react-router-dom';
 
 function App() {
   return (
-      <Loginpage></Loginpage>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/Login' element={<Loginpage />}></Route>
+        <Route path='/MainPage' element={<UserMainPage/>}></Route>
+        
+
+      </Routes>
+    </BrowserRouter>
+      
   );
 }
 
