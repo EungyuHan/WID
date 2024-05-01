@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const LoginButton = styled.button`
-background-color: #4CAF50; /* 초록색 */
+/* 가장 간단한 버튼 모양  */
+
+const ButtonEx = styled.button`
+background-color:#0A377C; /* 메인색상 */
 border: none;
 color: white;
 padding: 15px 32px;
@@ -15,11 +17,10 @@ cursor: pointer;
 border-radius: 8px;
 `;
 
-function Button() {
+function Button(props) {
+    const ID = props.name;
     return(
-        <LoginButton>
-            LoginButton
-        </LoginButton>
+        <ButtonEx onClick={props.onClick}>{ID}</ButtonEx>
     )
 }
 
