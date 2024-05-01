@@ -4,7 +4,7 @@ import com.example.wid.dto.RegisterDTO;
 import com.example.wid.entity.MemberEntity;
 import com.example.wid.entity.Role;
 import com.example.wid.entity.RoleEntity;
-import com.example.wid.exception.AlreadyExistsMemberException;
+import com.example.wid.controller.exception.AlreadyExistsMemberException;
 import com.example.wid.repository.MemberRepository;
 import com.example.wid.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.example.wid.exception;
+package com.example.wid.controller.exception;
 
 public class AlreadyExistsMemberException extends RuntimeException{
     private final static String message = "Member already exists";

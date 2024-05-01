@@ -20,4 +20,8 @@ public class MemberEntity extends BaseEntity{
     private RoleEntity role;
     @Column(nullable = true)
     private String wallet;
+
+    public String getRole(){
+        return role.getRole();
+    }
 }
