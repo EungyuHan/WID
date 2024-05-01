@@ -2,6 +2,7 @@ import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
+import Modal from '../Components/Modal';
 
 
 /* 스타일드 컴포넌트 양식을 사용할 것, 따라서 스타일드 컴포넌트에 대한 개념 공부 필요함*/
@@ -60,7 +61,6 @@ const CreateUserButton = styled.button`
   }
 
 `
-
 function Loginpage(){
     const [id, setID] = useState("");
     const [passward, setPassward] = useState("");
@@ -92,6 +92,12 @@ function Loginpage(){
                 <CreateUserButton onClick={makeUser}>WID가 처음이세요?</CreateUserButton>
             </LoginComponents>
             <Waves></Waves>
+
+              
+            { isModalOpen &&  (<Modal opened={toggleModal}>
+            </Modal>)
+                }
+
         </BackGround>
 
         
