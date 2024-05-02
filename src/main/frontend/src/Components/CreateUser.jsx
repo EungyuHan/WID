@@ -5,7 +5,7 @@ import Button from './Button';
 
 function CreateUser(props){
     const [id, setID] = useState("");
-    const [passward, setPassward] = useState("");
+    const [password, setPassword] = useState("");
     const [checkPW, setCheckPW] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -16,11 +16,14 @@ function CreateUser(props){
         if(!id) {
             return alert("사용자 ID를 입력해주세요");
         }
-        else if (!passward) {
+        else if (!password) {
             return alert("passward를 입력해주세요");
         }
-        else if ( passward != checkPW){
+        else if ( password != checkPW){
             return alert("비밀번호가 서로 동일하지 않습니다");
+        }
+        else if (!name) {
+            return alert("사용자의 이름을 적어주세요");
         }
         else {
             SendUserInfo();    
@@ -34,9 +37,10 @@ function CreateUser(props){
         props.UserInfo.email = email;
         props.UserInfo.phone = phone;
         props.UserInfo.ID = id;
-        props.UserInfo.PW = passward;
+        props.UserInfo.PW = password;
     }
     
+
     return(
         <Modals>
             <ModalContent>
@@ -49,12 +53,12 @@ function CreateUser(props){
                     }}></Create>
                     </div>
                     <div>
-                    <Create type='text' size="30" value={passward} placeholder="사용할 패스워드를 입력해주세요" onChange={(e)=>{
-                        setPassward(e.target.value)
+                    <Create type='password' size="30" value={password} placeholder="사용할 패스워드를 입력해주세요" onChange={(e)=>{
+                        setPassword(e.target.value)
                     }}></Create>
                     </div>
                     <div>
-                    <Create type='text' size="30"value={checkPW} placeholder="패스워드를 한번 더 입력해주세요" onChange={(e)=>{
+                    <Create type='password' size="30"value={checkPW} placeholder="패스워드를 한번 더 입력해주세요" onChange={(e)=>{
                         setCheckPW(e.target.value)
                     }}></Create>
                     </div>
@@ -113,7 +117,6 @@ const Create = styled.input`
     border-radius: 5px;
     border: none;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
-
 `
 const CreatePW = styled.input`
     padding: 10px 25px;

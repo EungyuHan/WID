@@ -42,7 +42,6 @@ function SelectUser(props) {
                     onChange={handleRadioChange}>
                 </input> 
                 <label for="Verifier"><h3>회사</h3></label>
-                <h1>{selectedValue}</h1>
                 <Button name="선택하기" onClick={Submit}></Button>
             </ModalContent>
             

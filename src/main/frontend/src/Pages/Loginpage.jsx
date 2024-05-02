@@ -10,7 +10,7 @@ import SelectUser from '../Components/SelectUser';
 
 function Loginpage(){
     const [id, setID] = useState("");
-    const [passward, setPassward] = useState("");
+    const [password, setPassword] = useState("");
     const [isModalOpen, setModalOpen] = useState(false);
     const [isSelected, setSelect] = useState(false);
     const [selectedValue, setSelectedValue] = useState('');
@@ -44,7 +44,7 @@ function Loginpage(){
         if(!id) {
             return alert("사용자 ID를 입력해주세요");
         }
-        else if (!passward) {
+        else if (!password) {
             return alert("passward를 입력해주세요");
         }
     }
@@ -59,8 +59,8 @@ function Loginpage(){
                             setID(e.target.value)
                         }}></InputID>
                         
-                        <InputPW type='text' value={passward} placeholder='PW' onChange={(e) => {
-                            setPassward(e.target.value)
+                        <InputPW type='text' value={password} placeholder='PW' onChange={(e) => {
+                            setPassword(e.target.value)
                         }}></InputPW>
                         <Button name="로그인"><input type='submit'></input></Button>  
                 </form>
