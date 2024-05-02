@@ -29,9 +29,10 @@ function CreateUser(props){
         /* API호출하는 로직 추후에 더 작성해야함  */
     }
 
+    
+
     return(
         <Modals>
-            
             <ModalContent>
             <button onClick={props.onClose}>취소</button>
                 <form onSubmit={Check}>
