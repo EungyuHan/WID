@@ -1,12 +1,16 @@
 import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
-
+import Button from './Button';
 
 
 function CreateUser(props){
     const [id, setID] = useState("");
     const [passward, setPassward] = useState("");
     const [checkPW, setCheckPW] = useState("");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+
     const Check = (e) => {
         e.preventDefault();
         if(!id) {
@@ -27,29 +31,41 @@ function CreateUser(props){
 
     return(
         <Modals>
+            
             <ModalContent>
             <button onClick={props.onClose}>취소</button>
                 <form onSubmit={Check}>
+                <img src='img/logo.png' width={`150px`} height={`150px`}></img>
                     <div>
-                    <Instruct>사용할 아이디를 입력해주세요</Instruct>
-                    <CreateID type='text' size="30" value={id} placeholder="사용할 ID를 입력해주세요" onChange={(e)=>{
+                    <Create type='text' size="30" value={id} placeholder="사용할 ID를 입력해주세요" onChange={(e)=>{
                         setID(e.target.value)
-                    }}></CreateID>
+                    }}></Create>
                     </div>
                     <div>
-                    <Instruct>사용할 패스워드를 입력해주세요</Instruct>
-                    <CreatePW type='text' size="30" value={passward} placeholder="사용할 패스워드를 입력해주세요" onChange={(e)=>{
+                    <Create type='text' size="30" value={passward} placeholder="사용할 패스워드를 입력해주세요" onChange={(e)=>{
                         setPassward(e.target.value)
-                    }}></CreatePW>
+                    }}></Create>
                     </div>
                     <div>
-                    <Instruct>사용할 패스워드를 한번 더 입력해주세요</Instruct>
-                    <CreatePW type='text' size="30"value={checkPW} placeholder="패스워드를 한번 더 입력해주세요" onChange={(e)=>{
+                    <Create type='text' size="30"value={checkPW} placeholder="패스워드를 한번 더 입력해주세요" onChange={(e)=>{
                         setCheckPW(e.target.value)
-                    }}></CreatePW>
+                    }}></Create>
+                    </div>
+                    <div>
+                    <Create type='text' size="30"value={name} placeholder="이름" onChange={(e)=>{
+                        setName(e.target.value)
+                    }}></Create>
+                    <Create type='text' size="30"value={email} placeholder="이메일" onChange={(e)=>{
+                        setEmail(e.target.value)
+                    }}></Create>
+                    </div>
+                    <Create type='text' size="30"value={phone} placeholder="전화번호" onChange={(e)=>{
+                        setPhone(e.target.value)
+                    }}></Create>
+                    <div>
+                    <Button name="제출하기"><input type='submit'></input></Button>
                     </div>
                     
-                    <input type='submit' ></input>
                 </form>
                 
                 
@@ -84,7 +100,7 @@ const ModalContent = styled.div`
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
      
 `
-const CreateID = styled.input`
+const Create = styled.input`
     padding: 10px 25px;
     margin: 5px 10px;
     border-radius: 5px;
