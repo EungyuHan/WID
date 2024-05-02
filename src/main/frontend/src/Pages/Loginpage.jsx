@@ -3,6 +3,7 @@ import React,{ useState } from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import CreateUser from '../Components/CreateUser';
+import SelectUser from '../Components/SelectUser';
 
 /* 스타일드 컴포넌트 양식을 사용할 것, 따라서 스타일드 컴포넌트에 대한 개념 공부 필요함*/
 /* 스타일드 컴포넌트 관련 코드는 모두 리액트 코드 아래에 작성할 것 (로직 먼저, CSS는 차후)*/
@@ -11,16 +12,19 @@ function Loginpage(){
     const [id, setID] = useState("");
     const [passward, setPassward] = useState("");
     const [isModalOpen, setModalOpen] = useState(false);
-    const [createID, setCreateID] = useState("");
-    const [createPW, setCreatePW] = useState("");
+    const [isSelected, setSelect] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
 
 
     const toggleModal = () => {
         setModalOpen(!isModalOpen)
     }
-    const closeModal = () => {
-        setModalOpen(!isModalOpen)
+    const Selected = () => {
+        setSelect(!isSelected)
     }
+    const handleRadioChange = (event) => {
+        setSelectedValue(event.target.value);
+    };
     
     const makeUser = () => {
         toggleModal();
@@ -57,8 +61,8 @@ function Loginpage(){
             </LoginComponents>
             <Waves></Waves>
 
-              
-            { isModalOpen &&  (<CreateUser onClose={closeModal} contents={<Welcometext></Welcometext>}>
+            { isModalOpen && isSelected==false &&(<SelectUser isSelected={Selected} ></SelectUser>)}
+            { isModalOpen && isSelected &&(<CreateUser onClose={toggleModal} contents={<Welcometext></Welcometext>}>
             </CreateUser>)
                 }
 

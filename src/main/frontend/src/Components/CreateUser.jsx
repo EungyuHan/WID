@@ -19,13 +19,9 @@ function CreateUser(props){
         else if (!passward) {
             return alert("passward를 입력해주세요");
         }
-        else if (!checkPW){
+        else if ( passward != checkPW){
             return alert("비밀번호가 서로 동일하지 않습니다");
         }
-        else if (id, passward, checkPW) {
-            return alert("계정을 생성중입니다 잠시만 기다려주세요");
-        }
-
         /* API호출하는 로직 추후에 더 작성해야함  */
     }
 
@@ -36,7 +32,7 @@ function CreateUser(props){
             <ModalContent>
             <button onClick={props.onClose}>취소</button>
                 <form onSubmit={Check}>
-                <img src='img/logo.png' width={`150px`} height={`150px`}></img>
+                <img src='img/logo.png' width={`180px`} height={`180px`}></img>
                     <div>
                     <Create type='text' size="30" value={id} placeholder="사용할 ID를 입력해주세요" onChange={(e)=>{
                         setID(e.target.value)
