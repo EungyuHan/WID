@@ -13,4 +13,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST) // 409 Conflict
                 .body(ex.getMessage());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST) // 400 Bad Request
+                .body(ex.getMessage());
+    }
 }
