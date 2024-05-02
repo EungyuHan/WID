@@ -9,6 +9,12 @@ function SelectUser(props) {
     const handleRadioChange = (event) => {
         setSelectedValue(event.target.value);
     };
+
+    const Submit = () => {
+        props.UserInfo.Role = selectedValue;
+        props.isSelected();
+    }
+
     return(
         <Modals>
             <ModalContent>
@@ -37,7 +43,7 @@ function SelectUser(props) {
                 </input> 
                 <label for="Verifier"><h3>회사</h3></label>
                 <h1>{selectedValue}</h1>
-                <Button name="선택하기" onClick={props.isSelected}></Button>
+                <Button name="선택하기" onClick={Submit}></Button>
             </ModalContent>
             
         </Modals>

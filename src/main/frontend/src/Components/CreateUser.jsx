@@ -22,11 +22,17 @@ function CreateUser(props){
         else if ( passward != checkPW){
             return alert("비밀번호가 서로 동일하지 않습니다");
         }
-        /* API호출하는 로직 추후에 더 작성해야함  */
+        else {
+            SendUserInfo();    
+    };
+
     }
-
     
-
+    const SendUserInfo = () => {
+        /* 모두 작성이 완료된 유저 정보를 서버로 전송하는 코드 */ 
+        console.log("전송중이양");
+    }
+    
     return(
         <Modals>
             <ModalContent>
