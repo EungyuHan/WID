@@ -33,7 +33,7 @@ public class MemberEntity extends BaseEntity{
     @Column(nullable = true)
     private String wallet;
 
-    public String getRole(){
-        return role.getRole();
+    public String getRole() {
+        return role.getRole().name();
     }
 }

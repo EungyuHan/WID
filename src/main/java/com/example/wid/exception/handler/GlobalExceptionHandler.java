@@ -1,6 +1,6 @@
 package com.example.wid.exception.handler;
 
-import com.example.wid.exception.AlreadyExistsMemberException;
+import com.example.wid.controller.exception.AlreadyExistsMemberException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

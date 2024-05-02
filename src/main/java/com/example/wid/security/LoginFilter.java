@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,13 +20,16 @@ import java.util.Map;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
+    private final Long expiredMs;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtUtil = jwtUtil;
+        this.expiredMs = 1000L * 60 * 60 * 24 * 7; // 7일
     }
 
+    // 로그인 시도시 실행하는 메소드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
@@ -48,14 +52,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 받아온 User를 customUserDetails에 저장
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String username = customUserDetails.getUsername(); // username 불러오기
-        // 권한 불러옴 -> 해당 예제애서는 1개만 저장
+        // 권한 불러옴, 1개만 저장
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
 
-        String token = jwtTokenProvider.createJwtToken(username, role, 60*60*10L);
+        String token = jwtUtil.createJwtToken(username, role, expiredMs);
 
         // 응답의 Content-Type을 application/json으로 설정
         response.setContentType("application/json");
@@ -76,6 +80,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        // 응답의 Content-Type을 application/json으로 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
+        // 실패 메시지를 포함하는 객체 생성
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "로그인에 실패하였습니다.");
+
+        // Jackson 라이브러리를 사용하여 error 객체를 JSON 문자열로 변환
+        try {
+            String errorJson = new ObjectMapper().writeValueAsString(error);
+
+            // 응답 바디에 JSON 문자열 쓰기
+            response.getWriter().write(errorJson);
+            response.getWriter().flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

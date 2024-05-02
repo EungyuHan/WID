@@ -1,14 +1,11 @@
 package com.example.wid.service;
 
 import com.example.wid.dto.RegisterDTO;
-import com.example.wid.entity.MemberEntity;
-import com.example.wid.exception.AlreadyExistsMemberException;
-import com.example.wid.repository.MemberRepository;
+import com.example.wid.controller.exception.AlreadyExistsMemberException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
