@@ -65,9 +65,14 @@ function Loginpage(){
     const [id, setID] = useState("");
     const [passward, setPassward] = useState("");
     const [isModalOpen, setModalOpen] = useState(false);
+    const [createID, setCreateID] = useState("");
+    const [createPW, setCreatePW] = useState("");
 
 
     const toggleModal = () => {
+        setModalOpen(!isModalOpen)
+    }
+    const closeModal = () => {
         setModalOpen(!isModalOpen)
     }
     
@@ -85,16 +90,26 @@ function Loginpage(){
             <InputID type='text' value={id} placeholder='ID' onChange={(e)=>{
                         setID(e.target.value)
                     }}></InputID>
-                    <Button name="로그인"></Button>
+                    
                 <InputPW type='text' value={passward} placeholder='PW' onChange={(e) => {
                         setPassward(e.target.value)
                     }}></InputPW>
+
+                <Button name="로그인"></Button>    
                 <CreateUserButton onClick={makeUser}>WID가 처음이세요?</CreateUserButton>
             </LoginComponents>
             <Waves></Waves>
 
               
-            { isModalOpen &&  (<Modal opened={toggleModal}>
+            { isModalOpen &&  (<Modal onClose={closeModal}>
+                <h1>모달창 안을 채울 수 있나요?</h1>
+                {/* <InputID type='text' value={createID} placeholder='ID' onChange={(e)=>{
+                        setCreateID(e.target.value)
+                    }}></InputID>
+                <InputPW type='text' value={createPW} placeholder='PW' onChange={(e) => {
+                        setCreatePW(e.target.value)
+                    }}></InputPW> */}
+
             </Modal>)
                 }
 

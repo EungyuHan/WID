@@ -25,17 +25,16 @@ const ModalContent = styled.div`
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
      
 `
-const changeOpen = (isModalOpen) => {
-    isModalOpen = false;
-} 
 
-function Modal(props) {
+
+function Modal(props){
+    const [id, setID] = useState("");
+    const [passward, setPassward] = useState("");
     return(
-        
         <Modals>
-
             <ModalContent>
-                <button onClick={props.toggleModal}></button>
+                <button onClick={props.onClose}></button>
+                
             </ModalContent>
         </Modals>
         
