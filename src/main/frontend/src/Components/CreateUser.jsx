@@ -12,6 +12,7 @@ function CreateUser(props){
     const [phone, setPhone] = useState("");
     const [isCreated, setCreated] = useState(false);
 
+
     const Check = (e) => {
         e.preventDefault();
         if(!id) {
@@ -79,9 +80,11 @@ function CreateUser(props){
                     <div>
                     <Button name="제출하기"><input type='submit'></input></Button>
                     </div>
-                    
                 </form>
+                
+                
             </ModalContent>
+            {isCreated && <ShowPrivateKey>개인키입니다</ShowPrivateKey>}
         </Modals>
         
     )
@@ -98,6 +101,7 @@ const Modals = styled.div`
     background-color: rgba(0, 0, 0, 0.4);
     z-index:2;
 `
+
 const ModalContent = styled.div`
     position: relative;
     top: 10%;
@@ -119,34 +123,20 @@ const Create = styled.input`
     border: none;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 `
-const CreatePW = styled.input`
-    padding: 10px 25px;
-    margin: 5px 10px;
-    border-radius: 5px;
-    border: none;
-    box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
-
-`
 
 const ShowPrivateKey = styled.div`
-    position: fixed;
+    position: relative;
+    top: 10%;
     display: block;
     width: 50%;
     height: 70%;
     padding: 40px;
     margin: auto;
     text-align: center;
-    background-color: #White;
+    background-color: #cacfd3;
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
-
 `
 
-const Instruct = styled.h3`
-    color: black
-    letter-spacing: 1px;
-    font-size: 17px;
-    font-family: 'Arial', sans-serif;
-`
 
 export default CreateUser;

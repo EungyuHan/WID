@@ -21,7 +21,9 @@ function UserMainPage(){
         <BackGround>
             <h1>메인페이지 입니다.</h1>
             <Waves></Waves>
+            <button>글자</button>
         </BackGround>
+        
     )
 }
 
