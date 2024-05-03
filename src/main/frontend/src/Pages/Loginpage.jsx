@@ -72,9 +72,7 @@ function Loginpage(){
             <Waves></Waves>
 
             { isModalOpen && isSelected===false &&(<SelectUser isSelected={Selected} UserInfo={userInfo} ></SelectUser>)}
-            { isModalOpen && isSelected &&(<CreateUser onClose={toggleModal} UserInfo={userInfo} contents={<Welcometext></Welcometext>}>
-            </CreateUser>)
-                }
+            { isModalOpen && isSelected &&(<CreateUser onClose={toggleModal} UserInfo={userInfo}></CreateUser>)}
 
         </BackGround>
 
@@ -139,5 +137,4 @@ const CreateUserButton = styled.button`
   }
 
 `
-
 export default Loginpage;

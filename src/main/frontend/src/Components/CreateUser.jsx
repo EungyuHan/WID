@@ -46,7 +46,10 @@ function CreateUser(props){
     
 
     return(
+
         <Modals>
+            
+            {isCreated === false && 
             <ModalContent>
             <button onClick={props.onClose}>취소</button>
                 <form onSubmit={Check}>
@@ -81,10 +84,24 @@ function CreateUser(props){
                     <Button name="제출하기"><input type='submit'></input></Button>
                     </div>
                 </form>
+            </ModalContent>
+            
+            }
+
+            
+            {isCreated === true && 
+            <ModalContent>
+                <ShowPrivateKey>
+                    개인키입니다 안전한 곳에 보관해주세요
+                    <button onClick={props.onClose}>닫기</button>
+                </ShowPrivateKey>
                 
                 
             </ModalContent>
-            {isCreated && <ShowPrivateKey>개인키입니다</ShowPrivateKey>}
+            
+            
+            }
+
         </Modals>
         
     )
