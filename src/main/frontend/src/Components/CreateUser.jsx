@@ -10,6 +10,7 @@ function CreateUser(props){
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
+    const [isCreated, setCreated] = useState(false);
 
     const Check = (e) => {
         e.preventDefault();
@@ -36,8 +37,10 @@ function CreateUser(props){
         props.UserInfo.name = name;
         props.UserInfo.email = email;
         props.UserInfo.phone = phone;
-        props.UserInfo.ID = id;
-        props.UserInfo.PW = password;
+        props.UserInfo.username = id;
+        props.UserInfo.password = password;
+        console.log(props.UserInfo);
+        setCreated(true);
     }
     
 
@@ -78,8 +81,6 @@ function CreateUser(props){
                     </div>
                     
                 </form>
-                
-                
             </ModalContent>
         </Modals>
         
@@ -123,6 +124,20 @@ const CreatePW = styled.input`
     margin: 5px 10px;
     border-radius: 5px;
     border: none;
+    box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
+
+`
+
+const ShowPrivateKey = styled.div`
+    position: fixed;
+    display: block;
+    width: 50%;
+    height: 70%;
+    padding: 40px;
+    margin: auto;
+    text-align: center;
+    background-color: #White;
+    border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 
 `

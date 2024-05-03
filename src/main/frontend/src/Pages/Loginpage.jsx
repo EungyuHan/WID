@@ -20,8 +20,8 @@ function Loginpage(){
         name:"",
         email:"",
         phone:"",
-        ID:"",
-        PW:""
+        username:"",
+        password:""
     });
 
     const toggleModal = () => {
