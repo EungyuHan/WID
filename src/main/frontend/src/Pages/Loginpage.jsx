@@ -2,9 +2,86 @@ import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
-
+import CreateUser from '../Components/CreateUser';
+import SelectUser from '../Components/SelectUser';
 
 /* 스타일드 컴포넌트 양식을 사용할 것, 따라서 스타일드 컴포넌트에 대한 개념 공부 필요함*/
+/* 스타일드 컴포넌트 관련 코드는 모두 리액트 코드 아래에 작성할 것 (로직 먼저, CSS는 차후)*/
+
+function Loginpage(){
+    const [id, setID] = useState("");
+    const [password, setPassword] = useState("");
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [isSelected, setSelect] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
+    
+    const [userInfo, setUserInfo] = useState({
+        Role:"",
+        name:"",
+        email:"",
+        phone:"",
+        username:"",
+        password:""
+    });
+
+    const toggleModal = () => {
+        setModalOpen(!isModalOpen)
+    }
+    const Selected = () => {
+        setSelect(!isSelected)
+    }
+    const handleRadioChange = (event) => {
+        setSelectedValue(event.target.value);
+    };
+    
+    const makeUser = () => {
+        toggleModal();
+        console.log(isModalOpen);
+        return 0;
+    }
+    const LoginFunc = (e) => {
+        e.preventDefault();
+        if(!id) {
+            return alert("사용자 ID를 입력해주세요");
+        }
+        else if (!password) {
+            return alert("passward를 입력해주세요");
+        }
+    }
+
+    return(
+        <BackGround>
+            <img src='img/logo.png' width={`300px`} height={`300px`}></img>
+            <LoginComponents>
+                <Welcometext>활동내역 증명 서비스 WID에 오신것을 환영합니다!</Welcometext>
+                <form onSubmit={LoginFunc}>
+                        <InputID type='text' value={id} placeholder='ID' onChange={(e)=>{
+                            setID(e.target.value)
+                        }}></InputID>
+                        
+                        <InputPW type='text' value={password} placeholder='PW' onChange={(e) => {
+                            setPassword(e.target.value)
+                        }}></InputPW>
+                        <Button name="로그인"><input type='submit'></input></Button>  
+                </form>
+            
+                <CreateUserButton onClick={makeUser}>WID가 처음이세요?</CreateUserButton>
+            </LoginComponents>
+            <Waves></Waves>
+
+            { isModalOpen && isSelected===false &&(<SelectUser isSelected={Selected} UserInfo={userInfo} ></SelectUser>)}
+            { isModalOpen && isSelected &&(<CreateUser onClose={toggleModal} UserInfo={userInfo} contents={<Welcometext></Welcometext>}>
+            </CreateUser>)
+                }
+
+        </BackGround>
+
+        
+            
+    )
+}
+
+
 
 const BackGround = styled.div`
     position: relative;
@@ -60,43 +137,5 @@ const CreateUserButton = styled.button`
   }
 
 `
-
-function Loginpage(){
-    const [id, setID] = useState("");
-    const [passward, setPassward] = useState("");
-    const [isModalOpen, setModalOpen] = useState(false);
-
-
-    const toggleModal = () => {
-        setModalOpen(!isModalOpen)
-    }
-    
-    const makeUser = () => {
-        toggleModal();
-        console.log(isModalOpen);
-        return 0;
-    }
-
-    return(
-        <BackGround>
-            <img src='img/logo.png' width={`300px`} height={`300px`}></img>
-            <LoginComponents>
-            <Welcometext>활동내역 증명 서비스 WID에 오신것을 환영합니다!</Welcometext>
-            <InputID type='text' value={id} placeholder='ID' onChange={(e)=>{
-                        setID(e.target.value)
-                    }}></InputID>
-                    <Button name="로그인"></Button>
-                <InputPW type='text' value={passward} placeholder='PW' onChange={(e) => {
-                        setPassward(e.target.value)
-                    }}></InputPW>
-                <CreateUserButton onClick={makeUser}>WID가 처음이세요?</CreateUserButton>
-            </LoginComponents>
-            <Waves></Waves>
-        </BackGround>
-
-        
-            
-    )
-}
 
 export default Loginpage;
