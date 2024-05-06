@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,9 +42,11 @@ public class SecurityConfig {
         http.csrf((auth) ->auth.disable());
         http.formLogin((auth) ->auth.disable());
         http.httpBasic((auth) ->auth.disable());
+        http.headers((headers) -> headers.frameOptions((options) -> options.disable()));
 
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/", "/login", "/register/**", "/error").permitAll() // 해당 경로는 모두 허용
+                .requestMatchers("/h2-console/**").permitAll() // 해당 경로는 모두 허용
 
                 .requestMatchers("/admin").hasRole("ADMIN") // 해당 경로는 ADMIN 권한만 허용
                 .requestMatchers("/user").hasRole("USER") // 해당 경로는 USER 권한만 허용
