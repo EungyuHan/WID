@@ -1,6 +1,8 @@
 import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 
 function CreateUser(props){
@@ -11,7 +13,7 @@ function CreateUser(props){
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [isCreated, setCreated] = useState(false);
-
+    const [isChecked, setIsChecked]  = useState(true);
 
     const Check = (e) => {
         e.preventDefault();
@@ -28,12 +30,12 @@ function CreateUser(props){
             return alert("사용자의 이름을 적어주세요");
         }
         else {
-            SendUserInfo();    
+            sendUserInfo();    
     };
 
     }
     
-    const SendUserInfo = () => {
+    const sendUserInfo = () => {
         /* 모두 작성이 완료된 유저 정보를 서버로 전송하는 코드 */ 
         props.UserInfo.name = name;
         props.UserInfo.email = email;
@@ -41,7 +43,19 @@ function CreateUser(props){
         props.UserInfo.username = id;
         props.UserInfo.password = password;
         console.log(props.UserInfo);
+        getPrivateKey();
         setCreated(true);
+        
+    }
+
+    const getPrivateKey = () => {
+        
+    }
+
+    const closeModal = () => {
+       
+            props.onClose();
+        
     }
     
 
@@ -91,10 +105,16 @@ function CreateUser(props){
             
             {isCreated === true && 
             <ModalContent>
-                <ShowPrivateKey>
-                    개인키입니다 안전한 곳에 보관해주세요
-                    <button onClick={props.onClose}>닫기</button>
-                </ShowPrivateKey>
+                <PrivateKeyModal>
+                    
+                    <h3>개인키입니다 안전한 곳에 보관해주세요</h3>
+                    <ShowPrivateKey>
+                    123124124124124125153152351235146134631461345345213523512352351235
+                    </ShowPrivateKey>
+                    <h4>개인키를 확인했으며 안전한 곳에 저장하였습니다.</h4>
+                    <button onClick={()=>{setIsChecked(!isChecked)}}>확인</button>
+                    <Button name={"닫기"} onClick={closeModal} disabled={isChecked}></Button>
+                </PrivateKeyModal>
                 
                 
             </ModalContent>
@@ -141,19 +161,28 @@ const Create = styled.input`
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 `
 
-const ShowPrivateKey = styled.div`
+const PrivateKeyModal = styled.div`
     position: relative;
     top: 10%;
     display: block;
+    justify-content: center;
     width: 50%;
     height: 70%;
     padding: 40px;
     margin: auto;
     text-align: center;
-    background-color: #cacfd3;
+    background: linear-gradient(to top, #FFFFFF, #0083b0);;
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 `
 
+const ShowPrivateKey = styled.input`
+    background-color: White;
+    width: 70%;
+    height: 10%;
+    margin: auto;
+    /* overflow-x: auto; /* 가로 스크롤 활성화 */
+    /* white-space: nowrap; 텍스트 줄 바꿈 방지 */ 
+`
 
 export default CreateUser;

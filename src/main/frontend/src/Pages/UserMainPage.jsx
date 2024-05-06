@@ -130,8 +130,6 @@ const UpNavButton = styled.button`
 
 
 
-
-
 // UserMainPage component
 function UserMainPage(props) {
   return (
