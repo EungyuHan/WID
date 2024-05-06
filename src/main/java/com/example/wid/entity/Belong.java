@@ -1,6 +1,6 @@
 package com.example.wid.entity;
 
-public enum Affiliation {
+public enum Belong {
     SCHOOL,
     COMPANY
 }

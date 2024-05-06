@@ -18,8 +18,8 @@ public class MemberEntity extends BaseEntity{
     @JoinColumn(name = "role_id")
     private RoleEntity role;
     @OneToOne
-    @JoinColumn(name = "affiliation_id")
-    private AffiliationEntity affiliation;
+    @JoinColumn(name = "_id")
+    private BelongEntity belong;
     @Column(unique = true)
     private String username;
     @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
@@ -31,7 +31,7 @@ public class MemberEntity extends BaseEntity{
     @Column(nullable = true)
     private String phone;
     @Column(nullable = true)
-    private String wallet;
+    private String publicKey;
 
     public String getRole() {
         return role.getRole().name();

@@ -2,12 +2,12 @@ package com.example.wid.entity;
 
 import jakarta.persistence.*;
 
-@Entity(name = "affiliation")
-public class AffiliationEntity {
+@Entity(name = "belong")
+public class BelongEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String affiliationName;
+    private String belongName;
     @Enumerated(EnumType.STRING)
-    private Affiliation affiliationType;
+    private Belong belongType;
 }
