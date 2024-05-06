@@ -2,6 +2,7 @@ package com.example.wid.service;
 
 import com.example.wid.dto.RegisterDTO;
 import com.example.wid.controller.exception.AlreadyExistsMemberException;
+import com.example.wid.entity.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ class MemberServiceTest {
         registerDTO.setEmail("test@test.com");
         registerDTO.setPhone("01001010101");
         // when
-        boolean registered = memberService.registerUser(registerDTO);
+        boolean registered = memberService.registerMember(registerDTO, Role.ROLE_USER);
         // then
         assertThat(registered).isTrue();
     }
@@ -43,7 +44,7 @@ class MemberServiceTest {
         firstRegisterDTO.setName("test");
         firstRegisterDTO.setEmail("test@test.com");
         firstRegisterDTO.setPhone("01001010101");
-        memberService.registerUser(firstRegisterDTO);
+        memberService.registerMember(firstRegisterDTO, Role.ROLE_USER);
         // when
         RegisterDTO secondRegisterDTO = new RegisterDTO();
         secondRegisterDTO.setUsername("test");
@@ -53,7 +54,7 @@ class MemberServiceTest {
         secondRegisterDTO.setPhone("01001010101");
         // then
         AlreadyExistsMemberException thrown = assertThrows(AlreadyExistsMemberException.class,
-                () -> memberService.registerUser(secondRegisterDTO));
+                () -> memberService.registerMember(secondRegisterDTO, Role.ROLE_USER));
         assertEquals("Member already exists", thrown.getMessage());
     }
 
@@ -68,7 +69,7 @@ class MemberServiceTest {
         registerDTO.setPhone("");
         // when
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> memberService.registerUser(registerDTO));
+                () -> memberService.registerMember(registerDTO, Role.ROLE_USER));
         assertEquals("모든 정보를 입력해주세요.", thrown.getMessage());
     }
 }
