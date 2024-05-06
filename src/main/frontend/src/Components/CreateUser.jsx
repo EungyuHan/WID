@@ -107,11 +107,17 @@ function CreateUser(props){
             <ModalContent>
                 <PrivateKeyModal>
                     
-                    <h3>개인키입니다 안전한 곳에 보관해주세요</h3>
-                    <ShowPrivateKey>
-                    123124124124124125153152351235146134631461345345213523512352351235
-                    </ShowPrivateKey>
-                    <h4>개인키를 확인했으며 안전한 곳에 저장하였습니다.</h4>
+                    <h3>'{props.UserInfo.name}' 회원님</h3>
+                    <h3>회원가입을 환영합니다.</h3>
+                    <h5>해당 개인키를 믿을만한 장소에 기록해주세요</h5>
+                    <Instruction>개인키가 타인에게 절대 공개되지 않도록 주의하세요</Instruction>
+                    <PrivateKeyDiv>
+                        <ShowPrivateKey>
+                            123124124124124125153152351235146134631461345345213523512352351235
+                        </ShowPrivateKey>
+                    </PrivateKeyDiv>
+                    
+                    <h5>개인키를 확인했으며 안전한 곳에 저장하였습니다.</h5>
                     <button onClick={()=>{setIsChecked(!isChecked)}}>확인</button>
                     <Button name={"닫기"} onClick={closeModal} disabled={isChecked}></Button>
                 </PrivateKeyModal>
@@ -171,18 +177,48 @@ const PrivateKeyModal = styled.div`
     padding: 40px;
     margin: auto;
     text-align: center;
-    background: linear-gradient(to top, #FFFFFF, #0083b0);;
+    background: #06345a3d;
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 `
 
-const ShowPrivateKey = styled.input`
+const PrivateKeyDiv = styled.div`
     background-color: White;
-    width: 70%;
-    height: 10%;
+    display: flex;
+    width: 75%;
+    height: 15%;
     margin: auto;
-    /* overflow-x: auto; /* 가로 스크롤 활성화 */
-    /* white-space: nowrap; 텍스트 줄 바꿈 방지 */ 
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    border-radius: 10px;
 `
+
+const ShowPrivateKey = styled.div`
+    position: relative;
+    background-color: White;
+    width: 95%;
+    height: 80%;
+    margin: auto;
+    overflow-x: auto; 
+    white-space: nowrap; 
+`
+
+const colorChange = keyframes`
+    0% {
+        color: red; /* 시작 색상: 빨강 */
+    }
+    50% {
+        color: white; /* 중간 색상: 하얀색 */
+    }
+    100% {
+        color: red; /* 끝 색상: 빨강 */
+    }
+`;
+
+const Instruction = styled.h5`
+    animation: ${colorChange} 4s infinite;
+`
+
 
 export default CreateUser;
