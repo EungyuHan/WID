@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Loginpage />}></Route>
         <Route path='/MainPage' element={<UserMainPage/>}></Route>
-        
+        <Route path='/Something' element={<div>Hello</div>}></Route>
       </Routes>
     </BrowserRouter>
       

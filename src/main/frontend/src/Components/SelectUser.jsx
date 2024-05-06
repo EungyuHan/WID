@@ -54,14 +54,11 @@ function SelectUser(props) {
                 </IconContainer>
                 </SelectContainer>
                 <Button name="선택하기" onClick={Submit}></Button>
-            
-        
             </ModalContent>
-            
-            
         </Modals>
     )
 }
+
 
 const Modals = styled.div`
     width: 100%;
