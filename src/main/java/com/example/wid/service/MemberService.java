@@ -3,10 +3,8 @@ package com.example.wid.service;
 import com.example.wid.dto.RegisterDTO;
 import com.example.wid.entity.MemberEntity;
 import com.example.wid.entity.Role;
-import com.example.wid.entity.RoleEntity;
 import com.example.wid.controller.exception.AlreadyExistsMemberException;
 import com.example.wid.repository.MemberRepository;
-import com.example.wid.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,13 +14,11 @@ import java.util.Optional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public MemberService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.memberRepository = memberRepository;
-        this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -43,15 +39,9 @@ public class MemberService {
         member.setEmail(registerDTO.getEmail());
         member.setPhone(registerDTO.getPhone());
 
-        // Member의 권한지정
-        Optional<RoleEntity> roleUser = roleRepository.findByRole(role);
-        if (!roleUser.isPresent()) {
-            return false;
-        } else {
-            member.setRole(roleUser.get());
-            memberRepository.save(member);
-            return true;
-        }
+        member.setRole(role);
+        memberRepository.save(member);
+        return true;
     }
 
     private boolean isExistsMember(RegisterDTO registerDTO) {

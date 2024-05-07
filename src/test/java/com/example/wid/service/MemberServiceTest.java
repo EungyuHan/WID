@@ -3,9 +3,7 @@ package com.example.wid.service;
 import com.example.wid.dto.RegisterDTO;
 import com.example.wid.controller.exception.AlreadyExistsMemberException;
 import com.example.wid.entity.Role;
-import com.example.wid.entity.RoleEntity;
 import com.example.wid.repository.MemberRepository;
-import com.example.wid.repository.RoleRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,18 +22,9 @@ class MemberServiceTest {
     @Autowired
     private MemberService memberService;
     @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
     private MemberRepository memberRepository;
-    @BeforeEach
-    public void setUp() {
-        RoleEntity roleUser = new RoleEntity();
-        roleUser.setRole(Role.ROLE_USER);
-        roleRepository.save(roleUser);
-    }
     @AfterEach
     public void tearDown() {
-        roleRepository.deleteAll();
         memberRepository.deleteAll();
     }
 

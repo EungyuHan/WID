@@ -14,9 +14,8 @@ public class MemberEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "role_id")
-    private RoleEntity role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @OneToOne
     @JoinColumn(name = "_id")
     private BelongEntity belong;
@@ -34,6 +33,6 @@ public class MemberEntity extends BaseEntity{
     private String publicKey;
 
     public String getRole() {
-        return role.getRole().name();
+        return role.name();
     }
 }
