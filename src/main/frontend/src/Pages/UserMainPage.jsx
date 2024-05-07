@@ -1,10 +1,9 @@
 import styled,{keyframes} from 'styled-components';
-import React,{ useState } from 'react';
+import React,{ useState , useRef} from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import axios from 'axios';
 import CheckPrivateModal from '../Components/CheckPrivateModal';
-
 
 
 function UserMainPage(props) {
@@ -37,10 +36,31 @@ return (
         </UpNavBarTop>
         <UpNavBarBottom>
             <ContentsConatiner>
-                <InformationDiv><h3>Personal Information</h3></InformationDiv>
-                <InformationDiv><h3>Experience</h3></InformationDiv>
-                <InformationDiv><h3>Education</h3></InformationDiv>
-                <InformationDiv><h3>Achivement</h3></InformationDiv>
+                <InformationDiv>
+                    <h3>Personal Information</h3>
+                    <div>내용 </div>
+                </InformationDiv>
+                <InformationDiv>
+                    <h3>Experience</h3>
+                    <div>내용</div>
+                </InformationDiv>
+                <InformationDiv>
+                    <h3>Education</h3>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+
+                </InformationDiv>
+                <InformationDiv>
+                    <h3>Achivement</h3>
+                    <div>내용</div>
+                </InformationDiv>
+                <InformationDiv>
+                    <h3>Interests</h3>
+                    <div>내용</div>
+                </InformationDiv>
             </ContentsConatiner>
         </UpNavBarBottom>
         </UpNavBar>
@@ -190,11 +210,12 @@ const ContentsConatiner = styled.div`
 
 const InformationDiv = styled.div`
     width: 95%;
-    height: 40%;
-    background-color: #605e5e;
+    height: auto;
+    background-color: #e9e9e9;
     margin: auto;
     overflow: auto;
     border-radius: 5px;
+    margin-top:10px;
     margin-bottom: 10px;
 `
 
