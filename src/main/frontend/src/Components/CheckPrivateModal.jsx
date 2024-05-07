@@ -2,9 +2,6 @@ import styled,{keyframes} from 'styled-components';
 import axios from 'axios';
 import Button from '../Components/Button';
 import React,{ useState } from 'react';
-import Waves from '../Components/Waves';
-
-
 
 
 function CheckPrivateModal(props) {
