@@ -2,6 +2,46 @@ import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
+import axios from 'axios';
+
+
+
+
+function UserMainPage(props) {
+
+
+
+
+return (
+    <BackGround>
+    <NavBar>
+        <NavBarLeft></NavBarLeft>
+        <NavBarRight>
+            <LogoBar>
+            <img src='img/logo.png' width={`102px`} height={`81px`} alt='Logo'></img>
+            </LogoBar>
+            <UserprofileContainer>
+                <UserProfile></UserProfile>
+            </UserprofileContainer>
+            <NavButton>PERSONAL INFORMATION</NavButton>
+            <NavButton>EXPERIENCE</NavButton>
+            <NavButton>EDUCATION</NavButton>
+            <NavButton>ACHIVEMENTS</NavButton>
+            <NavButton>INTERESTS</NavButton>
+        </NavBarRight>
+    </NavBar>
+    <UpNavBar>
+    <UpNavBarTop>
+        <UpNavButton>활동내역 관리</UpNavButton>
+        <UpNavButton>활동내역 발급</UpNavButton>
+        <UpNavButton>활동내역 제출</UpNavButton>
+       </UpNavBarTop>
+       <UpNavBarBottom></UpNavBarBottom>
+
+      </UpNavBar>
+    </BackGround>
+  );
+}
 
 
 const BackGround = styled.div`
@@ -127,41 +167,6 @@ const UpNavButton = styled.button`
     } 
     
 ` 
-
-
-
-// UserMainPage component
-function UserMainPage(props) {
-  return (
-    <BackGround>
-      <NavBar>
-        <NavBarLeft></NavBarLeft>
-        <NavBarRight>
-            <LogoBar>
-            <img src='img/logo.png' width={`102px`} height={`81px`} alt='Logo'></img>
-            </LogoBar>
-            <UserprofileContainer>
-                <UserProfile></UserProfile>
-            </UserprofileContainer>
-            <NavButton>PERSONAL INFORMATION</NavButton>
-            <NavButton>EXPERIENCE</NavButton>
-            <NavButton>EDUCATION</NavButton>
-            <NavButton>ACHIVEMENTS</NavButton>
-            <NavButton>INTERESTS</NavButton>
-        </NavBarRight>
-      </NavBar>
-      <UpNavBar>
-       <UpNavBarTop>
-        <UpNavButton>활동내역 관리</UpNavButton>
-        <UpNavButton>활동내역 발급</UpNavButton>
-        <UpNavButton>활동내역 제출</UpNavButton>
-       </UpNavBarTop>
-       <UpNavBarBottom></UpNavBarBottom>
-
-      </UpNavBar>
-    </BackGround>
-  );
-}
 
 
 

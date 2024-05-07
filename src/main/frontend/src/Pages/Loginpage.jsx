@@ -61,7 +61,7 @@ function Loginpage(){
                             setID(e.target.value)
                         }}></InputID>
                         
-                        <InputPW type='text' value={password} placeholder='PW' onChange={(e) => {
+                        <InputPW type='password' value={password} placeholder='PW' onChange={(e) => {
                             setPassword(e.target.value)
                         }}></InputPW>
                         <Button name="로그인"><input type='submit'></input></Button>  

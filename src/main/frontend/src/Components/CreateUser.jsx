@@ -206,13 +206,12 @@ const ShowPrivateKey = styled.div`
 
 const colorChange = keyframes`
     0% {
-        color: red; /* 시작 색상: 빨강 */
-    }
+        color: red; 
     50% {
-        color: white; /* 중간 색상: 하얀색 */
+        color: white; 
     }
     100% {
-        color: red; /* 끝 색상: 빨강 */
+        color: red; 
     }
 `;
 
