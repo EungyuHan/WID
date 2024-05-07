@@ -10,7 +10,6 @@ import CheckPrivateModal from '../Components/CheckPrivateModal';
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 
-
 return (
     <BackGround>
         <NavBar>
@@ -38,7 +37,10 @@ return (
         </UpNavBarTop>
         <UpNavBarBottom>
             <ContentsConatiner>
-
+                <InformationDiv>Personal Information</InformationDiv>
+                <InformationDiv>Experience</InformationDiv>
+                <InformationDiv>Education</InformationDiv>
+                <InformationDiv>Achivement</InformationDiv>
             </ContentsConatiner>
         </UpNavBarBottom>
         </UpNavBar>
@@ -56,6 +58,7 @@ const BackGround = styled.div`
     width: 100%;
     height: 100vh;
     display: flex;
+    background-attachment: fixed;
 `
 
 const NavBar = styled.div`
@@ -177,10 +180,23 @@ const ContentsConatiner = styled.div`
     position: relative;
     background-color: #383838;
     left:10%;
-    top:10%;
+    top:5%;
     width:85%;
     height:90%;
+    justify-content: center;
+    
+    overflow: auto;
 `
+
+const InformationDiv = styled.div`
+    width: 95%;
+    height: 40%;
+    background-color: #605e5e;
+    margin: auto;
+    overflow: auto;
+`
+
+
 
 
 export default UserMainPage;

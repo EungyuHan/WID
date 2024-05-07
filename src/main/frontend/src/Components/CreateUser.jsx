@@ -207,6 +207,7 @@ const ShowPrivateKey = styled.div`
 const colorChange = keyframes`
     0% {
         color: red; 
+    }
     50% {
         color: white; 
     }
