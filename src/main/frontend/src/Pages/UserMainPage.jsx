@@ -8,6 +8,17 @@ import CheckPrivateModal from '../Components/CheckPrivateModal';
 
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
+const personalInfoRef = useRef();
+const experienceRef = useRef();
+const educationRef = useRef();
+const achivementRef = useRef();
+const interestRef = useRef();
+
+const goToRef = (index) => {  
+        index.current.scrollIntoView({ behavior: 'smooth' });
+};
+
+
 
 return (
     <BackGround>
@@ -20,11 +31,11 @@ return (
             <UserprofileContainer>
                 <UserProfile></UserProfile>
             </UserprofileContainer>
-            <NavButton>PERSONAL INFORMATION</NavButton>
-            <NavButton>EXPERIENCE</NavButton>
-            <NavButton>EDUCATION</NavButton>
-            <NavButton>ACHIVEMENTS</NavButton>
-            <NavButton>INTERESTS</NavButton>
+            <NavButton onClick={()=>goToRef(personalInfoRef)}>PERSONAL INFORMATION</NavButton>
+            <NavButton onClick={()=>goToRef(experienceRef)}>EXPERIENCE</NavButton>
+            <NavButton onClick={()=>goToRef(educationRef)}>EDUCATION</NavButton>
+            <NavButton onClick={()=>goToRef(achivementRef)}>ACHIVEMENTS</NavButton>
+            <NavButton onClick={()=>goToRef(interestRef)}>INTERESTS</NavButton>
         </NavBarRight>
         </NavBar>
         <UpNavBar>
@@ -36,29 +47,138 @@ return (
         </UpNavBarTop>
         <UpNavBarBottom>
             <ContentsConatiner>
-                <InformationDiv>
-                    <h3>Personal Information</h3>
+                <InformationDiv ref={personalInfoRef}>
+                    <h3 >Personal Information</h3>
                     <div>내용 </div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3>Experience</h3>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용 </div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
                     <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3>Education</h3>
+                    <h3 ref={experienceRef}>Experience</h3>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>
-
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3>Achivement</h3>
+                    <h3 ref={educationRef}>Education</h3>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
                     <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3>Interests</h3>
+                    <h3 ref={achivementRef}>Achivement</h3>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                </InformationDiv>
+                <InformationDiv>
+                    <h3 ref={interestRef}>Interests</h3>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
+                    <div>내용</div>
                     <div>내용</div>
                 </InformationDiv>
             </ContentsConatiner>
