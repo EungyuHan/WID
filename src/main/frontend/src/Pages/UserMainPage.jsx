@@ -3,18 +3,16 @@ import React,{ useState } from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import axios from 'axios';
-
+import CheckPrivateModal from '../Components/CheckPrivateModal';
 
 
 
 function UserMainPage(props) {
 
-
-
-
 return (
     <BackGround>
-    <NavBar>
+    
+        <NavBar>
         <NavBarLeft></NavBarLeft>
         <NavBarRight>
             <LogoBar>
@@ -29,18 +27,24 @@ return (
             <NavButton>ACHIVEMENTS</NavButton>
             <NavButton>INTERESTS</NavButton>
         </NavBarRight>
-    </NavBar>
-    <UpNavBar>
-    <UpNavBarTop>
-        <UpNavButton>활동내역 관리</UpNavButton>
-        <UpNavButton>활동내역 발급</UpNavButton>
-        <UpNavButton>활동내역 제출</UpNavButton>
-       </UpNavBarTop>
-       <UpNavBarBottom></UpNavBarBottom>
+        </NavBar>
+        <UpNavBar>
+        <UpNavBarTop>
+            <UpNavButton>활동내역 관리</UpNavButton>
+            <UpNavButton>활동내역 발급</UpNavButton>
+            <UpNavButton>활동내역 제출</UpNavButton>
+            <UpNavButton>도움말</UpNavButton>
+        </UpNavBarTop>
+        <UpNavBarBottom>
+            <ContentsConatiner>
 
-      </UpNavBar>
+            </ContentsConatiner>
+        </UpNavBarBottom>
+        </UpNavBar>
+        
+
     </BackGround>
-  );
+);
 }
 
 
@@ -97,8 +101,8 @@ const UserprofileContainer = styled.div`
 const UserProfile = styled.div`
     position: relative;
     border-radius: 50%;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     background-color: #FFFFFF;
 `
 
@@ -152,7 +156,7 @@ const UpNavButton = styled.button`
     position: relative;
     width: 25%;
     height: 100%; 
-    border: none; /* 테두리 제거 */
+    border: none; 
     box-shadow: none;
     background-color: transparent;
     color: #383838;
@@ -167,8 +171,14 @@ const UpNavButton = styled.button`
     } 
     
 ` 
-
-
+const ContentsConatiner = styled.div`
+    position: relative;
+    background-color: #383838;
+    left:10%;
+    top:10%;
+    width:85%;
+    height:90%;
+`
 
 
 export default UserMainPage;
