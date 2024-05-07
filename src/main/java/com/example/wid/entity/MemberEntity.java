@@ -30,7 +30,7 @@ public class MemberEntity extends BaseEntity{
     private String name;
     @Column(nullable = true)
     private String phone;
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String publicKey;
 
     public String getRole() {
