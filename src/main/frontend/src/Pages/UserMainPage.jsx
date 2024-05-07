@@ -37,10 +37,10 @@ return (
         </UpNavBarTop>
         <UpNavBarBottom>
             <ContentsConatiner>
-                <InformationDiv>Personal Information</InformationDiv>
-                <InformationDiv>Experience</InformationDiv>
-                <InformationDiv>Education</InformationDiv>
-                <InformationDiv>Achivement</InformationDiv>
+                <InformationDiv><h3>Personal Information</h3></InformationDiv>
+                <InformationDiv><h3>Experience</h3></InformationDiv>
+                <InformationDiv><h3>Education</h3></InformationDiv>
+                <InformationDiv><h3>Achivement</h3></InformationDiv>
             </ContentsConatiner>
         </UpNavBarBottom>
         </UpNavBar>
@@ -179,12 +179,12 @@ const UpNavButton = styled.button`
 const ContentsConatiner = styled.div`
     position: relative;
     background-color: #383838;
-    left:10%;
-    top:5%;
-    width:85%;
-    height:90%;
+    left:5%;
+    top:2%;
+    width:90%;
+    height:96%;
     justify-content: center;
-    
+    border-radius: 10px;
     overflow: auto;
 `
 
@@ -194,6 +194,8 @@ const InformationDiv = styled.div`
     background-color: #605e5e;
     margin: auto;
     overflow: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
 `
 
 
