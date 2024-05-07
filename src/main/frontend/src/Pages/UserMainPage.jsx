@@ -8,10 +8,11 @@ import CheckPrivateModal from '../Components/CheckPrivateModal';
 
 
 function UserMainPage(props) {
+const [PKchecked, setPKchecked] = useState(false);
+
 
 return (
     <BackGround>
-    
         <NavBar>
         <NavBarLeft></NavBarLeft>
         <NavBarRight>
@@ -30,9 +31,9 @@ return (
         </NavBar>
         <UpNavBar>
         <UpNavBarTop>
-            <UpNavButton>활동내역 관리</UpNavButton>
-            <UpNavButton>활동내역 발급</UpNavButton>
-            <UpNavButton>활동내역 제출</UpNavButton>
+            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 관리</UpNavButton>
+            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 발급</UpNavButton>
+            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 제출</UpNavButton>
             <UpNavButton>도움말</UpNavButton>
         </UpNavBarTop>
         <UpNavBarBottom>
@@ -41,6 +42,7 @@ return (
             </ContentsConatiner>
         </UpNavBarBottom>
         </UpNavBar>
+        { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
         
 
     </BackGround>
@@ -163,7 +165,7 @@ const UpNavButton = styled.button`
     text-align: center;
     font-size: 22px;
     font-family: 'Arial', sans-serif;
-    transition: background-color 0.5s ease;
+    transition: background-color 1s ease;
     box-shadow: none;
     &:hover {
        background-color: #FFFFFF;
