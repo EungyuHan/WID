@@ -196,7 +196,7 @@ return (
 
 
 const BackGround = styled.div`
-    position: relative;
+    position: fixed;
     background: linear-gradient(to right, #FFFFFF, #0083b0);
     width: 100%;
     height: 100vh;

@@ -3,9 +3,13 @@ import React,{ useState } from 'react';
 import styled,{keyframes} from 'styled-components';
 import Waves from '../Components/Waves';
 import {Link} from 'react-router-dom';
-import { Document, Page } from 'react-pdf';
+import { pdfjs } from 'react-pdf';
+import PDFpreviewer from '../Components/PDFpreviewer';
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function UserCreateVC() {
+   
+
     return(
         <BackGround>
             <div div style={{ zIndex: 1 }}>
@@ -32,8 +36,8 @@ function UserCreateVC() {
                     <FormH4>전공 <FormInput></FormInput></FormH4>
                     <FormH4>과목 <FormInput></FormInput></FormH4>
                     <FormH4>요청대상 <FormInput></FormInput></FormH4>
-                    <FormH4>신청대상 <FormInput></FormInput></FormH4>
                     <FormH4>작업기간 <FormInput></FormInput></FormH4>
+                    <Button name={'제출하기'}></Button>
                 </FormContainer>
     
                 <DescriptionContainer>
@@ -42,8 +46,8 @@ function UserCreateVC() {
                 </DescriptionContainer>
                 
                 <PreviewContainer>
-                <Button name={"제출하기"}></Button>
-                    미리보기 창 ddddddddddddddd
+                    <FormH4>미리보기</FormH4>
+                    <PDFpreviewer></PDFpreviewer>
                 </PreviewContainer>
                 
             </ContentContainer>
@@ -66,7 +70,7 @@ function UserCreateVC() {
 
 
 const BackGround = styled.div`
-    position: relative;
+    position: fixed;
     background: linear-gradient(to right, #FFFFFF, #0083b0);
     width: 100%;
     height: 100vh;
@@ -138,9 +142,11 @@ const PreviewContainer = styled.div`
     position: absolute;
     top: 2%;
     right: 4%;
-    width: 45%
-    height: 80%;
-    background-color: white;
+    width: 45%;
+    height: 97%;
+    overflow: auto;
+    border-radius: 10px;
+    background-color: gray;
 `
 
 
