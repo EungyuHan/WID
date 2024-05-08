@@ -8,8 +8,7 @@ import PDFpreviewer from '../Components/PDFpreviewer';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function UserCreateVC() {
-   
-
+    
     return(
         <BackGround>
             <div div style={{ zIndex: 1 }}>
@@ -31,18 +30,22 @@ function UserCreateVC() {
             
             <ContentContainer>
                 <FormContainer>
+                    <form>
                     <FormH4>신청인  <FormInput></FormInput></FormH4>
                     <FormH4>학교    <FormInput></FormInput></FormH4>
                     <FormH4>전공 <FormInput></FormInput></FormH4>
                     <FormH4>과목 <FormInput></FormInput></FormH4>
                     <FormH4>요청대상 <FormInput></FormInput></FormH4>
                     <FormH4>작업기간 <FormInput></FormInput></FormH4>
+                    <div style={{background:'white', width:'50%'}}><input type={'file'}></input></div>
+                    </form>
+                    <div style={{right:'10%'}}></div>
                     <Button name={'제출하기'}></Button>
                 </FormContainer>
     
                 <DescriptionContainer>
                     <FormH4>설명</FormH4>
-                    <textarea size={200}></textarea>
+                    <DescriptionTextarea></DescriptionTextarea>
                 </DescriptionContainer>
                 
                 <PreviewContainer>
@@ -51,15 +54,6 @@ function UserCreateVC() {
                 </PreviewContainer>
                 
             </ContentContainer>
-
-
-
-
-
-
-
-
-
 
             </div>
             <Waves></Waves>
@@ -105,20 +99,19 @@ const ContentContainer = styled.div`
     left: 50%;
     width: 90%;
     height: 87%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.25);
     transform: translate(-50%);
     border-radius: 15px;
 `
 const FormContainer = styled.div`
     position: absolute;
     top: 2%;
-    left: 4%;
+    left: 5%;
     width: 45%;
-    height: 65%;
+    height: 60%;
 `
 
 const FormH4 = styled.h4`
-    size: 5;
     margin: auto;
     padding: 5px 10px;
     color: white;
@@ -134,8 +127,14 @@ const FormInput = styled.input`
 const DescriptionContainer = styled.div`
     position: absolute;
     width: 45%;
-    top: 67%;
+    top: 57%;
     left: 4%;
+`
+
+const DescriptionTextarea = styled.textarea`
+    width: 100%;  
+    height: 200px;
+    border-radius: 10px;
 `
 
 const PreviewContainer = styled.div`
@@ -146,7 +145,7 @@ const PreviewContainer = styled.div`
     height: 97%;
     overflow: auto;
     border-radius: 10px;
-    background-color: gray;
+    background-color: #5c5c5c;
 `
 
 

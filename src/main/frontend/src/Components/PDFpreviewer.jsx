@@ -22,9 +22,6 @@ function PDFpreviewer(props) {
         onLoadSuccess={onDocumentLoadSuccess}>
         <Page pageNumber={pageNumber} />
         </Document>
-
-        
-    
     </DocumentDiv>
     
     );
@@ -53,7 +50,11 @@ const ControllerButton = styled.button`
     padding: 10px 10px;
     border: none;
     box-shadow: 0.5px 0.5px 2px black;
-    margin: 2px;
+    margin: 3px;
+    &:hover {
+      background-color: White;
+      color: black;
+    }
 `
 
 export default PDFpreviewer;
