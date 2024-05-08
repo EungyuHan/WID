@@ -149,7 +149,4 @@ const PreviewContainer = styled.div`
 `
 
 
-
-
-
 export default UserCreateVC;

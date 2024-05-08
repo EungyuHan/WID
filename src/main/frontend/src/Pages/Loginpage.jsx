@@ -76,11 +76,9 @@ function Loginpage(){
         </BackGround>
 
         
-            
+
     )
 }
-
-
 
 const BackGround = styled.div`
     position: fixed;

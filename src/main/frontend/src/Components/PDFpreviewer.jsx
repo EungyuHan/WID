@@ -30,7 +30,6 @@ function PDFpreviewer(props) {
 
 
 const DocumentDiv = styled.div`
-    border-radius: 15px;
     position: relative;
     width: 90%;
     height: 93%;
