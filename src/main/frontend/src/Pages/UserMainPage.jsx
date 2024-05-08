@@ -22,6 +22,7 @@ const goToRef = (index) => {
 
 return (
     <BackGround>
+        <div style={{ zIndex: 1 }}>
         <NavBar>
         <NavBarLeft></NavBarLeft>
         <NavBarRight>
@@ -186,7 +187,9 @@ return (
         </UpNavBar>
         { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
         
-
+        </div>
+        
+        <Waves></Waves>
     </BackGround>
 );
 }
