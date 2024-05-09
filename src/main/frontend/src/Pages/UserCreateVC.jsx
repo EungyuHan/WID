@@ -8,7 +8,20 @@ import PDFpreviewer from '../Components/PDFpreviewer';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function UserCreateVC() {
+
+    const [file, setFile] = useState(null);
     
+    const handleFileChange = (event) =>{
+        const inputFile = event.target.files[0];
+        if(inputFile) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                setFile(event.target.result);
+            };
+            reader.readAsArrayBuffer(inputFile);
+        }
+    }
+
     return(
         <BackGround>
             <div div style={{ zIndex: 1 }}>
@@ -37,7 +50,8 @@ function UserCreateVC() {
                     <FormH4>과목 <FormInput></FormInput></FormH4>
                     <FormH4>요청대상 <FormInput></FormInput></FormH4>
                     <FormH4>작업기간 <FormInput></FormInput></FormH4>
-                    <div style={{background:'white', width:'50%'}}><input type={'file'}></input></div>
+                    <div style={{background:'white', width:'50%'}}><input type={'file'} 
+                    onChange={handleFileChange}></input></div>
                     </form>
                     <div style={{right:'10%'}}></div>
                     <Button name={'제출하기'}></Button>
@@ -50,7 +64,7 @@ function UserCreateVC() {
                 
                 <PreviewContainer>
                     <FormH4>미리보기</FormH4>
-                    <PDFpreviewer></PDFpreviewer>
+                    <PDFpreviewer file={file}></PDFpreviewer>
                 </PreviewContainer>
                 
             </ContentContainer>

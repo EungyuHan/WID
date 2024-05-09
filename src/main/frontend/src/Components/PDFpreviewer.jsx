@@ -18,7 +18,7 @@ function PDFpreviewer(props) {
         <ControllerButton onClick={()=> pageNumber < numPages ? setPageNumber(pageNumber+1):null}>다음페이지</ControllerButton> 
         </PDFcontroller>
         <Document
-        file="/img/(2021)프라이빗 블록체인을 사용한 DID 활용 연구.pdf"
+        file={props.file}
         onLoadSuccess={onDocumentLoadSuccess}>
         <Page pageNumber={pageNumber} />
         </Document>

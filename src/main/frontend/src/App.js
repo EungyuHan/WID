@@ -12,6 +12,7 @@ function App() {
         <Route path='/' element={<Loginpage />}></Route>
         <Route path='/MainPage' element={<UserMainPage/>}></Route>
         <Route path='/Something' element={<UserCreateVC/>}></Route>
+        <Route path='/Working' element={<UserMainPage/>}></Route>
       </Routes>
     </BrowserRouter>
       

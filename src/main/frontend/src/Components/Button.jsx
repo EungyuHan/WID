@@ -4,6 +4,14 @@ import styled from 'styled-components';
 /* 가장 간단한 버튼 모양  */
 
 
+function Button(props) {
+    const ID = props.name;
+    return(
+        <ButtonEx onClick={props.onClick} disabled={props.disabled}>{ID}</ButtonEx>
+    )
+}
+
+
 const ButtonEx = styled.button`
 background-color: ${props => props.disabled ? 'gray' : '#0A377C' };
 border: none;
@@ -27,11 +35,5 @@ ${props => props.disabled ? '' : `
   `}
 `;
 
-function Button(props) {
-    const ID = props.name;
-    return(
-        <ButtonEx onClick={props.onClick} disabled={props.disabled}>{ID}</ButtonEx>
-    )
-}
 
 export default Button;

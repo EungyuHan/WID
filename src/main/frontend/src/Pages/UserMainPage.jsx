@@ -4,10 +4,12 @@ import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import axios from 'axios';
 import CheckPrivateModal from '../Components/CheckPrivateModal';
+import HelpModal from '../Components/HelpModal';
 
 
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
+const [isHelpClicked, setHelp] = useState(false);
 const personalInfoRef = useRef();
 const experienceRef = useRef();
 const educationRef = useRef();
@@ -18,6 +20,9 @@ const goToRef = (index) => {
         index.current.scrollIntoView({ behavior: 'smooth' });
 };
 
+const toggleHelp = () => {
+    setHelp(!isHelpClicked);
+}
 
 
 return (
@@ -44,7 +49,7 @@ return (
             <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 관리</UpNavButton>
             <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 발급</UpNavButton>
             <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 제출</UpNavButton>
-            <UpNavButton>도움말</UpNavButton>
+            <UpNavButton onClick={toggleHelp}>도움말</UpNavButton>
         </UpNavBarTop>
         <UpNavBarBottom>
             <ContentsConatiner>
@@ -185,8 +190,8 @@ return (
             </ContentsConatiner>
         </UpNavBarBottom>
         </UpNavBar>
-        { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
-        
+        { PKchecked && (<CheckPrivateModal/>)}
+        { isHelpClicked && (<HelpModal onClose={toggleHelp}/>)}
         </div>
         
         <Waves></Waves>

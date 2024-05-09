@@ -2,12 +2,13 @@ import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
 
-function HelpModal() {
+
+
+function HelpModal(props) {
     return(
         <Modals>
-            <ModalContent>
-
-            </ModalContent>
+            <button onClick={props.onClose}>뒤로가기</button>
+            <Instruct>안녕하세요 WID가 처음이시군요</Instruct>
         </Modals>
     )
 }
@@ -24,19 +25,10 @@ const Modals = styled.div`
     z-index:2;
 `
 
-const ModalContent = styled.div`
-    position: relative;
-    top: 10%;
-    display: block;
-    width: 50%;
-    height: 70%;
-    padding: 40px;
-    margin: auto;
-    text-align: center;
-    background-color: #cacfd3;
-    border-radius: 10px;
-    box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
-
+const Instruct = styled.h2`
+    color: White;
 `
+
+
 
 export default HelpModal;

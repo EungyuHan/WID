@@ -4,10 +4,13 @@ import Button from './Button';
 
 function ConfirmSubmitModal() {
 
+
+
     return(
         <Modals>
+            <ModalContent>
 
-        
+            </ModalContent>
         </Modals>
     )
 }
@@ -33,7 +36,7 @@ const ModalContent = styled.div`
     padding: 40px;
     margin: auto;
     text-align: center;
-    background-color: #cacfd3;
+    background: linear-gradient(to top, #FFFFFF, #0083b0);
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 
