@@ -5,9 +5,18 @@ import styled,{keyframes} from 'styled-components';
 function PDFpreviewer(props) {
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1);
+    const [scale, setScale] = useState(1.0);
 
-    function onDocumentLoadSuccess({ numPages }) {
+    const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    }
+
+    const zoomDocument = () => {
+        setScale(scale+0.1);
+    }
+    
+    const zoomOutDocument = () => {
+        setScale(scale-0.1);
     }
 
     return (
@@ -15,12 +24,21 @@ function PDFpreviewer(props) {
     <DocumentDiv>
         <PDFcontroller> 
         <ControllerButton onClick={()=> pageNumber > 1 ? setPageNumber(pageNumber-1):null}>이전페이지</ControllerButton>
-        <ControllerButton onClick={()=> pageNumber < numPages ? setPageNumber(pageNumber+1):null}>다음페이지</ControllerButton> 
+        <ControllerButton onClick={()=> pageNumber < numPages ? setPageNumber(pageNumber+1):null}>다음페이지</ControllerButton>
+        <div>
+            <ControllerButton onClick={zoomDocument}>
+                <img src='img/plus.png' width={`10px`} height={`10px`} alt='Logo'></img>    
+            </ControllerButton>  
+            <ControllerButton onClick={zoomOutDocument}>
+                <img src='img/minus.png' width={`10px`} height={`10px`} alt='Logo'></img>  
+            </ControllerButton>  
+        </div>
+        
         </PDFcontroller>
         <Document
         file={props.file}
         onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={pageNumber} scale={'page-fit'}/>
+        <Page pageNumber={pageNumber} scale={scale}/>
         </Document>
     </DocumentDiv>
     
