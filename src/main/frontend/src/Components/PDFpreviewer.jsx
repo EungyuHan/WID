@@ -20,7 +20,7 @@ function PDFpreviewer(props) {
         <Document
         file={props.file}
         onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={pageNumber} />
+        <Page pageNumber={pageNumber} scale={'page-fit'}/>
         </Document>
     </DocumentDiv>
     
