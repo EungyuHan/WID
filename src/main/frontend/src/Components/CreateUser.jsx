@@ -116,9 +116,10 @@ function CreateUser(props){
                             123124124124124125153152351235146134631461345345213523512352351235
                         </ShowPrivateKey>
                     </PrivateKeyDiv>
-                    
+                    <div>
                     <h5>개인키를 확인했으며 안전한 곳에 저장하였습니다.</h5>
-                    <button onClick={()=>{setIsChecked(!isChecked)}}>확인</button>
+                    <input type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
+                    </div>
                     <Button name={"닫기"} onClick={closeModal} disabled={isChecked}></Button>
                 </PrivateKeyModal>
                 

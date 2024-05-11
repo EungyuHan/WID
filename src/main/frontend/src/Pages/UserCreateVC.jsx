@@ -5,11 +5,13 @@ import Waves from '../Components/Waves';
 import {Link} from 'react-router-dom';
 import { pdfjs } from 'react-pdf';
 import PDFpreviewer from '../Components/PDFpreviewer';
+import ConfirmSubmitModal from '../Components/ConfirmSubmitModal';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function UserCreateVC() {
 
     const [file, setFile] = useState(null);
+    const [isModalopen, setModal] = useState(false);
     
     const handleFileChange = (event) =>{
         const inputFile = event.target.files[0];
@@ -20,6 +22,11 @@ function UserCreateVC() {
             };
             reader.readAsArrayBuffer(inputFile);
         }
+    }
+
+    const toggleModal = () => {
+        /* 제출확인 모달창이 뜨기전에 확인해야하는 필수 제출 요소들이 체크되었는지 확인. */
+        setModal(!isModalopen);
     }
 
     return(
@@ -54,7 +61,7 @@ function UserCreateVC() {
                     onChange={handleFileChange}></input></div>
                     </form>
                     <div style={{right:'10%'}}></div>
-                    <Button name={'제출하기'}></Button>
+                    <Button name={'제출하기'} onClick={toggleModal}></Button>
                 </FormContainer>
     
                 <DescriptionContainer>
@@ -68,8 +75,9 @@ function UserCreateVC() {
                 </PreviewContainer>
                 
             </ContentContainer>
-
+            
             </div>
+            { isModalopen && <ConfirmSubmitModal></ConfirmSubmitModal>}
             <Waves></Waves>
         </BackGround>
     )
