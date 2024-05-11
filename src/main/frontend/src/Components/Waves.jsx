@@ -9,8 +9,8 @@ const Waves = () => {
                     <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"/>
                 </defs>
                 <g className="parallax">
-                    <use xlinkHref="#gentle-wave" x="30" y="0" fill="rgba(255,255,255,0.7)"/>
-                    <use xlinkHref="#gentle-wave" x="40" y="3" fill="rgba(255,255,255,0.5)"/>
+                    <use xlinkHref="#gentle-wave" x="70" y="0" fill="rgba(255,255,255,0.7)"/>
+                    <use xlinkHref="#gentle-wave" x="80" y="3" fill="rgba(255,255,255,0.5)"/>
                     <use xlinkHref="#gentle-wave" x="50" y="0" fill="rgba(255,255,255,0.3)"/>
                     <use xlinkHref="#gentle-wave" x="50" y="7" fill="#fff"/>
                 </g>
@@ -32,7 +32,7 @@ const WavesContainer = styled.div`
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 50vh;
+    height: 60vh;
     margin-bottom: -7px; /*Fix for safari gap*/
     min-height: 0%;
     max-height: %;

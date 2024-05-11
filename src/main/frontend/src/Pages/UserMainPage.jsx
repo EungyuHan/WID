@@ -326,7 +326,7 @@ const UpNavButton = styled.button`
 ` 
 const ContentsConatiner = styled.div`
     position: relative;
-    background-color: #383838;
+    background-color: rgba(0, 0, 0, 0.4);
     left:5%;
     top:2%;
     width:90%;
