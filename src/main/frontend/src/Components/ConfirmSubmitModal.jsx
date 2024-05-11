@@ -1,6 +1,7 @@
 import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
+import {Link} from 'react-router-dom';
 
 function ConfirmSubmitModal() {
     const [isChecked,setIsChecked] = useState(false);
@@ -10,7 +11,7 @@ function ConfirmSubmitModal() {
     return(
         <Modals>
             <ModalContent>
-                <h2>인증신청이 완료되었습니다.</h2>
+                <h2 style={{color:'white'}}>인증신청이 완료되었습니다!</h2>
                 <InformDiv>
                     <InformText>제출된 내용은 담당자의 사실여부 확인 후에 성공적으로 저장이됩니다.</InformText>
                     <InformText>1.사실이 아닌경우</InformText>
@@ -21,15 +22,14 @@ function ConfirmSubmitModal() {
                 </InformDiv>
                 <div>
                 <h4>상기의 내용을 확인하였습니다.</h4>
-                <input type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
+                <input style={{background:'white', width:'25px', height:'25px',margin:'auto'}} type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
                 </div>
                 
-                <Button name={'제출하기'} disabled={!isChecked}></Button>
+                <Link to="/MainPage"><Button name={'제출하기'} disabled={!isChecked}></Button></Link>
             </ModalContent>
         </Modals>
     )
 }
-
 
 const Modals = styled.div`
     width: 100%;
