@@ -17,7 +17,7 @@ public class MemberEntity extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToOne
-    @JoinColumn(name = "_id")
+    @JoinColumn(name = "belong_id")
     private BelongEntity belong;
     @Column(unique = true)
     private String username;

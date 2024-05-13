@@ -18,23 +18,19 @@ public class RsaService {
     }
     public Optional<String> generateRsaKeyPair(Authentication authentication) throws NoSuchAlgorithmException {
         // RSA 비대칭키 생성
-        try{
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(1024);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024);
+        KeyPair keyGenerator = keyPairGenerator.genKeyPair();
 
-            PublicKey publicKey = keyPairGenerator.genKeyPair().getPublic();
-            PrivateKey privateKey = keyPairGenerator.genKeyPair().getPrivate();
-            String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-            String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+        PublicKey publicKey = keyGenerator.getPublic();
+        PrivateKey privateKey = keyGenerator.getPrivate();
+        String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+        String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 
-            String username = authentication.getName();
+        String username = authentication.getName();
 
-            memberRepository.updatePublicKeyByUsername(username, encodedPrivateKey);
+        memberRepository.updatePublicKeyByUsername(username, encodedPublicKey);
 
-            return Optional.of(encodedPublicKey);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
+        return Optional.of(encodedPrivateKey);
     }
 }
