@@ -6,6 +6,7 @@ import Button from '../Components/Button';
 
 function SetItemNameModal(props) {
     const [itemName, setName] = useState("");
+    
 
     return (  
         <Modals>
@@ -14,7 +15,8 @@ function SetItemNameModal(props) {
                 <ItemNameInput type='text' value={itemName} placeholder='항목명' onChange={(e)=>{
                             setName(e.target.value)
                         }}></ItemNameInput>
-                <Button name="확인" onClick={props.onClick} ></Button>
+                <Button name="확인" onClick={ ()=>{
+                    props.onClick()}} ></Button>
             </ModalContent>
 
         </Modals>

@@ -12,29 +12,30 @@ function UserCreateVP() {
     const [itemName, setName] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false); 
     
-
-
     const addItem = () => {
         setModal();
         const newItemID = item+1;
-        let ItemName = newItemID;
         setItem(newItemID);
         setName([...itemName,newItemID])
-        setItemList([...itemList,<ItemListContainer onClick={setModal}>{ItemName}</ItemListContainer>])
+        const newItemList = [...itemList, { id: newItemID, name: newItemID }];
+        setItemList(newItemList);
     }
 
-
+    const renderItemList = () => {
+        return itemList.map((itemName, index) => (
+            <ItemListContainer key={itemName.id} onClick={setModal}>
+                {itemName.name}
+            </ItemListContainer>
+        ))
+    }
+    
     const setModal = () => {
         setIsModalOpen(!isModalOpen);
     }
-
-    
-
-
     
 
     
-
+    
     return(
         <BackGround>
             <div div style={{ zIndex: 1 }}>
@@ -55,7 +56,7 @@ function UserCreateVP() {
                 <SelectBarDiv>
                     <ItemDiv>
                         {item === 0 && <div></div>}
-                        {itemList}
+                        {renderItemList()}
                     </ItemDiv>
                     <ItemAddButtonDiv>
                         <Button name="항목추가하기" onClick={addItem}></Button>
