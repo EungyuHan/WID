@@ -3,14 +3,37 @@ import styled,{keyframes} from 'styled-components';
 import Waves from '../Components/Waves';
 import Button from '../Components/Button';
 import {Link} from 'react-router-dom';
+import SetItemNameModal from '../Components/SetItemNameModal';
+
 
 function UserCreateVP() {
-    const [item, setItem] = useState([]);
-    const itemList = [];
+    const [item, setItem] = useState(0);
+    const [itemList, setItemList] = useState([]);   
+    const [itemName, setName] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    
+
 
     const addItem = () => {
-        
+        setModal();
+        const newItemID = item+1;
+        let ItemName = newItemID;
+        setItem(newItemID);
+        setName([...itemName,newItemID])
+        setItemList([...itemList,<ItemListContainer onClick={setModal}>{ItemName}</ItemListContainer>])
     }
+
+
+    const setModal = () => {
+        setIsModalOpen(!isModalOpen);
+    }
+
+    
+
+
+    
+
+    
 
     return(
         <BackGround>
@@ -31,7 +54,8 @@ function UserCreateVP() {
 
                 <SelectBarDiv>
                     <ItemDiv>
-                        
+                        {item === 0 && <div></div>}
+                        {itemList}
                     </ItemDiv>
                     <ItemAddButtonDiv>
                         <Button name="항목추가하기" onClick={addItem}></Button>
@@ -44,6 +68,7 @@ function UserCreateVP() {
                 </ContentDiv>
             </div>
             <Waves/>
+            {isModalOpen && <SetItemNameModal onClick={setModal}></SetItemNameModal>}
         </BackGround>
     )
 }
@@ -58,6 +83,7 @@ const BackGround = styled.div`
     padding = 0px;
     display: flex;
 `
+
 const LogoContainer = styled.div`
     position: fixed; 
     width: 60%;
@@ -99,6 +125,8 @@ const ContentDiv = styled.div`
     background-color: rgba(0, 0, 0, 0.25);
 `
 
+
+
 const ItemDiv = styled.div`
     position: relative;
     top: 3%;
@@ -107,8 +135,14 @@ const ItemDiv = styled.div`
     margin: auto;
     border-radius: 10px;
     display:block;
-    background-color: #ffffffcc;
-    overflow:scroll;
+    background-color: #383838;
+    overflow:auto;
+`
+const PrivateInput = styled.input`
+    padding: 10px 25px;
+    margin: 5px 10px;
+    border-radius: 5px;
+    border: none;   
 `
 const ItemAddButtonDiv = styled.div`
     position: relative;
@@ -121,5 +155,22 @@ const ItemAddButtonDiv = styled.div`
     align-items: center;
 `
 
+const ItemListContainer = styled.button`
+    position: relative;
+    top:12%;
+    left: 50%;
+    width: 90%;
+    height: 20%;
+    border-radius: 15px;
+    border: none;
+    margin-bottom: 5%;
+    box-shadow: 0.5px 0.5px 2px black;
+    background-color: White;
+    transform: translate(-50%, -50%);
+    &:hover {
+    background-color: #878787;
+    color: black;
+    }
+`
 
 export default UserCreateVP;
