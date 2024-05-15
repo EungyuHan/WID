@@ -16,7 +16,10 @@ function SetItemNameModal(props) {
                             setName(e.target.value)
                         }}></ItemNameInput>
                 <Button name="확인" onClick={ ()=>{
-                    props.onClick()}} ></Button>
+                    props.getString(itemName);
+                    setName("");
+                    props.onClick();
+                }} ></Button>
             </ModalContent>
 
         </Modals>

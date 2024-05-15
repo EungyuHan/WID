@@ -9,14 +9,15 @@ import SetItemNameModal from '../Components/SetItemNameModal';
 function UserCreateVP() {
     const [item, setItem] = useState(0);
     const [itemList, setItemList] = useState([]);   
-    const [itemName, setName] = useState([]);
+    const [itemName, setName] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false); 
     
+
+
     const addItem = () => {
         setModal();
         const newItemID = item+1;
         setItem(newItemID);
-        setName([...itemName,newItemID])
         const newItemList = [...itemList, { id: newItemID, name: newItemID }];
         setItemList(newItemList);
     }
@@ -32,7 +33,11 @@ function UserCreateVP() {
     const setModal = () => {
         setIsModalOpen(!isModalOpen);
     }
+
     
+    const getString = (name) => {
+        setItem(name);
+    }
 
     
     
@@ -59,7 +64,7 @@ function UserCreateVP() {
                         {renderItemList()}
                     </ItemDiv>
                     <ItemAddButtonDiv>
-                        <Button name="항목추가하기" onClick={addItem}></Button>
+                        <Button name="항목추가하기" onClick={addItem} ></Button>
                     </ItemAddButtonDiv>
                     
                 </SelectBarDiv>
@@ -69,7 +74,7 @@ function UserCreateVP() {
                 </ContentDiv>
             </div>
             <Waves/>
-            {isModalOpen && <SetItemNameModal onClick={setModal}></SetItemNameModal>}
+            {isModalOpen && <SetItemNameModal onClick={setModal} getString={getString}></SetItemNameModal>}
         </BackGround>
     )
 }
