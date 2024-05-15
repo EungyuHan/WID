@@ -9,37 +9,39 @@ import SetItemNameModal from '../Components/SetItemNameModal';
 function UserCreateVP() {
     const [item, setItem] = useState(0);
     const [itemList, setItemList] = useState([]);   
-    const [itemName, setName] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false); 
     
 
-
     const addItem = () => {
         setModal();
-        const newItemID = item+1;
-        setItem(newItemID);
-        const newItemList = [...itemList, { id: newItemID, name: itemName }];
-        setItemList(newItemList);
-    }
-
-    const renderItemList = () => {
-        return itemList.map((itemName, index) => (
-            <ItemListContainer key={itemName.id} onClick={setModal}>
-                {itemName.name}
-            </ItemListContainer>
-        ))
+        
     }
     
     const setModal = () => {
         setIsModalOpen(!isModalOpen);
     }
 
-    
+
+
     const getItemName = (name) => {
-        setName(name);
+        const newName = name;
+        const newItemID = item+1;
+        setItem(newItemID);
+        const newItemList = [...itemList, { id: newItemID, name: newName }];
+        setItemList(newItemList);
+        console.log(newItemList);
     }
 
     
+
+
+    const renderItemList = () => {
+        return itemList.map((itemName, index) => (
+            <ItemListContainer key={itemName.id} onClick={setModal}>
+                <h4>{itemName.name}</h4>
+            </ItemListContainer>
+        ))
+    }
     
     return(
         <BackGround>
