@@ -18,7 +18,7 @@ function UserCreateVP() {
         setModal();
         const newItemID = item+1;
         setItem(newItemID);
-        const newItemList = [...itemList, { id: newItemID, name: newItemID }];
+        const newItemList = [...itemList, { id: newItemID, name: itemName }];
         setItemList(newItemList);
     }
 
@@ -35,8 +35,8 @@ function UserCreateVP() {
     }
 
     
-    const getString = (name) => {
-        setItem(name);
+    const getItemName = (name) => {
+        setName(name);
     }
 
     
@@ -74,7 +74,7 @@ function UserCreateVP() {
                 </ContentDiv>
             </div>
             <Waves/>
-            {isModalOpen && <SetItemNameModal onClick={setModal} getString={getString}></SetItemNameModal>}
+            {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
         </BackGround>
     )
 }
