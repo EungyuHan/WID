@@ -1,7 +1,7 @@
 package com.example.wid.controller;
 
 import com.example.wid.dto.RegisterDTO;
-import com.example.wid.entity.Role;
+import com.example.wid.entity.enums.Role;
 import com.example.wid.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

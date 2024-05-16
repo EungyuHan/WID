@@ -2,14 +2,12 @@ package com.example.wid.service;
 
 import com.example.wid.dto.RegisterDTO;
 import com.example.wid.entity.MemberEntity;
-import com.example.wid.entity.Role;
+import com.example.wid.entity.enums.Role;
 import com.example.wid.controller.exception.AlreadyExistsMemberException;
 import com.example.wid.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class MemberService {

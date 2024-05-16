@@ -1,4 +1,4 @@
-package com.example.wid.entity;
+package com.example.wid.entity.enums;
 
 public enum Belong {
     SCHOOL,

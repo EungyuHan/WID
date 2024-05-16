@@ -1,6 +1,7 @@
 package com.example.wid.entity;
 
 import com.example.wid.entity.base.BaseEntity;
+import com.example.wid.entity.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

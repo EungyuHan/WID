@@ -1,5 +1,6 @@
 package com.example.wid.entity;
 
+import com.example.wid.entity.enums.Belong;
 import jakarta.persistence.*;
 
 @Entity(name = "belong")

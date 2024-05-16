@@ -2,10 +2,9 @@ package com.example.wid.service;
 
 import com.example.wid.dto.RegisterDTO;
 import com.example.wid.controller.exception.AlreadyExistsMemberException;
-import com.example.wid.entity.Role;
+import com.example.wid.entity.enums.Role;
 import com.example.wid.repository.MemberRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
