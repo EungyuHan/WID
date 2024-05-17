@@ -10,14 +10,12 @@ import HelpModal from '../Components/HelpModal';
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 const [isHelpClicked, setHelp] = useState(false);
-const personalInfoRef = useRef();
-const experienceRef = useRef();
-const educationRef = useRef();
-const achivementRef = useRef();
-const interestRef = useRef();
+const refs = useRef({});
 
 const goToRef = (index) => {  
-        index.current.scrollIntoView({ behavior: 'smooth' });
+    if(refs.current[index]){
+        refs.current[index].scrollIntoView({ behavior: 'smooth' });
+    }
 };
 
 const toggleHelp = () => {
@@ -37,11 +35,11 @@ return (
             <UserprofileContainer>
                 <UserProfile></UserProfile>
             </UserprofileContainer>
-            <NavButton onClick={()=>goToRef(personalInfoRef)}>PERSONAL INFORMATION</NavButton>
-            <NavButton onClick={()=>goToRef(experienceRef)}>EXPERIENCE</NavButton>
-            <NavButton onClick={()=>goToRef(educationRef)}>EDUCATION</NavButton>
-            <NavButton onClick={()=>goToRef(achivementRef)}>ACHIVEMENTS</NavButton>
-            <NavButton onClick={()=>goToRef(interestRef)}>INTERESTS</NavButton>
+            <NavButton onClick={()=>goToRef('personalInfo')}>PERSONAL INFORMATION</NavButton>
+            <NavButton onClick={()=>goToRef('experience')}>EXPERIENCE</NavButton>
+            <NavButton onClick={()=>goToRef('education')}>EDUCATION</NavButton>
+            <NavButton onClick={()=>goToRef('achievement')}>ACHIVEMENTS</NavButton>
+            <NavButton onClick={()=>goToRef('interest')}>INTERESTS</NavButton>
         </NavBarRight>
         </NavBar>
         <UpNavBar>
@@ -53,7 +51,7 @@ return (
         </UpNavBarTop>
         <UpNavBarBottom>
             <ContentsConatiner>
-                <InformationDiv ref={personalInfoRef}>
+                <InformationDiv ref={el => refs.current['personalInfo'] = el}>
                     <h3 >Personal Information</h3>
                     <div>내용 </div>
                     <div>내용</div>
@@ -81,7 +79,7 @@ return (
                     <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3 ref={experienceRef}>Experience</h3>
+                    <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>
@@ -108,7 +106,7 @@ return (
                     <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3 ref={educationRef}>Education</h3>
+                    <h3  ref={el => refs.current['education'] = el}>Education</h3>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>
@@ -134,7 +132,7 @@ return (
                     <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3 ref={achivementRef}>Achivement</h3>
+                    <h3 ref={el => refs.current['achievement'] = el} >Achivement</h3>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>
@@ -161,7 +159,7 @@ return (
                     <div>내용</div>
                 </InformationDiv>
                 <InformationDiv>
-                    <h3 ref={interestRef}>Interests</h3>
+                    <h3 ref={el => refs.current['interest'] = el}>Interests</h3>
                     <div>내용</div>
                     <div>내용</div>
                     <div>내용</div>

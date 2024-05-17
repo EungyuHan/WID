@@ -2,11 +2,8 @@ import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from '../Components/Button';
 
-
-
 function SetItemNameModal(props) {
     const [itemName, setName] = useState("");
-    
 
     return (  
         <Modals>
@@ -21,9 +18,7 @@ function SetItemNameModal(props) {
                     props.onClick();
                 }} ></Button>
             </ModalContent>
-
         </Modals>
-
     )
 }
 

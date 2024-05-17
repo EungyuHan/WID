@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled,{keyframes} from 'styled-components';
 import Waves from '../Components/Waves';
 import Button from '../Components/Button';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import SetItemNameModal from '../Components/SetItemNameModal';
 
 
@@ -11,17 +11,13 @@ function UserCreateVP() {
     const [itemList, setItemList] = useState([]);   
     const [isModalOpen, setIsModalOpen] = useState(false); 
     
-
     const addItem = () => {
         setModal();
-        
     }
     
     const setModal = () => {
         setIsModalOpen(!isModalOpen);
     }
-
-
 
     const getItemName = (name) => {
         const newName = name;
@@ -32,16 +28,18 @@ function UserCreateVP() {
         console.log(newItemList);
     }
 
-    
-
 
     const renderItemList = () => {
         return itemList.map((itemName, index) => (
-            <ItemListContainer key={itemName.id} onClick={setModal}>
+                <ItemListContainer key={itemName.id} 
+                onClick={()=>{console.log(itemName.name+' Clicked!')}}>
                 <h4>{itemName.name}</h4>
-            </ItemListContainer>
-        ))
+                </ItemListContainer>
+                )
+        )
     }
+
+    
     
     return(
         <BackGround>
@@ -61,15 +59,16 @@ function UserCreateVP() {
                 </HelpContainer>
 
                 <SelectBarDiv>
-                    <ItemDiv>
-                        {item === 0 && <div></div>}
-                        {renderItemList()}
-                    </ItemDiv>
-                    <ItemAddButtonDiv>
-                        <Button name="항목추가하기" onClick={addItem} ></Button>
-                    </ItemAddButtonDiv>
-                    
+                        <ItemDiv>
+                            {item === 0 && <div></div>}
+                            {renderItemList()}
+                        </ItemDiv>
+                        <ItemAddButtonDiv>
+                            <Button name="항목추가하기" onClick={addItem} ></Button>
+                        </ItemAddButtonDiv>
+                        
                 </SelectBarDiv>
+                
 
                 <ContentDiv>
 
@@ -132,8 +131,6 @@ const ContentDiv = styled.div`
     border-radius : 15px;
     background-color: rgba(0, 0, 0, 0.25);
 `
-
-
 
 const ItemDiv = styled.div`
     position: relative;
