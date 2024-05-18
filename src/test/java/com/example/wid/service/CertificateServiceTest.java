@@ -1,13 +1,14 @@
 package com.example.wid.service;
 
 import com.example.wid.dto.ClassCertificateDTO;
+import com.example.wid.entity.CertificateInfoEntity;
+import com.example.wid.entity.ClassCertificateEntity;
 import com.example.wid.entity.MemberEntity;
 import com.example.wid.entity.enums.Role;
 import com.example.wid.repository.ClassCertificateRepository;
 import com.example.wid.repository.MemberRepository;
-import com.example.wid.repository.UserCertificateInfoRepository;
+import com.example.wid.repository.CertificateInfoRepository;
 import com.example.wid.security.CustomUserDetails;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +35,7 @@ class CertificateServiceTest {
     @Autowired
     private ClassCertificateRepository classCertificateRepository;
     @Autowired
-    private UserCertificateInfoRepository userCertificateInfoRepository;
+    private CertificateInfoRepository certificateInfoRepository;
     private Authentication authentication;
 
     @BeforeEach
@@ -82,5 +80,14 @@ class CertificateServiceTest {
         assertDoesNotThrow(() -> certificateService.createClassCertificate(classCertificateDTO, authentication));
         // then
         assertEquals(1, classCertificateRepository.findAll().size());
+        assertEquals(1, certificateInfoRepository.findAll().size());
+
+        ClassCertificateEntity classCertificate = classCertificateRepository.findAll().get(0);
+        CertificateInfoEntity certificateInfo = certificateInfoRepository.findAll().get(0);
+
+        assertNotNull(classCertificate.getCertificateInfo());
+        assertNotNull(certificateInfo.getClassCertificate());
+        assertEquals(classCertificate.getCertificateInfo().getId(), certificateInfo.getId());
+        assertEquals(certificateInfo.getClassCertificate().getId(), classCertificate.getId());
     }
 }

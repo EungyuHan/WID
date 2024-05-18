@@ -6,10 +6,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "user_certificate_info")
+@Entity(name = "certificate_info")
 @Getter
 @Setter
-public class UserCertificateInfoEntity extends BaseEntity {
+public class CertificateInfoEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,10 +27,9 @@ public class UserCertificateInfoEntity extends BaseEntity {
     private String originalFilename;
 
     @OneToOne
-    @JoinColumn(name = "class_certificate_id", nullable = true)
-    private ClassCertificateEntity classCertificate;
-
-    @OneToOne
     @JoinColumn(name = "signature_info_id", nullable = true)
     private SignatureInfoEntity signatureInfo;
+
+    @OneToOne(mappedBy = "certificateInfo")
+    private ClassCertificateEntity classCertificate;
 }
