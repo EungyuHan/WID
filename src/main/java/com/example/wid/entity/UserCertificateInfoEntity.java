@@ -14,10 +14,10 @@ public class UserCertificateInfoEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private MemberEntity user;
     @OneToOne
-    @Column(name = "issuer_id")
+    @JoinColumn(name = "issuer_id")
     private MemberEntity issuer;
     @Column(name = "certificate_type")
     @Enumerated(EnumType.STRING)
@@ -27,9 +27,10 @@ public class UserCertificateInfoEntity extends BaseEntity {
     private String originalFilename;
 
     @OneToOne
-    @Column(name = "class_certificate_id", nullable = true)
+    @JoinColumn(name = "class_certificate_id", nullable = true)
     private ClassCertificateEntity classCertificate;
 
     @OneToOne
+    @JoinColumn(name = "signature_info_id", nullable = true)
     private SignatureInfoEntity signatureInfo;
 }
