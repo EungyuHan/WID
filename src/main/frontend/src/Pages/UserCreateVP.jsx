@@ -4,12 +4,20 @@ import Waves from '../Components/Waves';
 import Button from '../Components/Button';
 import { Link } from 'react-router-dom';
 import SetItemNameModal from '../Components/SetItemNameModal';
+import VCviewer from '../Components/VCviewer';
 
 
 function UserCreateVP() {
     const [item, setItem] = useState(0);
     const [itemList, setItemList] = useState([]);   
     const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [contentsList , setContentList] = useState([]);
+    const [show, setShow] = useState(false);
+
+    const toggleDiv = () => {
+    setShow(!show);
+    };
+
     
     const addItem = () => {
         setModal();
@@ -24,7 +32,9 @@ function UserCreateVP() {
         const newItemID = item+1;
         setItem(newItemID);
         const newItemList = [...itemList, { id: newItemID, name: newName }];
+        const newContentsList = [...contentsList, {id: newItemID, name: newName}];
         setItemList(newItemList);
+        setContentList(newContentsList);
         console.log(newItemList);
     }
 
@@ -32,10 +42,20 @@ function UserCreateVP() {
     const renderItemList = () => {
         return itemList.map((itemName, index) => (
                 <ItemListContainer key={itemName.id} 
-                onClick={()=>{console.log(itemName.name+' Clicked!')}}>
+                onClick={toggleDiv}>
                 <h4>{itemName.name}</h4>
                 </ItemListContainer>
                 )
+        )
+    }
+
+    const renderContentList = () => {
+        return contentsList.map((contentName, index)=>(
+            <ContentsListDiv key={contentName.id}>
+                <h4>{contentName.name}</h4>
+                <div>내용입니다.</div>
+            </ContentsListDiv>
+        )
         )
     }
 
@@ -71,9 +91,13 @@ function UserCreateVP() {
                 
 
                 <ContentDiv>
-
+                    {renderContentList()}
+                    <SlideVCdiv show={show}>
+                        <VCviewer/>
+                    </SlideVCdiv>
                 </ContentDiv>
             </div>
+            
             <Waves/>
             {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
         </BackGround>
@@ -142,13 +166,9 @@ const ItemDiv = styled.div`
     display:block;
     background-color: #383838;
     overflow:auto;
+    box-shadow: 0.5px 0.5px 2px black;
 `
-const PrivateInput = styled.input`
-    padding: 10px 25px;
-    margin: 5px 10px;
-    border-radius: 5px;
-    border: none;   
-`
+
 const ItemAddButtonDiv = styled.div`
     position: relative;
     top:5%;
@@ -177,5 +197,29 @@ const ItemListContainer = styled.button`
     color: black;
     }
 `
+const ContentsListDiv = styled.div`
+    position: relative;
+    top: 5%;
+    width: 95%;
+    height: auto;
+    margin: auto;
+    border-radius: 5px;
+    background-color: #ffffffd1;
+`
+
+const SlideVCdiv = styled.div`
+    position: fixed;
+    bottom: ${(props) => (props.show ? '5%' : '-50%')};
+    left: 30%;
+    width: 63%;
+    height: 35%;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: bottom 0.5s ease-in-out;
+`;
+
 
 export default UserCreateVP;

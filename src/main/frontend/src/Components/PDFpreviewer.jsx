@@ -52,7 +52,7 @@ const DocumentDiv = styled.div`
     width: 90%;
     height: 93%;
     margin: auto;
-    overflow: scroll;
+    overflow: auto;
 `
 
 const PDFcontroller = styled.div`

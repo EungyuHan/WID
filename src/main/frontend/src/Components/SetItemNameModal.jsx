@@ -40,6 +40,7 @@ const ItemNameInput = styled.input`
     margin: 5px 10px;
     border-radius: 5px;
     border: none;   
+    box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 `
 
 const ModalContent = styled.div`
