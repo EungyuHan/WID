@@ -34,6 +34,7 @@ public class CertificateService {
         this.signatureInfoRepository = signatureInfoRepository;
     }
 
+    // 수업에 대한 증명서를 생성
     public void createClassCertificate(ClassCertificateDTO classCertificateDTO, Authentication authentication) throws IOException, ParseException {
         // 사용자 인증서 매핑정보 저장
         CertificateInfoEntity certificateInfoEntity = new CertificateInfoEntity();

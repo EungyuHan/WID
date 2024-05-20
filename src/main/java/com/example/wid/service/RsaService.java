@@ -16,14 +16,15 @@ public class RsaService {
     public RsaService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
+    // RSA 비대칭키 생성
     public Optional<String> generateRsaKeyPair(Authentication authentication) throws NoSuchAlgorithmException {
         // RSA 비대칭키 생성
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(1024);
-        KeyPair keyGenerator = keyPairGenerator.genKeyPair();
+        KeyPair keyGenerator = keyPairGenerator.genKeyPair(); // 키생성기
 
-        PublicKey publicKey = keyGenerator.getPublic();
-        PrivateKey privateKey = keyGenerator.getPrivate();
+        PublicKey publicKey = keyGenerator.getPublic(); // 공개키 생성
+        PrivateKey privateKey = keyGenerator.getPrivate(); // 비공개키 생성
         String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 

@@ -10,6 +10,7 @@ import java.util.Date;
 @Entity(name = "signature_info")
 @Getter
 @Setter
+// 서명한 정보를 담는 클래스
 public class SignatureInfoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

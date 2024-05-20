@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+// 증명서에 대한 소유등을 저장하기 위한 클래스
 @Entity(name = "certificate_info")
 @Getter
 @Setter

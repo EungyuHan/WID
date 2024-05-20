@@ -20,6 +20,7 @@ public class MemberService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    // 회원가입
     public boolean registerMember(RegisterDTO registerDTO, Role role) throws AlreadyExistsMemberException {
         // 이미 존재하는 아이디인지 확인
         if(isExistsMember(registerDTO)){
@@ -42,13 +43,14 @@ public class MemberService {
         return true;
     }
 
+    // 이미 존재하는 회원인지 확인하는 메소드
     private boolean isExistsMember(RegisterDTO registerDTO) {
         String username = registerDTO.getUsername();
         String email = registerDTO.getEmail();
         String phone = registerDTO.getPhone();
         return memberRepository.existsByUsernameOrEmailOrPhone(username, email, phone);
     }
-    // 정보가 비었는지 확인
+    // 정보가 비었는지 확인하는 메소드
     public boolean isInfoEmpty(RegisterDTO registerDTO){
         return registerDTO.getUsername().isEmpty() || registerDTO.getPassword().isEmpty() || registerDTO.getName().isEmpty() || registerDTO.getEmail().isEmpty() || registerDTO.getPhone().isEmpty();
     }
