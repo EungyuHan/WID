@@ -2,13 +2,21 @@ import Button from '../Components/Button';
 import React,{ useState } from 'react';
 import styled,{keyframes} from 'styled-components';
 import Waves from '../Components/Waves';
+import CheckPrivateModal from '../Components/CheckPrivateModal';
+
 import {Link} from 'react-router-dom';
 import { pdfjs } from 'react-pdf';
 import PDFpreviewer from '../Components/PDFpreviewer';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-function UserCreateVC() {
-   
+
+function IssuerCheck() {
+    const [PKchecked, setPKchecked] = useState(false);
+    const handleDownload = () => {
+        // PDF 파일 다운로드 로직 구현
+        // 예: window.open(pdfUrl, '_blank');
+      };
+    
 
     return(
         <BackGround>
@@ -31,44 +39,42 @@ function UserCreateVC() {
             
             <ContentContainer>
                 <FormContainer>
-                    <FormH4>신청인  <FormInput></FormInput></FormH4>
-                    <FormH4>학교    <FormInput></FormInput></FormH4>
-                    <FormH4>전공 <FormInput></FormInput></FormH4>
-                    <FormH4>과목 <FormInput></FormInput></FormH4>
-                    <FormH4>요청대상 <FormInput></FormInput></FormH4>
-                    <FormH4>작업기간 <FormInput></FormInput></FormH4>
-                    <Button name={'제출하기'}></Button>
+                    <FormH4>신청인  <FormInput value='qwer1216914@gmail.com'/></FormH4>
+                    <FormH4>학  교  <FormInput value='전북대학교'/></FormH4>
+                    <FormH4>전  공 <FormInput value='소프트웨어공학과'/></FormH4>
+                    <FormH4>과  목 <FormInput value='소프트웨어공학캡스톤프로젝트'/></FormH4>
+                    <FormH4>요청대상 <FormInput value='김순태 교수님'/></FormH4>
+                    <FormH4>작업기간 <FormInput value='2023.03 ~ 2023.12'/></FormH4>
                 </FormContainer>
     
                 <DescriptionContainer>
                     <FormH4>설명</FormH4>
-                    <textarea size={200}></textarea>
+                    <textarea value="소프트웨어공학캡스톤 프로젝트 과목에서 팀프로젝트로 논문을 작성하였습니다" />
                 </DescriptionContainer>
+               
                 
+                <RightContainer>
+                <div style={{ textAlign: 'right' }}>
+                  <Button onClick={()=>{setPKchecked(true)}} name="인증하기"/>
+                </div>
                 <PreviewContainer>
-                    <FormH4>미리보기</FormH4>
+                <RightTopContainer>
+                <FormH4>증명서번호 <FormInput value='12255'/></FormH4>
+                <button onClick={handleDownload}>다운로드</button>  
+                </RightTopContainer>  
                     <PDFpreviewer></PDFpreviewer>
                 </PreviewContainer>
+                </RightContainer>
                 
             </ContentContainer>
-
-
-
-
-
-
-
-
-
-
+            { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
             </div>
             <Waves></Waves>
         </BackGround>
+   
+        
     )
 }
-
-
-
 const BackGround = styled.div`
     position: fixed;
     background: linear-gradient(to right, #FFFFFF, #0083b0);
@@ -77,6 +83,7 @@ const BackGround = styled.div`
     padding: 0px;
     display: flex;
 `
+
 const LogoContainer = styled.div`
     position: fixed; 
     width: 60%;
@@ -138,12 +145,24 @@ const DescriptionContainer = styled.div`
     left: 4%;
 `
 
-const PreviewContainer = styled.div`
+const RightContainer = styled.div`
     position: absolute;
-    top: 2%;
-    right: 4%;
     width: 45%;
-    height: 97%;
+    height: 100%;
+    right: 4%;
+    background-color: transparent;
+    `
+
+const RightTopContainer = styled.div`
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-right: 250px;
+`
+const PreviewContainer = styled.div`
+    position: relative;
+    top: 1%;
+    height: 90%;
     overflow: auto;
     border-radius: 10px;
     background-color: gray;
@@ -153,4 +172,6 @@ const PreviewContainer = styled.div`
 
 
 
-export default UserCreateVC;
+
+
+export default IssuerCheck;
