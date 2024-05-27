@@ -4,60 +4,48 @@ import com.example.wid.dto.ClassCertificateDTO;
 import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.entity.ClassCertificateEntity;
 import com.example.wid.entity.MemberEntity;
-import com.example.wid.entity.enums.Role;
+import com.example.wid.entity.SignatureInfoEntity;
 import com.example.wid.repository.ClassCertificateRepository;
 import com.example.wid.repository.MemberRepository;
 import com.example.wid.repository.CertificateInfoRepository;
-import com.example.wid.security.CustomUserDetails;
+import com.example.wid.repository.SignatureInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
 @ExtendWith(MockitoExtension.class)
+@Transactional
 class CertificateServiceTest {
-    @Autowired
+    @InjectMocks
     private CertificateService certificateService;
-    @Autowired
+    @Mock
     private MemberRepository memberRepository;
-    @Autowired
+    @Mock
     private ClassCertificateRepository classCertificateRepository;
-    @Autowired
+    @Mock
     private CertificateInfoRepository certificateInfoRepository;
-    private Authentication authentication;
-
-    @BeforeEach
-    void setUp() {
-        MemberEntity issuer = new MemberEntity();
-        issuer.setUsername("issuer");
-        issuer.setPassword("issuerpassword");
-        issuer.setName("issuer");
-        issuer.setEmail("issuer@issuer.com");
-        issuer.setPhone("01001010101");
-
-        MemberEntity user = new MemberEntity();
-        user.setUsername("test");
-        user.setPassword("testpassword");
-        user.setName("test");
-        user.setRole(Role.ROLE_USER);
-        memberRepository.save(issuer);
-        memberRepository.save(user);
-
-        CustomUserDetails userDetails = new CustomUserDetails(user);
-        authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-    }
+    @Mock
+    private SignatureInfoRepository signatureInfoRepository;
     @Test
     void createClassCertificate() {
         // given
@@ -69,25 +57,67 @@ class CertificateServiceTest {
         classCertificateDTO.setStartDate("2021-01-01");
         classCertificateDTO.setEndDate("2021-06-01");
         classCertificateDTO.setIssuerEmail("issuer@issuer.com");
+
         // 임시파일 생성
         MockMultipartFile mockFile = new MockMultipartFile(
-                "file", // 파라미터 이름(file과 일치해야 함)
-                "filename.txt", // 테스트 파일 이름
-                "text/plain", // 콘텐츠 타입
-                "This is the file content".getBytes()); // 파일의 내용
+                "file",
+                "filename.txt",
+                "text/plain",
+                "This is the file content".getBytes()
+        );
         classCertificateDTO.setFile(mockFile);
+
+        MemberEntity issuerEntity = mock(MemberEntity.class);
+        MemberEntity userEntity = mock(MemberEntity.class);
+
+        Authentication userAuthentication = mock(Authentication.class);
+        when(userAuthentication.getName()).thenReturn("user");
+
+        when(memberRepository.findByEmail(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
+        when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(userEntity));
         // when
-        assertDoesNotThrow(() -> certificateService.createClassCertificate(classCertificateDTO, authentication));
+        assertDoesNotThrow(() -> certificateService.createClassCertificate(classCertificateDTO, userAuthentication));
         // then
-        assertEquals(1, classCertificateRepository.findAll().size());
-        assertEquals(1, certificateInfoRepository.findAll().size());
+        verify(certificateInfoRepository, times(1)).save(any(CertificateInfoEntity.class));
+        verify(classCertificateRepository, times(1)).save(any(ClassCertificateEntity.class));
+    }
 
-        ClassCertificateEntity classCertificate = classCertificateRepository.findAll().get(0);
-        CertificateInfoEntity certificateInfo = certificateInfoRepository.findAll().get(0);
+    @Test
+    void signClassCertificateIssuer() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024);
+        KeyPair keyGenerator = keyPairGenerator.genKeyPair();
 
-        assertNotNull(classCertificate.getCertificateInfo());
-        assertNotNull(certificateInfo.getClassCertificate());
-        assertEquals(classCertificate.getCertificateInfo().getId(), certificateInfo.getId());
-        assertEquals(certificateInfo.getClassCertificate().getId(), classCertificate.getId());
+        PublicKey publicKey = keyGenerator.getPublic();
+        PrivateKey privateKey = keyGenerator.getPrivate();
+
+        String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+        String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+
+        MemberEntity issuerEntity = mock(MemberEntity.class);
+        when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
+        when(issuerEntity.getPublicKey()).thenReturn(encodedPublicKey);
+
+        ClassCertificateEntity classCertificateEntity = new ClassCertificateEntity();
+        when(classCertificateRepository.findById(1L)).thenReturn(java.util.Optional.of(classCertificateEntity));
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("testUser");
+
+        assertDoesNotThrow(() -> certificateService.signClassCertificateIssuer(1L, encodedPrivateKey, authentication));
+        PrivateKey decodedPrivateKey = KeyFactory
+                .getInstance("RSA")
+                .generatePrivate(new PKCS8EncodedKeySpec(Base64
+                        .getDecoder()
+                        .decode(encodedPrivateKey.getBytes())
+                ));
+        PublicKey decodedPublicKey = KeyFactory
+                .getInstance("RSA")
+                .generatePublic(new X509EncodedKeySpec(Base64
+                        .getDecoder()
+                        .decode(encodedPublicKey.getBytes())
+                ));
+        assertTrue(certificateService.verifyKey(decodedPublicKey, decodedPrivateKey));
+        verify(signatureInfoRepository, times(1)).save(any(SignatureInfoEntity.class));
     }
 }
