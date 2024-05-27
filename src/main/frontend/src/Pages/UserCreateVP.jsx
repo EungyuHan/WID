@@ -13,11 +13,13 @@ function UserCreateVP() {
     const [isModalOpen, setIsModalOpen] = useState(false); 
     const [contentsList , setContentList] = useState([]);
     const [show, setShow] = useState(false);
+    const [content, setContent] = useState([]);
+    const [focusIndex, setFocus] = useState(0);
 
-    const toggleDiv = () => {
+    const toggleDiv = (focus) => {
     setShow(!show);
+    setFocus(focus);
     };
-
     
     const addItem = () => {
         setModal();
@@ -35,14 +37,13 @@ function UserCreateVP() {
         const newContentsList = [...contentsList, {id: newItemID, name: newName}];
         setItemList(newItemList);
         setContentList(newContentsList);
-        console.log(newItemList);
     }
 
 
     const renderItemList = () => {
         return itemList.map((itemName, index) => (
                 <ItemListContainer key={itemName.id} 
-                onClick={toggleDiv}>
+                onClick={()=>{toggleDiv(itemName.id)}}>
                 <h4>{itemName.name}</h4>
                 </ItemListContainer>
                 )
@@ -50,14 +51,26 @@ function UserCreateVP() {
     }
 
     const renderContentList = () => {
-        return contentsList.map((contentName, index)=>(
+        return contentsList.map((contentName)=>(
             <ContentsListDiv key={contentName.id}>
-                <h4>{contentName.name}</h4>
-                <div>내용입니다.</div>
+                <h3>{contentName.name}</h3>
+                    <div>
+                    {renderMatchingContent(contentName.id)}
+                    </div>
+                
             </ContentsListDiv>
         )
-        )
+    )
+    
     }
+    const renderMatchingContent = (id) => {
+        const matchedContents = content.filter(item => item.id === id-1);
+    return matchedContents.length > 0 ? (
+        matchedContents.map((item, idx) => (
+            <div key={idx}>{item.summary}</div>
+        ))
+    ) : null;
+    };
 
     
     
@@ -93,7 +106,7 @@ function UserCreateVP() {
                 <ContentDiv>
                     {renderContentList()}
                     <SlideVCdiv show={show}>
-                        <VCviewer/>
+                        <VCviewer content={content} setContent={setContent} focusIndex={focusIndex-1}/>
                     </SlideVCdiv>
                 </ContentDiv>
             </div>
@@ -199,7 +212,7 @@ const ItemListContainer = styled.button`
 `
 const ContentsListDiv = styled.div`
     position: relative;
-    top: 5%;
+    top: 2%;
     width: 95%;
     height: auto;
     margin: auto;

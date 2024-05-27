@@ -11,6 +11,9 @@ function UserSendPage() {
   };
 
 
+
+
+  
     // 드래그가 끝났을 때 호출되는 함수
   
 

@@ -128,10 +128,10 @@ const CreateUserButton = styled.button`
     transition: background-color 0.3s ease;
     box-shadow: 0.5px 1px 3px black;
 
-  &:hover {
+&:hover {
     background-color: White;
     color:black;
-  }
+}
 
 `
 export default Loginpage;
