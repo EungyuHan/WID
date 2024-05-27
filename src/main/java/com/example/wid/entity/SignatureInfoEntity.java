@@ -17,8 +17,15 @@ public class SignatureInfoEntity {
     private Long id;
 
     @Column(columnDefinition = "TEXT")
-    private String signature;
+    private String issuerSignature;
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String userSignature;
+    @Column(columnDefinition = "TEXT")
+    private String issuerPublicKey;
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String userPublicKey;
     private Date issuerSignedAt;
+    @Column(nullable = true)
     private Date userSignedAt;
     @ColumnDefault("false")
     private boolean isUserSigned;
