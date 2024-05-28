@@ -16,7 +16,7 @@ public class ClassCertificateEntity extends BaseCertificateEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_info_id")
     private CertificateInfoEntity certificateInfo;
 

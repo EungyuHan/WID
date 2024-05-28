@@ -29,7 +29,4 @@ public class CertificateInfoEntity extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "signature_info_id", nullable = true)
     private SignatureInfoEntity signatureInfo;
-
-    @OneToOne(mappedBy = "certificateInfo")
-    private ClassCertificateEntity classCertificate;
 }
