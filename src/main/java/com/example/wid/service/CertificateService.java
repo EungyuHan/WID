@@ -92,10 +92,9 @@ public class CertificateService {
         // 사용자의 소속정보를 성정하는 부분이 미구현되어 임시값으로 조정
         classCertificateEntity.setBelong("JeonBuk National University");
 
-        certificateInfoEntity.setClassCertificate(classCertificateEntity);
-        classCertificateEntity.setCertificateInfo(certificateInfoEntity);
-
-        certificateInfoRepository.save(certificateInfoEntity);
+        // 인증서 저장
+        CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
+        classCertificateEntity.setCertificateInfo(savedCertificateInfo);
         classCertificateRepository.save(classCertificateEntity);
     }
     // issuer가 서명
