@@ -2,7 +2,9 @@ package com.example.wid.entity;
 
 import com.example.wid.dto.ClassCertificateDTO;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -10,6 +12,7 @@ import java.util.Date;
 @Entity(name = "class_certificate")
 @Getter
 @Setter
+@NoArgsConstructor
 // 전자서명 중 수업에 대한 증명을 위한 인증서를 저장하기 위한 클래스
 public class ClassCertificateEntity {
     @Id
@@ -27,23 +30,20 @@ public class ClassCertificateEntity {
     private String summary;
     private String term;
 
-    private String belong;
-
-    public static ClassCertificateEntity createClassCertificate(ClassCertificateDTO classCertificateDTO) {
-        ClassCertificateEntity classCertificateEntity = new ClassCertificateEntity();
-        classCertificateEntity.setStudentId(classCertificateDTO.getStudentId());
-        classCertificateEntity.setSubject(classCertificateDTO.getSubject());
-        classCertificateEntity.setProfessor(classCertificateDTO.getProfessor());
-        classCertificateEntity.setSummary(classCertificateDTO.getSummary());
-        String term = classCertificateDTO.getStartDate() + " ~ " + classCertificateDTO.getEndDate();
-        classCertificateEntity.setTerm(term);
-        return classCertificateEntity;
+    @Builder
+    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term) {
+        this.certificateInfo = certificateInfo;
+        this.name = name;
+        this.studentId = studentId;
+        this.subject = subject;
+        this.professor = professor;
+        this.summary = summary;
+        this.term = term;
     }
 
     public static String serializeClassCertificateForSignature(ClassCertificateEntity classCertificateEntity) {
         String serializedClassCertificate = "{\n"
                 + "\"name\": \"" + classCertificateEntity.getName() + "\",\n"
-                + "\"belong\": \"" + classCertificateEntity.getBelong() + "\"\n"
                 + "\"subject\": \"" + classCertificateEntity.getSubject() + "\",\n"
                 + "\"professor\": \"" + classCertificateEntity.getProfessor() + "\",\n"
                 + "\"summary\": \"" + classCertificateEntity.getSummary() + "\",\n"

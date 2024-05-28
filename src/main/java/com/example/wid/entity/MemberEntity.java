@@ -5,13 +5,16 @@ import com.example.wid.entity.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "member")
+@NoArgsConstructor
 public class MemberEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +36,18 @@ public class MemberEntity extends BaseEntity {
     private String phone;
     @Column(nullable = true, columnDefinition = "TEXT")
     private String publicKey;
+
+    @Builder
+    public MemberEntity(Role role, BelongEntity belong, String username, String password, String email, String name, String phone, String publicKey) {
+        this.role = role;
+        this.belong = belong;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.phone = phone;
+        this.publicKey = publicKey;
+    }
 
     public String getRole() {
         return role.name();

@@ -31,14 +31,14 @@ public class MemberService {
             throw new IllegalArgumentException("모든 정보를 입력해주세요.");
         }
         // MemberEntity 생성 및 아이디 비밀번호 저장
-        MemberEntity member = new MemberEntity();
-        member.setUsername(registerDTO.getUsername());
-        member.setPassword(bCryptPasswordEncoder.encode(registerDTO.getPassword()));
-        member.setName(registerDTO.getName());
-        member.setEmail(registerDTO.getEmail());
-        member.setPhone(registerDTO.getPhone());
-
-        member.setRole(role);
+        MemberEntity member = MemberEntity.builder()
+                .username(registerDTO.getUsername())
+                .password(bCryptPasswordEncoder.encode(registerDTO.getPassword()))
+                .name(registerDTO.getName())
+                .email(registerDTO.getEmail())
+                .phone(registerDTO.getPhone())
+                .role(role)
+                .build();
         memberRepository.save(member);
         return true;
     }
@@ -51,7 +51,7 @@ public class MemberService {
         return memberRepository.existsByUsernameOrEmailOrPhone(username, email, phone);
     }
     // 정보가 비었는지 확인하는 메소드
-    public boolean isInfoEmpty(RegisterDTO registerDTO){
+    private boolean isInfoEmpty(RegisterDTO registerDTO){
         return registerDTO.getUsername().isEmpty() || registerDTO.getPassword().isEmpty() || registerDTO.getName().isEmpty() || registerDTO.getEmail().isEmpty() || registerDTO.getPhone().isEmpty();
     }
 }

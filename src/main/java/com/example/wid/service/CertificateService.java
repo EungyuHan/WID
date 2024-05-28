@@ -21,8 +21,6 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Base64;
 
 @Service
@@ -42,21 +40,16 @@ public class CertificateService {
     }
 
     // 수업에 대한 증명서를 생성
-    public void createClassCertificate(ClassCertificateDTO classCertificateDTO, Authentication authentication) throws IOException, ParseException {
+    public void createClassCertificate(ClassCertificateDTO classCertificateDTO, Authentication authentication) throws IOException {
         // 사용자 인증서 매핑정보 저장
         MemberEntity issuerEntity = null;
         MemberEntity userEntity = null;
-        CertificateInfoEntity certificateInfoEntity = new CertificateInfoEntity();
         if (memberRepository.findByEmail(classCertificateDTO.getIssuerEmail()).isPresent()) {
             issuerEntity = memberRepository.findByEmail(classCertificateDTO.getIssuerEmail()).get();
         } else throw new IllegalArgumentException("인증서 발급자 정보가 올바르지 않습니다.");
         if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
             userEntity = memberRepository.findByUsername(authentication.getName()).get();
         } else throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
-
-        certificateInfoEntity.setIssuer(issuerEntity);
-        certificateInfoEntity.setUser(userEntity);
-        certificateInfoEntity.setCertificateType(CertificateType.CLASS_CERTIFICATE);
 
         MultipartFile file = classCertificateDTO.getFile();
         String originalFilename = file.getOriginalFilename();
@@ -66,18 +59,25 @@ public class CertificateService {
         String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + storedFilename;
         file.transferTo(new File(savePath));
 
-        certificateInfoEntity.setOriginalFilename(originalFilename);
-        certificateInfoEntity.setStoredFilename(storedFilename);
+        CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
+                .issuer(issuerEntity)
+                .user(userEntity)
+                .certificateType(CertificateType.CLASS_CERTIFICATE)
+                .originalFilename(originalFilename)
+                .storedFilename(storedFilename)
+                .build();
 
         // 인증서 생성
-        // 사용자가 입력한 정보 기반
-        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.createClassCertificate(classCertificateDTO);
-
-        // 사용자의 정보 기반
-        classCertificateEntity.setName(userEntity.getName());
-        // 사용자의 소속 정보 기반
-        // 사용자의 소속정보를 성정하는 부분이 미구현되어 임시값으로 조정
-        classCertificateEntity.setBelong("JeonBuk National University");
+        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.builder()
+                // 인증 정보 기반
+                .name(userEntity.getName())
+                // 사용자 입력 정보 기반
+                .studentId(classCertificateDTO.getStudentId())
+                .subject(classCertificateDTO.getSubject())
+                .professor(classCertificateDTO.getProfessor())
+                .summary(classCertificateDTO.getSummary())
+                .term(classCertificateDTO.getStartDate() + " ~ " + classCertificateDTO.getEndDate())
+                .build();
 
         // 인증서 저장
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
@@ -124,7 +124,10 @@ public class CertificateService {
             signatureInfoEntity.setIssuerSignature(Base64.getEncoder().encodeToString(signData));
 
             // 서명 정보 저장
-            signatureInfoRepository.save(signatureInfoEntity);
+            SignatureInfoEntity savedSignatureInfo = signatureInfoRepository.save(signatureInfoEntity);
+            CertificateInfoEntity certificateInfo = classCertificateEntity.getCertificateInfo();
+            certificateInfo.setSignatureInfo(savedSignatureInfo);
+            certificateInfoRepository.save(certificateInfo);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("서명에 실패하였습니다.");

@@ -10,73 +10,95 @@ import com.example.wid.repository.MemberRepository;
 import com.example.wid.repository.CertificateInfoRepository;
 import com.example.wid.repository.SignatureInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 @Transactional
 class CertificateServiceTest {
-    @InjectMocks
+    @Autowired
     private CertificateService certificateService;
-    @Mock
+    @Autowired
     private MemberRepository memberRepository;
-    @Mock
+    @Autowired
     private ClassCertificateRepository classCertificateRepository;
-    @Mock
+    @Autowired
     private CertificateInfoRepository certificateInfoRepository;
-    @Mock
+    @Autowired
     private SignatureInfoRepository signatureInfoRepository;
-    @Test
-    void createClassCertificate() {
-        MockedStatic<ClassCertificateEntity> classCertificateEntityMockedStatic = mockStatic(ClassCertificateEntity.class);
-        ClassCertificateDTO classCertificateDTO = mock(ClassCertificateDTO.class);
-        MemberEntity issuerEntity = mock(MemberEntity.class);
-        MemberEntity userEntity = mock(MemberEntity.class);
-        MockMultipartFile mockFile = new MockMultipartFile(
-                "file",
-                "filename.txt",
-                "text/plain",
-                "This is the file content".getBytes()
-        );
-        Authentication userAuthentication = mock(Authentication.class);
 
-        classCertificateEntityMockedStatic.when(() ->
-                ClassCertificateEntity.createClassCertificate(any(ClassCertificateDTO.class)))
-                .thenReturn(new ClassCertificateEntity());
-        when(classCertificateDTO.getIssuerEmail()).thenReturn(" ");
-        when(classCertificateDTO.getFile()).thenReturn(mockFile);
-        when(userAuthentication.getName()).thenReturn("user");
-        when(memberRepository.findByEmail(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
-        when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(userEntity));
+    @BeforeEach
+    void setUp() {
+        memberRepository.deleteAll();
+        classCertificateRepository.deleteAll();
+        certificateInfoRepository.deleteAll();
+        signatureInfoRepository.deleteAll();
+    }
+    @Test
+    @DisplayName("수업 인증서 생성 성공")
+    void createClassCertificate() {
+        ClassCertificateDTO classCertificateDTO = ClassCertificateDTO.builder()
+                .studentId("201911114")
+                .subject("소프트웨어공학")
+                .professor("김순태")
+                .summary("블록체인 기반 활동내역 증명 서비스")
+                .startDate("2021-01-01")
+                .endDate("2021-01-01")
+                .issuerEmail("issuer@issuer.com")
+                .file(new MockMultipartFile(
+                        "file",
+                        "filename.txt",
+                        "text/plain",
+                        "This is the file content".getBytes()
+                ))
+                .build();
+        MemberEntity issuerEntity = MemberEntity.builder()
+                .username("issuer")
+                .password("issuerpassword")
+                .email("issuer@issuer.com")
+                .name("issuer")
+                .phone("01011111111")
+                .publicKey("test")
+                .build();
+        MemberEntity userEntity = MemberEntity.builder()
+                .username("user")
+                .password("userpassword")
+                .email("user@user.com")
+                .name("user")
+                .phone("01022222222")
+                .publicKey("test2")
+                .build();
+
+        memberRepository.save(issuerEntity);
+        memberRepository.save(userEntity);
+
+        Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
 
         assertDoesNotThrow(() -> certificateService.createClassCertificate(classCertificateDTO, userAuthentication));
-        verify(certificateInfoRepository, times(1)).save(any(CertificateInfoEntity.class));
-        verify(classCertificateRepository, times(1)).save(any(ClassCertificateEntity.class));
+
+        assertEquals(1, classCertificateRepository.findAll().size());
+        assertEquals(1, certificateInfoRepository.findAll().size());
+
+        ClassCertificateEntity classCertificateEntity = classCertificateRepository.findAll().get(0);
+        CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
+        assertEquals(classCertificateEntity.getCertificateInfo().getId(), certificateInfoEntity.getId());
     }
 
     @Test
-    void signClassCertificateIssuer() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    @DisplayName("수업 인증서 이슈어 1차 서명 성공")
+    void signClassCertificateIssuer() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(1024);
         KeyPair keyGenerator = keyPairGenerator.genKeyPair();
@@ -87,33 +109,39 @@ class CertificateServiceTest {
         String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 
-        MockedStatic<ClassCertificateEntity> classCertificateEntityMockedStatic = mockStatic(ClassCertificateEntity.class);
-        MemberEntity issuerEntity = mock(MemberEntity.class);
-        ClassCertificateEntity classCertificateEntity = mock(ClassCertificateEntity.class);
-        Authentication authentication = mock(Authentication.class);
+        MemberEntity issuerEntity = MemberEntity.builder()
+                .username("issuer")
+                .password("issuerpassword")
+                .email("issuer@issuer.com")
+                .name("issuer")
+                .phone("01011111111")
+                .publicKey(encodedPublicKey)
+                .build();
+        memberRepository.save(issuerEntity);
 
-        classCertificateEntityMockedStatic.when(() ->
-                ClassCertificateEntity.serializeClassCertificateForSignature(any(ClassCertificateEntity.class)))
-                .thenReturn(" ");
-        when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
-        when(issuerEntity.getPublicKey()).thenReturn(encodedPublicKey);
-        when(classCertificateRepository.findById(1L)).thenReturn(java.util.Optional.of(classCertificateEntity));
-        when(authentication.getName()).thenReturn("testUser");
+        CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
+                .issuer(issuerEntity)
+                .build();
+        certificateInfoRepository.save(certificateInfoEntity);
 
-        assertDoesNotThrow(() -> certificateService.signClassCertificateIssuer(1L, encodedPrivateKey, authentication));
-        PrivateKey decodedPrivateKey = KeyFactory
-                .getInstance("RSA")
-                .generatePrivate(new PKCS8EncodedKeySpec(Base64
-                        .getDecoder()
-                        .decode(encodedPrivateKey.getBytes())
-                ));
-        PublicKey decodedPublicKey = KeyFactory
-                .getInstance("RSA")
-                .generatePublic(new X509EncodedKeySpec(Base64
-                        .getDecoder()
-                        .decode(encodedPublicKey.getBytes())
-                ));
-        assertTrue(certificateService.verifyKey(decodedPublicKey, decodedPrivateKey));
-        verify(signatureInfoRepository, times(1)).save(any(SignatureInfoEntity.class));
+        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.builder()
+                .certificateInfo(certificateInfoEntity)
+                .name("user")
+                .studentId("201911114")
+                .subject("소프트웨어공학")
+                .professor("김순태")
+                .summary("블록체인 기반 활동내역 증명 서비스")
+                .term("2021.01.01~2021.01.02")
+                .build();
+        ClassCertificateEntity savedCertificate = classCertificateRepository.save(classCertificateEntity);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(issuerEntity.getUsername(), issuerEntity.getPassword());
+        assertDoesNotThrow(() -> certificateService.signClassCertificateIssuer(savedCertificate.getId(), encodedPrivateKey, authentication));
+
+        assertEquals(1, signatureInfoRepository.findAll().size());
+        CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.findAll().get(0);
+        SignatureInfoEntity signatureInfoEntity = signatureInfoRepository.findAll().get(0);
+
+        assertEquals(savedCertificateInfo.getSignatureInfo().getId(), signatureInfoEntity.getId());
     }
 }
