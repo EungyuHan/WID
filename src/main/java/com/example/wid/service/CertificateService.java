@@ -115,7 +115,7 @@ public class CertificateService {
             } else throw new IllegalArgumentException("인증서 정보가 올바르지 않습니다.");
 
             // 서명 정보 생성
-            String serializedClassCertificate = serializeClassCertificateForSignature(classCertificateEntity);
+            String serializedClassCertificate = ClassCertificateEntity.serializeClassCertificateForSignature(classCertificateEntity);
             SignatureInfoEntity signatureInfoEntity = new SignatureInfoEntity();
             signatureInfoEntity.setIssuerSignature(serializedClassCertificate);
             signatureInfoEntity.setIssuerPublicKey(issuer.getPublicKey());
@@ -154,18 +154,5 @@ public class CertificateService {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public String serializeClassCertificateForSignature(ClassCertificateEntity classCertificateEntity) {
-        String serializedClassCertificate = "{\n"
-                + "\"name\": \"" + classCertificateEntity.getName() + "\",\n"
-                + "\"belong\": \"" + classCertificateEntity.getBelong() + "\"\n"
-                + "\"subject\": \"" + classCertificateEntity.getSubject() + "\",\n"
-                + "\"professor\": \"" + classCertificateEntity.getProfessor() + "\",\n"
-                + "\"summary\": \"" + classCertificateEntity.getSummary() + "\",\n"
-                + "\"term\": \"" + classCertificateEntity.getTerm() + "\"\n"
-                + "}";
-        return serializedClassCertificate;
-        // json형태로 직렬화
     }
 }

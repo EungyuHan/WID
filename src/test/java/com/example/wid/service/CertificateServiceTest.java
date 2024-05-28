@@ -61,7 +61,9 @@ class CertificateServiceTest {
         );
         Authentication userAuthentication = mock(Authentication.class);
 
-        classCertificateEntityMockedStatic.when(() -> ClassCertificateEntity.createClassCertificate(any(ClassCertificateDTO.class))).thenReturn(new ClassCertificateEntity());
+        classCertificateEntityMockedStatic.when(() ->
+                ClassCertificateEntity.createClassCertificate(any(ClassCertificateDTO.class)))
+                .thenReturn(new ClassCertificateEntity());
         when(classCertificateDTO.getIssuerEmail()).thenReturn(" ");
         when(classCertificateDTO.getFile()).thenReturn(mockFile);
         when(userAuthentication.getName()).thenReturn("user");
@@ -85,10 +87,14 @@ class CertificateServiceTest {
         String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 
+        MockedStatic<ClassCertificateEntity> classCertificateEntityMockedStatic = mockStatic(ClassCertificateEntity.class);
         MemberEntity issuerEntity = mock(MemberEntity.class);
         ClassCertificateEntity classCertificateEntity = mock(ClassCertificateEntity.class);
         Authentication authentication = mock(Authentication.class);
 
+        classCertificateEntityMockedStatic.when(() ->
+                ClassCertificateEntity.serializeClassCertificateForSignature(any(ClassCertificateEntity.class)))
+                .thenReturn(" ");
         when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
         when(issuerEntity.getPublicKey()).thenReturn(encodedPublicKey);
         when(classCertificateRepository.findById(1L)).thenReturn(java.util.Optional.of(classCertificateEntity));

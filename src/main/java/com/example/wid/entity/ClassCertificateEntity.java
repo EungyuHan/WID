@@ -39,4 +39,16 @@ public class ClassCertificateEntity {
         classCertificateEntity.setTerm(term);
         return classCertificateEntity;
     }
+
+    public static String serializeClassCertificateForSignature(ClassCertificateEntity classCertificateEntity) {
+        String serializedClassCertificate = "{\n"
+                + "\"name\": \"" + classCertificateEntity.getName() + "\",\n"
+                + "\"belong\": \"" + classCertificateEntity.getBelong() + "\"\n"
+                + "\"subject\": \"" + classCertificateEntity.getSubject() + "\",\n"
+                + "\"professor\": \"" + classCertificateEntity.getProfessor() + "\",\n"
+                + "\"summary\": \"" + classCertificateEntity.getSummary() + "\",\n"
+                + "\"term\": \"" + classCertificateEntity.getTerm() + "\"\n"
+                + "}";
+        return serializedClassCertificate;
+    }
 }
