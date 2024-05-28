@@ -65,11 +65,11 @@ function UserCreateVP() {
     }
     const renderMatchingContent = (id) => {
         const matchedContents = content.filter(item => item.id === id-1);
-    return matchedContents.length > 0 ? (
-        matchedContents.map((item, idx) => (
-            <div key={idx}>{item.summary}</div>
-        ))
-    ) : null;
+
+        return matchedContents.length > 0 ? (
+                matchedContents.map((item, idx) => (
+                    <div key={idx}>{item.summary}</div>
+                ))) : null;
     };
 
     

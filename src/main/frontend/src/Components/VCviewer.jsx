@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import styled,{keyframes} from 'styled-components';
-
+import axios from 'axios';
 
 function VCviewer(props) {
+    const [vcdata, setVCdata] = useState([]);
+    
+    useEffect(() => {
+        axios.get('http://localhost:3001/vccontent')
+        .then(response => {
+            setVCdata(response.data);
+            console.log(vcdata);
+        })
+    },[])
 
-    const [search, setSearch] = useState("");
-
-    const vccontent = ["전북대학교, 캡스톤 프로젝트, 블록체인 네트워크를 활용한 활동내역 증명 및 관리 시스템" , "전북대학교 소프트웨어 공학과 학술동아리 AM:PM 교내 프로그래밍 경진대회 입상" , "과학기술정보통신부 주최 해커톤 대회 장관상"]
 
     const addVC = (name,index) => {
         const newList = [...props.content, {id: index, summary: name}];
@@ -15,17 +21,18 @@ function VCviewer(props) {
     }
     
     const deleteVC = (name) => {
-        const newList = props.content.filter(item => item !== name);
+        const newList = props.content.filter(item => item.summary !== name);
         props.setContent(newList);
     }
 
     const renderContentList = () => {
-        return vccontent.map((name)=>(
+        return vcdata.map((data)=>(
                 <VC_List_Container>
-                <VCcontentDiv width={'80%'}>{name}</VCcontentDiv>
+                <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
                 <VCcontentDiv width={'20%'}>
-                    <AddVCbutton onClick={()=>{addVC(name , props.focusIndex)}}>추가</AddVCbutton>
-                    <DeleteVCbutton onClick={()=>{deleteVC(name)}}>삭제</DeleteVCbutton>
+                    <AddVCbutton onClick={()=>{addVC(data.summary , props.focusIndex)}}>추가</AddVCbutton>
+                    <DeleteVCbutton onClick={()=>{deleteVC(data.summary)}}>삭제</DeleteVCbutton>
+                    
                 </VCcontentDiv>
                 </VC_List_Container>
         )
