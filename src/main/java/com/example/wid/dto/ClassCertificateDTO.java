@@ -7,10 +7,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class ClassCertificateDTO {
-    private String major;
+    private String studentId;
     private String subject;
     private String professor;
-    private String detail;
+    private String summary;
     private String startDate;
     private String endDate;
     // 수업 인증서 발급자 이메일

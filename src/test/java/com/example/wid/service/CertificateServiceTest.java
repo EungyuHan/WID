@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -48,36 +49,26 @@ class CertificateServiceTest {
     private SignatureInfoRepository signatureInfoRepository;
     @Test
     void createClassCertificate() {
-        // given
-        ClassCertificateDTO classCertificateDTO = new ClassCertificateDTO();
-        classCertificateDTO.setMajor("Computer Science");
-        classCertificateDTO.setSubject("Web Application Development");
-        classCertificateDTO.setProfessor("professor");
-        classCertificateDTO.setDetail("A+");
-        classCertificateDTO.setStartDate("2021-01-01");
-        classCertificateDTO.setEndDate("2021-06-01");
-        classCertificateDTO.setIssuerEmail("issuer@issuer.com");
-
-        // 임시파일 생성
+        MockedStatic<ClassCertificateEntity> classCertificateEntityMockedStatic = mockStatic(ClassCertificateEntity.class);
+        ClassCertificateDTO classCertificateDTO = mock(ClassCertificateDTO.class);
+        MemberEntity issuerEntity = mock(MemberEntity.class);
+        MemberEntity userEntity = mock(MemberEntity.class);
         MockMultipartFile mockFile = new MockMultipartFile(
                 "file",
                 "filename.txt",
                 "text/plain",
                 "This is the file content".getBytes()
         );
-        classCertificateDTO.setFile(mockFile);
-
-        MemberEntity issuerEntity = mock(MemberEntity.class);
-        MemberEntity userEntity = mock(MemberEntity.class);
-
         Authentication userAuthentication = mock(Authentication.class);
-        when(userAuthentication.getName()).thenReturn("user");
 
+        classCertificateEntityMockedStatic.when(() -> ClassCertificateEntity.createClassCertificate(any(ClassCertificateDTO.class))).thenReturn(new ClassCertificateEntity());
+        when(classCertificateDTO.getIssuerEmail()).thenReturn(" ");
+        when(classCertificateDTO.getFile()).thenReturn(mockFile);
+        when(userAuthentication.getName()).thenReturn("user");
         when(memberRepository.findByEmail(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
         when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(userEntity));
-        // when
+
         assertDoesNotThrow(() -> certificateService.createClassCertificate(classCertificateDTO, userAuthentication));
-        // then
         verify(certificateInfoRepository, times(1)).save(any(CertificateInfoEntity.class));
         verify(classCertificateRepository, times(1)).save(any(ClassCertificateEntity.class));
     }
@@ -95,13 +86,12 @@ class CertificateServiceTest {
         String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());
 
         MemberEntity issuerEntity = mock(MemberEntity.class);
+        ClassCertificateEntity classCertificateEntity = mock(ClassCertificateEntity.class);
+        Authentication authentication = mock(Authentication.class);
+
         when(memberRepository.findByUsername(anyString())).thenReturn(java.util.Optional.of(issuerEntity));
         when(issuerEntity.getPublicKey()).thenReturn(encodedPublicKey);
-
-        ClassCertificateEntity classCertificateEntity = new ClassCertificateEntity();
         when(classCertificateRepository.findById(1L)).thenReturn(java.util.Optional.of(classCertificateEntity));
-
-        Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("testUser");
 
         assertDoesNotThrow(() -> certificateService.signClassCertificateIssuer(1L, encodedPrivateKey, authentication));

@@ -69,24 +69,11 @@ public class CertificateService {
         certificateInfoEntity.setOriginalFilename(originalFilename);
         certificateInfoEntity.setStoredFilename(storedFilename);
 
-
         // 인증서 생성
-        ClassCertificateEntity classCertificateEntity = new ClassCertificateEntity();
-
         // 사용자가 입력한 정보 기반
-        classCertificateEntity.setMajor(classCertificateDTO.getMajor());
-        classCertificateEntity.setSubject(classCertificateDTO.getSubject());
-        classCertificateEntity.setProfessor(classCertificateDTO.getProfessor());
-        classCertificateEntity.setDetail(classCertificateDTO.getDetail());
-
-        String startDate = classCertificateDTO.getStartDate();
-        String endDate = classCertificateDTO.getEndDate();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        classCertificateEntity.setStartDate(formatter.parse(startDate));
-        classCertificateEntity.setEndDate(formatter.parse(endDate));
+        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.createClassCertificate(classCertificateDTO);
 
         // 사용자의 정보 기반
-
         classCertificateEntity.setName(userEntity.getName());
         // 사용자의 소속 정보 기반
         // 사용자의 소속정보를 성정하는 부분이 미구현되어 임시값으로 조정
@@ -173,13 +160,10 @@ public class CertificateService {
         String serializedClassCertificate = "{\n"
                 + "\"name\": \"" + classCertificateEntity.getName() + "\",\n"
                 + "\"belong\": \"" + classCertificateEntity.getBelong() + "\"\n"
-                + "\"major\": \"" + classCertificateEntity.getMajor() + "\",\n"
                 + "\"subject\": \"" + classCertificateEntity.getSubject() + "\",\n"
                 + "\"professor\": \"" + classCertificateEntity.getProfessor() + "\",\n"
-                + "\"startDate\": \"" + classCertificateEntity.getStartDate() + "\",\n"
-                + "\"endDate\": \"" + classCertificateEntity.getEndDate() + "\",\n"
-                + "\"detail\": \"" + classCertificateEntity.getDetail() + "\"\n"
-                + "\"detail\": \"" + classCertificateEntity.getDetail() + "\",\n"
+                + "\"summary\": \"" + classCertificateEntity.getSummary() + "\",\n"
+                + "\"term\": \"" + classCertificateEntity.getTerm() + "\"\n"
                 + "}";
         return serializedClassCertificate;
         // json형태로 직렬화
