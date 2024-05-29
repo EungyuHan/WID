@@ -2,7 +2,7 @@ package com.example.wid.dto;
 
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.dto.base.BaseCertificateDTO;
-import com.example.wid.entity.ClassCertificateEntity;
+import com.example.wid.entity.CompetitionCertificateEntity;
 import com.example.wid.entity.base.BaseCertificate;
 import com.example.wid.entity.enums.CertificateType;
 import lombok.Builder;
@@ -14,24 +14,23 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ClassCertificateDTO implements BaseCertificateDTO {
-    private String studentId;
-    private String subject;
-    private String professor;
+public class CompetitionCertificateDTO implements BaseCertificateDTO {
+    private String competitionName;
+    private String achievement;
+    private String organizer;
     private String summary;
+
     private String startDate;
     private String endDate;
-    // 수업 인증서 발급자 이메일
-    // 이슈어가 누군지 식별하기 위함
     private String issuerEmail;
 
     private MultipartFile file;
 
     @Builder
-    public ClassCertificateDTO(String studentId, String subject, String professor, String summary, String startDate, String endDate, String issuerEmail, MultipartFile file) {
-        this.studentId = studentId;
-        this.subject = subject;
-        this.professor = professor;
+    public CompetitionCertificateDTO(String competitionName, String achievement, String organizer, String summary, String startDate, String endDate, String issuerEmail, MultipartFile file) {
+        this.competitionName = competitionName;
+        this.achievement = achievement;
+        this.organizer = organizer;
         this.summary = summary;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -41,15 +40,15 @@ public class ClassCertificateDTO implements BaseCertificateDTO {
 
     @Override
     public BaseCertificate getCertificateInfo(CertificateType certificateType) {
-        if(certificateType != CertificateType.CLASS_CERTIFICATE)
+        if(certificateType != CertificateType.COMPETITION_CERTIFICATE)
             throw new InvalidCertificateException("잘못된 증명서 정보입니다.");
 
-        return ClassCertificateEntity.builder()
-                .studentId(this.studentId)
-                .subject(this.subject)
-                .professor(this.professor)
+        return CompetitionCertificateEntity.builder()
+                .competitionName(this.competitionName)
+                .achievement(this.achievement)
+                .organizer(this.organizer)
                 .summary(this.summary)
-                .term(this.startDate + " ~ " + this.endDate)
+                .term(this.getStartDate() + " ~ " + this.getEndDate())
                 .build();
     }
 }

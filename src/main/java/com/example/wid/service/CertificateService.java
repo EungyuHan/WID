@@ -3,16 +3,11 @@ package com.example.wid.service;
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.controller.exception.InvalidKeyPairException;
 import com.example.wid.controller.exception.UserNotFoundException;
-import com.example.wid.dto.ClassCertificateDTO;
-import com.example.wid.entity.ClassCertificateEntity;
-import com.example.wid.entity.MemberEntity;
-import com.example.wid.entity.CertificateInfoEntity;
-import com.example.wid.entity.SignatureInfoEntity;
+import com.example.wid.dto.base.BaseCertificateDTO;
+import com.example.wid.entity.*;
+import com.example.wid.entity.base.BaseCertificate;
 import com.example.wid.entity.enums.CertificateType;
-import com.example.wid.repository.ClassCertificateRepository;
-import com.example.wid.repository.MemberRepository;
-import com.example.wid.repository.SignatureInfoRepository;
-import com.example.wid.repository.CertificateInfoRepository;
+import com.example.wid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -30,33 +25,37 @@ import java.util.Base64;
 public class CertificateService {
     private final MemberRepository memberRepository;
     private final ClassCertificateRepository classCertificateRepository;
+    private final CompetitionCertificateRepository competitionCertificateRepository;
     private final CertificateInfoRepository certificateInfoRepository;
 
     private final SignatureInfoRepository signatureInfoRepository;
 
     @Autowired
-    public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CertificateInfoRepository certificateInfoRepository, SignatureInfoRepository signatureInfoRepository) {
+    public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CompetitionCertificateRepository competitionCertificateRepository, CertificateInfoRepository certificateInfoRepository, SignatureInfoRepository signatureInfoRepository) {
         this.memberRepository = memberRepository;
         this.classCertificateRepository = classCertificateRepository;
+        this.competitionCertificateRepository = competitionCertificateRepository;
         this.certificateInfoRepository = certificateInfoRepository;
         this.signatureInfoRepository = signatureInfoRepository;
     }
 
-    // 수업에 대한 증명서를 생성
-    public void createClassCertificate(ClassCertificateDTO classCertificateDTO, Authentication authentication) throws IOException {
+    // 증명서 생성
+    public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) throws IOException {
         // 사용자 인증서 매핑정보 저장
         MemberEntity issuerEntity = null;
         MemberEntity userEntity = null;
 
-        if (memberRepository.findByEmail(classCertificateDTO.getIssuerEmail()).isPresent()) {
-            issuerEntity = memberRepository.findByEmail(classCertificateDTO.getIssuerEmail()).get();
+        // 이슈어 정보 확인
+        if (memberRepository.findByEmail(certificateDTO.getIssuerEmail()).isPresent()) {
+            issuerEntity = memberRepository.findByEmail(certificateDTO.getIssuerEmail()).get();
         } else throw new UserNotFoundException("인증서 발급자 정보가 올바르지 않습니다.");
 
+        // 사용자 정보 확인
         if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
             userEntity = memberRepository.findByUsername(authentication.getName()).get();
         } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
 
-        MultipartFile file = classCertificateDTO.getFile();
+        MultipartFile file = certificateDTO.getFile();
         String originalFilename = file.getOriginalFilename();
         String storedFilename = System.currentTimeMillis() + "_" + originalFilename;
         // 파일 저장 경로 설정
@@ -67,30 +66,17 @@ public class CertificateService {
         CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
                 .issuer(issuerEntity)
                 .user(userEntity)
-                .certificateType(CertificateType.CLASS_CERTIFICATE)
+                .certificateType(certificateType)
                 .originalFilename(originalFilename)
                 .storedFilename(storedFilename)
                 .build();
-
-        // 인증서 생성
-        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.builder()
-                // 인증 정보 기반
-                .name(userEntity.getName())
-                // 사용자 입력 정보 기반
-                .studentId(classCertificateDTO.getStudentId())
-                .subject(classCertificateDTO.getSubject())
-                .professor(classCertificateDTO.getProfessor())
-                .summary(classCertificateDTO.getSummary())
-                .term(classCertificateDTO.getStartDate() + " ~ " + classCertificateDTO.getEndDate())
-                .build();
-
-        // 인증서 저장
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
-        classCertificateEntity.setCertificateInfo(savedCertificateInfo);
-        classCertificateRepository.save(classCertificateEntity);
+
+        BaseCertificate baseCertificate = certificateDTO.getCertificateInfo(certificateType);
+        if(Boolean.FALSE.equals(saveCertificate(baseCertificate, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
     }
     // issuer가 서명
-    public void signClassCertificateIssuer(Long classCertificateId, String encodedPrivateKey, Authentication authentication){
+    public void signCertificateIssuer(Long certificateId, String encodedPrivateKey, Authentication authentication){
         try{
             MemberEntity issuer = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
@@ -113,14 +99,20 @@ public class CertificateService {
 
             if(!verifyKey(publicKey, privateKey)) throw new InvalidKeyPairException();
 
-            // 인증서 정보 확인
-            ClassCertificateEntity classCertificateEntity = null;
-            if (classCertificateRepository.findById(classCertificateId).isPresent()) {
-                classCertificateEntity = classCertificateRepository.findById(classCertificateId).get();
+            // 인증서 정보 가져오기
+            CertificateInfoEntity certificateInfo = null;
+            if(certificateInfoRepository.findById(certificateId).isPresent()){
+                certificateInfo = certificateInfoRepository.findById(certificateId).get();
             } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+            if(certificateInfo.getSignatureInfo() != null) throw new InvalidCertificateException("이미 서명된 인증서입니다.");
+
+            // 인증서 정보에 저장된 하위 증명서 가져오기
+            CertificateType certificateType = certificateInfo.getCertificateType();
+            BaseCertificate baseCertificate = getCertificate(certificateId, certificateType);
+            if(baseCertificate == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
 
             // 서명 정보 생성
-            String serializedClassCertificate = ClassCertificateEntity.serializeClassCertificateForSignature(classCertificateEntity);
+            String serializedClassCertificate = baseCertificate.serializeCertificateForSignature();
             byte[] signData = signData(serializedClassCertificate, privateKey);
 
             SignatureInfoEntity signatureInfoEntity = SignatureInfoEntity.builder()
@@ -132,7 +124,6 @@ public class CertificateService {
 
             // 서명 정보 저장
             SignatureInfoEntity savedSignatureInfo = signatureInfoRepository.save(signatureInfoEntity);
-            CertificateInfoEntity certificateInfo = classCertificateEntity.getCertificateInfo();
             certificateInfo.setSignatureInfo(savedSignatureInfo);
             certificateInfoRepository.save(certificateInfo);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
@@ -142,7 +133,7 @@ public class CertificateService {
     }
     
     // 사용자가 서명
-    public void signClassCertificateUser(Long classCertificateId, String encodedPrivateKey, Authentication authentication){
+    public void signClassCertificateUser(Long certificateId, String encodedPrivateKey, Authentication authentication){
         try{
             MemberEntity user = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
@@ -164,22 +155,22 @@ public class CertificateService {
                     ));
 
             if(!verifyKey(publicKey, privateKey)) throw new InvalidKeyPairException();
-
-            ClassCertificateEntity classCertificateEntity = null;
-            if (classCertificateRepository.findById(classCertificateId).isPresent()) {
-                classCertificateEntity = classCertificateRepository.findById(classCertificateId).get();
+            CertificateInfoEntity certificateInfo = null;
+            if(certificateInfoRepository.findById(certificateId).isPresent()){
+                certificateInfo = certificateInfoRepository.findById(certificateId).get();
             } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
 
-            // 본인 인증서 맞는지 확인
-            CertificateInfoEntity certificateInfo = classCertificateEntity.getCertificateInfo();
+            CertificateType certificateType = certificateInfo.getCertificateType();
+            BaseCertificate baseCertificate = getCertificate(certificateId, certificateType);
+            if(baseCertificate == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
             if(certificateInfo.getUser() != user) throw new InvalidCertificateException("인증서에 대한 권한이 없습니다.");
-            
+
             // 올바른 서명정보인지 확인
             SignatureInfoEntity signatureInfo = certificateInfo.getSignatureInfo();
             if(signatureInfo == null) throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
-            if(signatureInfo.getIsUserSigned()) throw new InvalidCertificateException("이미 서명하였습니다.");
+            if(Boolean.TRUE.equals(signatureInfo.getIsUserSigned())) throw new InvalidCertificateException("이미 서명하였습니다.");
 
-            String serializedClassCertificate = ClassCertificateEntity.serializeClassCertificateForSignature(classCertificateEntity)
+            String serializedClassCertificate = baseCertificate.serializeCertificateForSignature()
                     + "\n\"issuerSignature\":"
                     + signatureInfo.getIssuerSignature();
             byte[] signData = signData(serializedClassCertificate, privateKey);
@@ -222,4 +213,26 @@ public class CertificateService {
             return false;
         }
     }
+    public boolean saveCertificate(BaseCertificate baseCertificate, CertificateInfoEntity certificateInfoEntity) {
+        if(baseCertificate instanceof ClassCertificateEntity classCertificateEntity){
+            classCertificateEntity = (ClassCertificateEntity) baseCertificate;
+            classCertificateEntity.setCertificateInfo(certificateInfoEntity);
+            classCertificateRepository.save(classCertificateEntity);
+            return true;
+        } else if(baseCertificate instanceof CompetitionCertificateEntity competitionCertificateEntity){
+            competitionCertificateEntity = (CompetitionCertificateEntity) baseCertificate;
+            competitionCertificateEntity.setCertificateInfo(certificateInfoEntity);
+            competitionCertificateRepository.save(competitionCertificateEntity);
+            return true;
+        }
+        return false;
+    }
+    public BaseCertificate getCertificate(Long certificateId, CertificateType certificateType) {
+        if (certificateType == CertificateType.CLASS_CERTIFICATE && classCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {
+            return classCertificateRepository.findByCertificateInfo_Id(certificateId).get();
+        } else if (certificateType == CertificateType.COMPETITION_CERTIFICATE && competitionCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {
+            return competitionCertificateRepository.findByCertificateInfo_Id(certificateId).get();
+        } else return null;
+    }
 }
+

@@ -1,20 +1,18 @@
 package com.example.wid.entity;
 
-import com.example.wid.dto.ClassCertificateDTO;
+import com.example.wid.entity.base.BaseCertificate;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Entity(name = "class_certificate")
 @Getter
 @Setter
 @NoArgsConstructor
 // 전자서명 중 수업에 대한 증명을 위한 인증서를 저장하기 위한 클래스
-public class ClassCertificateEntity {
+public class ClassCertificateEntity implements BaseCertificate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,13 +39,15 @@ public class ClassCertificateEntity {
         this.term = term;
     }
 
-    public static String serializeClassCertificateForSignature(ClassCertificateEntity classCertificateEntity) {
+    @Override
+    public String serializeCertificateForSignature() {
         String serializedClassCertificate = "{\n"
-                + "\"name\": \"" + classCertificateEntity.getName() + "\",\n"
-                + "\"subject\": \"" + classCertificateEntity.getSubject() + "\",\n"
-                + "\"professor\": \"" + classCertificateEntity.getProfessor() + "\",\n"
-                + "\"summary\": \"" + classCertificateEntity.getSummary() + "\",\n"
-                + "\"term\": \"" + classCertificateEntity.getTerm() + "\"\n"
+                + "\"name\": \"" + name + "\",\n"
+                + "\"studentId\": \"" + studentId + "\",\n"
+                + "\"subject\": \"" + subject + "\",\n"
+                + "\"professor\": \"" + professor + "\",\n"
+                + "\"summary\": \"" + summary + "\",\n"
+                + "\"term\": \"" + term + "\"\n"
                 + "}";
         return serializedClassCertificate;
     }

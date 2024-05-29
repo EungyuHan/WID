@@ -1,6 +1,7 @@
 package com.example.wid.controller;
 
 import com.example.wid.dto.ClassCertificateDTO;
+import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,12 +25,12 @@ public class CertificateController {
     @PostMapping("/class")
     public void createClassCertificate(ClassCertificateDTO classCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.createClassCertificate(classCertificateDTO, authentication);
+        certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.CLASS_CERTIFICATE);
     }
 
     @PostMapping("/class/sign/issuer")
     public void signClassCertificateIssuer(@RequestParam Long classCertificateId,@RequestParam String privateKey) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.signClassCertificateIssuer(classCertificateId, privateKey, authentication);
+        certificateService.signCertificateIssuer(classCertificateId, privateKey, authentication);
     }
 }
