@@ -19,19 +19,18 @@ public class SignatureInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String issuerSignature;
-    @Column(columnDefinition = "TEXT", nullable = true)
-    private String userSignature;
     @Column(columnDefinition = "TEXT")
+    private String userSignature;
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String issuerPublicKey;
-    @Column(columnDefinition = "TEXT", nullable = true)
+    @Column(columnDefinition = "TEXT")
     private String userPublicKey;
     private Date issuerSignedAt;
-    @Column(nullable = true)
     private Date userSignedAt;
     @ColumnDefault("false")
-    private boolean isUserSigned;
+    private Boolean isUserSigned;
 
     @Builder
     public SignatureInfoEntity(String issuerSignature, String userSignature, String issuerPublicKey, String userPublicKey, Date issuerSignedAt, Date userSignedAt, boolean isUserSigned) {

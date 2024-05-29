@@ -1,5 +1,8 @@
 package com.example.wid.service;
 
+import com.example.wid.controller.exception.InvalidCertificateException;
+import com.example.wid.controller.exception.InvalidKeyPairException;
+import com.example.wid.controller.exception.UserNotFoundException;
 import com.example.wid.dto.ClassCertificateDTO;
 import com.example.wid.entity.ClassCertificateEntity;
 import com.example.wid.entity.MemberEntity;
@@ -44,12 +47,14 @@ public class CertificateService {
         // 사용자 인증서 매핑정보 저장
         MemberEntity issuerEntity = null;
         MemberEntity userEntity = null;
+
         if (memberRepository.findByEmail(classCertificateDTO.getIssuerEmail()).isPresent()) {
             issuerEntity = memberRepository.findByEmail(classCertificateDTO.getIssuerEmail()).get();
-        } else throw new IllegalArgumentException("인증서 발급자 정보가 올바르지 않습니다.");
+        } else throw new UserNotFoundException("인증서 발급자 정보가 올바르지 않습니다.");
+
         if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
             userEntity = memberRepository.findByUsername(authentication.getName()).get();
-        } else throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
+        } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
 
         MultipartFile file = classCertificateDTO.getFile();
         String originalFilename = file.getOriginalFilename();
@@ -87,12 +92,12 @@ public class CertificateService {
     // issuer가 서명
     public void signClassCertificateIssuer(Long classCertificateId, String encodedPrivateKey, Authentication authentication){
         try{
-            // 인코딩된 개인키와 공개키를 PrivateKey, PublicKey 객체로 변환
             MemberEntity issuer = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
                 issuer = memberRepository.findByUsername(authentication.getName()).get();
-            } else throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
+            } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
 
+            // 인코딩된 개인키와 공개키를 PrivateKey, PublicKey 객체로 변환
             PrivateKey privateKey = KeyFactory
                     .getInstance("RSA")
                     .generatePrivate(new PKCS8EncodedKeySpec(Base64
@@ -106,22 +111,24 @@ public class CertificateService {
                             .decode(issuer.getPublicKey().getBytes())
                     ));
 
-            if(!verifyKey(publicKey, privateKey)) throw new IllegalArgumentException("공개키와 개인키가 일치하지 않습니다.");
+            if(!verifyKey(publicKey, privateKey)) throw new InvalidKeyPairException();
 
             // 인증서 정보 확인
             ClassCertificateEntity classCertificateEntity = null;
             if (classCertificateRepository.findById(classCertificateId).isPresent()) {
                 classCertificateEntity = classCertificateRepository.findById(classCertificateId).get();
-            } else throw new IllegalArgumentException("인증서 정보가 올바르지 않습니다.");
+            } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
 
             // 서명 정보 생성
             String serializedClassCertificate = ClassCertificateEntity.serializeClassCertificateForSignature(classCertificateEntity);
-            SignatureInfoEntity signatureInfoEntity = new SignatureInfoEntity();
-            signatureInfoEntity.setIssuerSignature(serializedClassCertificate);
-            signatureInfoEntity.setIssuerPublicKey(issuer.getPublicKey());
-            signatureInfoEntity.setIssuerSignedAt(new java.util.Date());
             byte[] signData = signData(serializedClassCertificate, privateKey);
-            signatureInfoEntity.setIssuerSignature(Base64.getEncoder().encodeToString(signData));
+
+            SignatureInfoEntity signatureInfoEntity = SignatureInfoEntity.builder()
+                    .issuerSignature(serializedClassCertificate)
+                    .issuerPublicKey(issuer.getPublicKey())
+                    .issuerSignedAt(new java.util.Date())
+                    .issuerSignature(Base64.getEncoder().encodeToString(signData))
+                    .build();
 
             // 서명 정보 저장
             SignatureInfoEntity savedSignatureInfo = signatureInfoRepository.save(signatureInfoEntity);
@@ -133,7 +140,64 @@ public class CertificateService {
             throw new IllegalArgumentException("서명에 실패하였습니다.");
         }
     }
+    
+    // 사용자가 서명
+    public void signClassCertificateUser(Long classCertificateId, String encodedPrivateKey, Authentication authentication){
+        try{
+            MemberEntity user = null;
+            if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
+                user = memberRepository.findByUsername(authentication.getName()).get();
+            } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
 
+            // 인코딩된 개인키와 공개키를 PrivateKey, PublicKey 객체로 변환
+            PrivateKey privateKey = KeyFactory
+                    .getInstance("RSA")
+                    .generatePrivate(new PKCS8EncodedKeySpec(Base64
+                            .getDecoder()
+                            .decode(encodedPrivateKey.getBytes())
+                    ));
+            PublicKey publicKey = KeyFactory
+                    .getInstance("RSA")
+                    .generatePublic(new X509EncodedKeySpec(Base64
+                            .getDecoder()
+                            .decode(user.getPublicKey().getBytes())
+                    ));
+
+            if(!verifyKey(publicKey, privateKey)) throw new InvalidKeyPairException();
+
+            ClassCertificateEntity classCertificateEntity = null;
+            if (classCertificateRepository.findById(classCertificateId).isPresent()) {
+                classCertificateEntity = classCertificateRepository.findById(classCertificateId).get();
+            } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+
+            // 본인 인증서 맞는지 확인
+            CertificateInfoEntity certificateInfo = classCertificateEntity.getCertificateInfo();
+            if(certificateInfo.getUser() != user) throw new InvalidCertificateException("인증서에 대한 권한이 없습니다.");
+            
+            // 올바른 서명정보인지 확인
+            SignatureInfoEntity signatureInfo = certificateInfo.getSignatureInfo();
+            if(signatureInfo == null) throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
+            if(signatureInfo.getIsUserSigned()) throw new InvalidCertificateException("이미 서명하였습니다.");
+
+            String serializedClassCertificate = ClassCertificateEntity.serializeClassCertificateForSignature(classCertificateEntity)
+                    + "\n\"issuerSignature\":"
+                    + signatureInfo.getIssuerSignature();
+            byte[] signData = signData(serializedClassCertificate, privateKey);
+
+            signatureInfo.setUserSignature(Base64.getEncoder().encodeToString(signData));
+            signatureInfo.setUserPublicKey(user.getPublicKey());
+            signatureInfo.setUserSignedAt(new java.util.Date());
+            signatureInfo.setIsUserSigned(true);
+            signatureInfoRepository.save(signatureInfo);
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("서명에 실패하였습니다.");
+        }
+    }
+
+    // 클래스 내부 메소드
+    // 테스트를 위해 public으로 선언 , 실제 서비스에서는 private로 변경
     public byte[] signData(String data, PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(privateKey);
