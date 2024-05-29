@@ -5,7 +5,7 @@ import com.example.wid.controller.exception.InvalidKeyPairException;
 import com.example.wid.controller.exception.UserNotFoundException;
 import com.example.wid.dto.base.BaseCertificateDTO;
 import com.example.wid.entity.*;
-import com.example.wid.entity.base.BaseCertificate;
+import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +72,8 @@ public class CertificateService {
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
 
-        BaseCertificate baseCertificate = certificateDTO.getCertificateInfo(certificateType);
-        if(Boolean.FALSE.equals(saveCertificate(baseCertificate, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+        BaseCertificateEntity baseCertificateEntity = certificateDTO.toCertificateEntity(certificateType);
+        if(Boolean.FALSE.equals(saveCertificate(baseCertificateEntity, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
     }
     // issuer가 서명
     public void signCertificateIssuer(Long certificateId, String encodedPrivateKey, Authentication authentication){
@@ -108,11 +108,11 @@ public class CertificateService {
 
             // 인증서 정보에 저장된 하위 증명서 가져오기
             CertificateType certificateType = certificateInfo.getCertificateType();
-            BaseCertificate baseCertificate = getCertificate(certificateId, certificateType);
-            if(baseCertificate == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+            BaseCertificateEntity baseCertificateEntity = getCertificate(certificateId, certificateType);
+            if(baseCertificateEntity == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
 
             // 서명 정보 생성
-            String serializedClassCertificate = baseCertificate.serializeCertificateForSignature();
+            String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature();
             byte[] signData = signData(serializedClassCertificate, privateKey);
 
             SignatureInfoEntity signatureInfoEntity = SignatureInfoEntity.builder()
@@ -161,8 +161,8 @@ public class CertificateService {
             } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
 
             CertificateType certificateType = certificateInfo.getCertificateType();
-            BaseCertificate baseCertificate = getCertificate(certificateId, certificateType);
-            if(baseCertificate == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+            BaseCertificateEntity baseCertificateEntity = getCertificate(certificateId, certificateType);
+            if(baseCertificateEntity == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
             if(certificateInfo.getUser() != user) throw new InvalidCertificateException("인증서에 대한 권한이 없습니다.");
 
             // 올바른 서명정보인지 확인
@@ -170,7 +170,7 @@ public class CertificateService {
             if(signatureInfo == null) throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
             if(Boolean.TRUE.equals(signatureInfo.getIsUserSigned())) throw new InvalidCertificateException("이미 서명하였습니다.");
 
-            String serializedClassCertificate = baseCertificate.serializeCertificateForSignature()
+            String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature()
                     + "\n\"issuerSignature\":"
                     + signatureInfo.getIssuerSignature();
             byte[] signData = signData(serializedClassCertificate, privateKey);
@@ -213,21 +213,21 @@ public class CertificateService {
             return false;
         }
     }
-    public boolean saveCertificate(BaseCertificate baseCertificate, CertificateInfoEntity certificateInfoEntity) {
-        if(baseCertificate instanceof ClassCertificateEntity classCertificateEntity){
-            classCertificateEntity = (ClassCertificateEntity) baseCertificate;
+    public boolean saveCertificate(BaseCertificateEntity baseCertificateEntity, CertificateInfoEntity certificateInfoEntity) {
+        if(baseCertificateEntity instanceof ClassCertificateEntityEntity classCertificateEntity){
+            classCertificateEntity = (ClassCertificateEntityEntity) baseCertificateEntity;
             classCertificateEntity.setCertificateInfo(certificateInfoEntity);
             classCertificateRepository.save(classCertificateEntity);
             return true;
-        } else if(baseCertificate instanceof CompetitionCertificateEntity competitionCertificateEntity){
-            competitionCertificateEntity = (CompetitionCertificateEntity) baseCertificate;
+        } else if(baseCertificateEntity instanceof CompetitionCertificateEntityEntity competitionCertificateEntity){
+            competitionCertificateEntity = (CompetitionCertificateEntityEntity) baseCertificateEntity;
             competitionCertificateEntity.setCertificateInfo(certificateInfoEntity);
             competitionCertificateRepository.save(competitionCertificateEntity);
             return true;
         }
         return false;
     }
-    public BaseCertificate getCertificate(Long certificateId, CertificateType certificateType) {
+    public BaseCertificateEntity getCertificate(Long certificateId, CertificateType certificateType) {
         if (certificateType == CertificateType.CLASS_CERTIFICATE && classCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {
             return classCertificateRepository.findByCertificateInfo_Id(certificateId).get();
         } else if (certificateType == CertificateType.COMPETITION_CERTIFICATE && competitionCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {

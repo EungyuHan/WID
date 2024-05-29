@@ -1,6 +1,6 @@
 package com.example.wid.entity;
 
-import com.example.wid.entity.base.BaseCertificate;
+import com.example.wid.entity.base.BaseCertificateEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 // 전자서명 중 수업에 대한 증명을 위한 인증서를 저장하기 위한 클래스
-public class ClassCertificateEntity implements BaseCertificate {
+public class ClassCertificateEntityEntity implements BaseCertificateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +29,7 @@ public class ClassCertificateEntity implements BaseCertificate {
     private String term;
 
     @Builder
-    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term) {
+    public ClassCertificateEntityEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term) {
         this.certificateInfo = certificateInfo;
         this.name = name;
         this.studentId = studentId;

@@ -2,8 +2,8 @@ package com.example.wid.dto;
 
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.dto.base.BaseCertificateDTO;
-import com.example.wid.entity.CompetitionCertificateEntity;
-import com.example.wid.entity.base.BaseCertificate;
+import com.example.wid.entity.CompetitionCertificateEntityEntity;
+import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,11 +39,11 @@ public class CompetitionCertificateDTO implements BaseCertificateDTO {
     }
 
     @Override
-    public BaseCertificate getCertificateInfo(CertificateType certificateType) {
+    public BaseCertificateEntity toCertificateEntity(CertificateType certificateType) {
         if(certificateType != CertificateType.COMPETITION_CERTIFICATE)
             throw new InvalidCertificateException("잘못된 증명서 정보입니다.");
 
-        return CompetitionCertificateEntity.builder()
+        return CompetitionCertificateEntityEntity.builder()
                 .competitionName(this.competitionName)
                 .achievement(this.achievement)
                 .organizer(this.organizer)

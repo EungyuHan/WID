@@ -1,6 +1,6 @@
 package com.example.wid.entity;
 
-import com.example.wid.entity.base.BaseCertificate;
+import com.example.wid.entity.base.BaseCertificateEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CompetitionCertificateEntity implements BaseCertificate {
+public class CompetitionCertificateEntityEntity implements BaseCertificateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +25,7 @@ public class CompetitionCertificateEntity implements BaseCertificate {
     private String term;
 
     @Builder
-    public CompetitionCertificateEntity(CertificateInfoEntity certificateInfo, String competitionName, String achievement, String organizer, String summary, String term) {
+    public CompetitionCertificateEntityEntity(CertificateInfoEntity certificateInfo, String competitionName, String achievement, String organizer, String summary, String term) {
         this.certificateInfo = certificateInfo;
         this.competitionName = competitionName;
         this.achievement = achievement;

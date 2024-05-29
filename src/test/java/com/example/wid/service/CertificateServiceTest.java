@@ -118,7 +118,7 @@ class CertificateServiceTest {
         assertEquals(1, classCertificateRepository.findAll().size());
         assertEquals(1, certificateInfoRepository.findAll().size());
 
-        ClassCertificateEntity classCertificateEntity = classCertificateRepository.findAll().get(0);
+        ClassCertificateEntityEntity classCertificateEntity = classCertificateRepository.findAll().get(0);
         CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
         assertEquals(classCertificateEntity.getCertificateInfo().getId(), certificateInfoEntity.getId());
     }
@@ -149,7 +149,7 @@ class CertificateServiceTest {
         assertEquals(1, competitionCertificateRepository.findAll().size());
         assertEquals(1, certificateInfoRepository.findAll().size());
 
-        CompetitionCertificateEntity classCertificateEntity = competitionCertificateRepository.findAll().get(0);
+        CompetitionCertificateEntityEntity classCertificateEntity = competitionCertificateRepository.findAll().get(0);
         CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
         assertEquals(classCertificateEntity.getCertificateInfo().getId(), certificateInfoEntity.getId());
     }
@@ -163,7 +163,7 @@ class CertificateServiceTest {
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
 
-        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.builder()
+        ClassCertificateEntityEntity classCertificateEntity = ClassCertificateEntityEntity.builder()
                 .certificateInfo(savedCertificateInfo)
                 .name("user")
                 .studentId("201911114")
@@ -172,7 +172,7 @@ class CertificateServiceTest {
                 .summary("블록체인 기반 활동내역 증명 서비스")
                 .term("2021.01.01~2021.01.02")
                 .build();
-        ClassCertificateEntity savedClassCertificate = classCertificateRepository.save(classCertificateEntity);
+        ClassCertificateEntityEntity savedClassCertificate = classCertificateRepository.save(classCertificateEntity);
 
         assertEquals(savedCertificateInfo.getId(), savedClassCertificate.getCertificateInfo().getId());
         assertEquals(savedCertificateInfo.getId(), classCertificateRepository.findByCertificateInfo_Id(savedCertificateInfo.getId()).get().getCertificateInfo().getId());
@@ -196,7 +196,7 @@ class CertificateServiceTest {
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
 
-        CompetitionCertificateEntity competitionCertificateEntity = CompetitionCertificateEntity.builder()
+        CompetitionCertificateEntityEntity competitionCertificateEntity = CompetitionCertificateEntityEntity.builder()
                 .certificateInfo(savedCertificateInfo)
                 .competitionName("대회")
                 .achievement("우수상")
@@ -204,7 +204,7 @@ class CertificateServiceTest {
                 .summary("블록체인 기반 활동내역 증명 서비스")
                 .term("2021.01.01~2021.01.02")
                 .build();
-        CompetitionCertificateEntity savedCompetitionCertificate = competitionCertificateRepository.save(competitionCertificateEntity);
+        CompetitionCertificateEntityEntity savedCompetitionCertificate = competitionCertificateRepository.save(competitionCertificateEntity);
 
         assertEquals(savedCertificateInfo.getId(), savedCompetitionCertificate.getCertificateInfo().getId());
         assertEquals(savedCertificateInfo.getId(), competitionCertificateRepository.findByCertificateInfo_Id(savedCertificateInfo.getId()).get().getCertificateInfo().getId());
@@ -221,7 +221,7 @@ class CertificateServiceTest {
     @Test
     @DisplayName("수업 인증서 유저 2차 서명 성공")
     void signClassCertificateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
-        ClassCertificateEntity classCertificate = ClassCertificateEntity.builder()
+        ClassCertificateEntityEntity classCertificate = ClassCertificateEntityEntity.builder()
                 .name("user")
                 .studentId("201911114")
                 .subject("소프트웨어공학")
@@ -259,7 +259,7 @@ class CertificateServiceTest {
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfo);
 
         classCertificate.setCertificateInfo(savedCertificateInfo);
-        ClassCertificateEntity savedClassCertificate = classCertificateRepository.save(classCertificate);
+        ClassCertificateEntityEntity savedClassCertificate = classCertificateRepository.save(classCertificate);
 
         assertEquals(savedCertificateInfo.getSignatureInfo().getId(), savedSignatureInfo.getId());
         assertEquals(savedClassCertificate.getCertificateInfo().getId(), savedCertificateInfo.getId());
@@ -275,7 +275,7 @@ class CertificateServiceTest {
     @Test
     @DisplayName("대회 인증서 유저 2차 서명 성공")
     void signCompetitionCertificateUser() throws NoSuchAlgorithmException, InvalidKeySpecException, SignatureException, InvalidKeyException {
-        CompetitionCertificateEntity competitionCertificate = CompetitionCertificateEntity.builder()
+        CompetitionCertificateEntityEntity competitionCertificate = CompetitionCertificateEntityEntity.builder()
                 .competitionName("대회")
                 .achievement("우수상")
                 .organizer("주최기관")
@@ -312,7 +312,7 @@ class CertificateServiceTest {
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfo);
 
         competitionCertificate.setCertificateInfo(savedCertificateInfo);
-        CompetitionCertificateEntity savedCompetitionCertificate = competitionCertificateRepository.save(competitionCertificate);
+        CompetitionCertificateEntityEntity savedCompetitionCertificate = competitionCertificateRepository.save(competitionCertificate);
 
         assertEquals(savedCertificateInfo.getSignatureInfo().getId(), savedSignatureInfo.getId());
         assertEquals(savedCompetitionCertificate.getCertificateInfo().getId(), savedCertificateInfo.getId());

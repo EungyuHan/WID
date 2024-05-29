@@ -2,8 +2,8 @@ package com.example.wid.dto;
 
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.dto.base.BaseCertificateDTO;
-import com.example.wid.entity.ClassCertificateEntity;
-import com.example.wid.entity.base.BaseCertificate;
+import com.example.wid.entity.ClassCertificateEntityEntity;
+import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,11 +40,11 @@ public class ClassCertificateDTO implements BaseCertificateDTO {
     }
 
     @Override
-    public BaseCertificate getCertificateInfo(CertificateType certificateType) {
+    public BaseCertificateEntity toCertificateEntity(CertificateType certificateType) {
         if(certificateType != CertificateType.CLASS_CERTIFICATE)
             throw new InvalidCertificateException("잘못된 증명서 정보입니다.");
 
-        return ClassCertificateEntity.builder()
+        return ClassCertificateEntityEntity.builder()
                 .studentId(this.studentId)
                 .subject(this.subject)
                 .professor(this.professor)
