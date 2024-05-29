@@ -54,6 +54,7 @@ function UserCreateVP() {
         return contentsList.map((contentName)=>(
             <ContentsListDiv key={contentName.id}>
                 <h3>{contentName.name}</h3>
+                <hr></hr>
                     <div>
                     {renderMatchingContent(contentName.id)}
                     </div>
@@ -68,7 +69,14 @@ function UserCreateVP() {
 
         return matchedContents.length > 0 ? (
                 matchedContents.map((item, idx) => (
-                    <div key={idx}>{item.summary}</div>
+                    <div>
+                        <h4 key={idx}>{item.content.summary}</h4>
+                        <div key={idx}>{"진행일자 :"+ item.content.term}</div>
+                        <div key={idx}>{"이슈어:" + item.content.professor}</div>
+                        <div key={idx}>{item.content.organizer}</div>
+                    </div>
+                    
+                    
                 ))) : null;
     };
 
@@ -167,6 +175,7 @@ const ContentDiv = styled.div`
     height: 85%;
     border-radius : 15px;
     background-color: rgba(0, 0, 0, 0.25);
+    overflow:auto;
 `
 
 const ItemDiv = styled.div`

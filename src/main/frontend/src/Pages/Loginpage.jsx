@@ -1,12 +1,11 @@
 import styled,{keyframes} from 'styled-components';
-import React,{ useState } from 'react';
+import React,{ useState  } from 'react';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import CreateUser from '../Components/CreateUser';
 import SelectUser from '../Components/SelectUser';
+import axios from 'axios';
 
-/* 스타일드 컴포넌트 양식을 사용할 것, 따라서 스타일드 컴포넌트에 대한 개념 공부 필요함*/
-/* 스타일드 컴포넌트 관련 코드는 모두 리액트 코드 아래에 작성할 것 (로직 먼저, CSS는 차후)*/
 
 function Loginpage(){
     const [id, setID] = useState("");
@@ -20,7 +19,7 @@ function Loginpage(){
         name:"",
         email:"",
         phone:"",
-        username:"",
+        id:"",
         password:""
     });
 
@@ -48,6 +47,12 @@ function Loginpage(){
         else if (!password) {
             return alert("passward를 입력해주세요");
         }
+        else {
+            axios.post('http://localhost:3001/Login', {
+                userId : id,
+                userPassword : password
+            })
+        }
     }
 
     return(
@@ -63,7 +68,7 @@ function Loginpage(){
                         <InputPW type='password' value={password} placeholder='PW' onChange={(e) => {
                             setPassword(e.target.value)
                         }}></InputPW>
-                        <Button name="로그인"><input type='submit'></input></Button>  
+                        <Button name="로그인" onClick={LoginFunc}></Button>  
                 </form>
             
                 <CreateUserButton onClick={makeUser}>WID가 처음이세요?</CreateUserButton>
@@ -74,8 +79,6 @@ function Loginpage(){
             { isModalOpen && isSelected &&(<CreateUser onClose={toggleModal} UserInfo={userInfo}></CreateUser>)}
 
         </BackGround>
-
-        
 
     )
 }
@@ -102,8 +105,7 @@ const Welcometext = styled.h3`
     color: white;
     letter-spacing: 1px;
     font-size: 17px;
-    font-family: 'Arial', sans-serif;
-    
+    font-family: 'Arial', sans-serif; 
 `
 
 const InputID = styled.input`
@@ -111,6 +113,7 @@ padding: 10px 25px;
 margin: 5px 10px;
 border-radius: 5px;
 border: none;
+box-shadow: 0.5px 0.5px 2px black;
 `
 
 const InputPW = styled.input`
@@ -118,6 +121,7 @@ padding: 10px 25px;
 margin: 5px 10px;
 border-radius: 5px;
 border: none;
+box-shadow: 0.5px 0.5px 2px black;
 `
 
 const CreateUserButton = styled.button`
@@ -132,6 +136,6 @@ const CreateUserButton = styled.button`
     background-color: White;
     color:black;
 }
-
 `
+
 export default Loginpage;

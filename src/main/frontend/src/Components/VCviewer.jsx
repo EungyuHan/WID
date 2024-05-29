@@ -14,14 +14,14 @@ function VCviewer(props) {
     },[])
 
 
-    const addVC = (name,index) => {
-        const newList = [...props.content, {id: index, summary: name}];
+    const addVC = (name,index,) => {
+        const newList = [...props.content, {id: index,  content: name}];
         props.setContent(newList);
         console.log(newList);
     }
     
     const deleteVC = (name) => {
-        const newList = props.content.filter(item => item.summary !== name);
+        const newList = props.content.filter(item => item.content.summary !== name);
         props.setContent(newList);
     }
 
@@ -30,7 +30,7 @@ function VCviewer(props) {
                 <VC_List_Container>
                 <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
                 <VCcontentDiv width={'20%'}>
-                    <AddVCbutton onClick={()=>{addVC(data.summary , props.focusIndex)}}>추가</AddVCbutton>
+                    <AddVCbutton onClick={()=>{addVC(data , props.focusIndex)}}>추가</AddVCbutton>
                     <DeleteVCbutton onClick={()=>{deleteVC(data.summary)}}>삭제</DeleteVCbutton>
                     
                 </VCcontentDiv>
