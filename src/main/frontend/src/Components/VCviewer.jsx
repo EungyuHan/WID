@@ -4,6 +4,7 @@ import axios from 'axios';
 
 function VCviewer(props) {
     const [vcdata, setVCdata] = useState([]);
+    const [search, setSearch] = useState("");
     
     useEffect(() => {
         axios.get('http://localhost:3001/vccontent')
@@ -12,6 +13,7 @@ function VCviewer(props) {
             console.log(vcdata);
         })
     },[])
+
 
 
     const addVC = (name,index,) => {
@@ -25,8 +27,9 @@ function VCviewer(props) {
         props.setContent(newList);
     }
 
-    const renderContentList = () => {
-        return vcdata.map((data)=>(
+    const renderContentList = (search) => {
+        if(!search){
+            return vcdata.map((data)=>(
                 <VC_List_Container>
                 <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
                 <VCcontentDiv width={'20%'}>
@@ -35,8 +38,23 @@ function VCviewer(props) {
                     
                 </VCcontentDiv>
                 </VC_List_Container>
-        )
-        )
+        ))
+        }
+        else{
+            const searchList = vcdata.filter((data) => data.summary.includes(search));
+            console.log(searchList);
+            return searchList.map((data)=> (
+                <VC_List_Container>
+                <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
+                <VCcontentDiv width={'20%'}>
+                    <AddVCbutton onClick={()=>{addVC(data , props.focusIndex)}}>추가</AddVCbutton>
+                    <DeleteVCbutton onClick={()=>{deleteVC(data.summary)}}>삭제</DeleteVCbutton>
+                    
+                </VCcontentDiv>
+                </VC_List_Container>
+            ))
+        }
+            
     }
     
 
@@ -44,10 +62,10 @@ function VCviewer(props) {
         <VCcontents>
             <VCSearch>
             <img src='img/SearchIcon.png' width={`20x`} height={`20px`} alt='Logo'></img>
-                <Input type={'text'} placeholder='검색하실 활동내역을 입력해주세요' ></Input>
+                <Input type={'text'} placeholder='검색하실 활동내역을 입력해주세요' onChange={(e)=>{setSearch(e.target.value); console.log(search)}}></Input>
             </VCSearch>
             <VC_List_Div>
-                {renderContentList()}
+                {renderContentList(search)}
             </VC_List_Div>
         </VCcontents>
         
