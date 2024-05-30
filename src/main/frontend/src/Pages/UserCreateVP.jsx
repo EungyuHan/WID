@@ -5,6 +5,7 @@ import Button from '../Components/Button';
 import { Link } from 'react-router-dom';
 import SetItemNameModal from '../Components/SetItemNameModal';
 import VCviewer from '../Components/VCviewer';
+import UserSendPage from './UserSendPage';
 
 
 function UserCreateVP() {
@@ -15,6 +16,7 @@ function UserCreateVP() {
     const [show, setShow] = useState(false);
     const [content, setContent] = useState([]);
     const [focusIndex, setFocus] = useState(0);
+    const [isSubmitClicked, setSubmit] = useState(false);
 
     const toggleDiv = (focus) => {
     setShow(!show);
@@ -62,8 +64,9 @@ function UserCreateVP() {
             </ContentsListDiv>
         )
     )
-    
     }
+
+
     const renderMatchingContent = (id) => {
         const matchedContents = content.filter(item => item.id === id-1);
 
@@ -80,6 +83,19 @@ function UserCreateVP() {
                 ))) : null;
     };
 
+    const submit = () => {
+        // 현재 내용이 비워져있지는 않은지등에 대한 검사가 필요하다.
+        if(item == 0){
+            alert("현재 제출할 내용이 없습니다.");
+        }
+        else if(content.length == 0) {
+            alert("현재 추가된 VC가 없습니다 VC를 추가해주세요");
+        }
+        else{
+            setSubmit(!isSubmitClicked);
+        }
+        
+    }
     
     
     return(
@@ -94,9 +110,7 @@ function UserCreateVP() {
                         </Link>
                 </HomeContainer>
                 <HelpContainer>
-                <Link to="/Help">
-                        <img src='img/Help.png' width={`75x`} height={`75px`} alt='Logo'></img>
-                        </Link>
+                <Button name="제출하기" onClick={submit}> </Button>
                 </HelpContainer>
 
                 <SelectBarDiv>
@@ -121,6 +135,7 @@ function UserCreateVP() {
             
             <Waves/>
             {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
+            {isSubmitClicked && <UserSendPage ></UserSendPage> }
         </BackGround>
     )
 }
@@ -156,6 +171,9 @@ const HelpContainer = styled.div`
     width: 10%;
     height: 12%;
     right:5%;
+    display: flex;
+    justify-content: center;
+    
 `
 const SelectBarDiv = styled.div`
     position: fixed;
