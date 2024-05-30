@@ -265,7 +265,7 @@ class CertificateServiceTest {
         assertEquals(savedClassCertificate.getCertificateInfo().getId(), savedCertificateInfo.getId());
 
         Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
-        assertDoesNotThrow(() -> certificateService.signClassCertificateUser(savedCertificateInfo.getId(), encodedUserPrivateKey, userAuthentication));
+        assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId(), encodedUserPrivateKey, userAuthentication));
 
         SignatureInfoEntity updatedSignatureInfo = signatureInfoRepository.findById(savedSignatureInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserSignature());
@@ -318,7 +318,7 @@ class CertificateServiceTest {
         assertEquals(savedCompetitionCertificate.getCertificateInfo().getId(), savedCertificateInfo.getId());
 
         Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
-        assertDoesNotThrow(() -> certificateService.signClassCertificateUser(savedCertificateInfo.getId(), encodedUserPrivateKey, userAuthentication));
+        assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId(), encodedUserPrivateKey, userAuthentication));
 
         SignatureInfoEntity updatedSignatureInfo = signatureInfoRepository.findById(savedSignatureInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserSignature());

@@ -133,7 +133,7 @@ public class CertificateService {
     }
     
     // 사용자가 서명
-    public void signClassCertificateUser(Long certificateId, String encodedPrivateKey, Authentication authentication){
+    public void signCertificateUser(Long certificateId, String encodedPrivateKey, Authentication authentication){
         try{
             MemberEntity user = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {

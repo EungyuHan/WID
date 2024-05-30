@@ -28,9 +28,21 @@ public class CertificateController {
         certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.CLASS_CERTIFICATE);
     }
 
-    @PostMapping("/class/sign/issuer")
-    public void signClassCertificateIssuer(@RequestParam Long classCertificateId,@RequestParam String privateKey) {
+    @PostMapping("competition")
+    public void createCompetitionCertificate(ClassCertificateDTO classCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.signCertificateIssuer(classCertificateId, privateKey, authentication);
+        certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.COMPETITION_CERTIFICATE);
+    }
+
+    @PostMapping("/sign/issuer")
+    public void signCertificateIssuer(@RequestParam Long certificateId,@RequestParam String privateKey) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        certificateService.signCertificateIssuer(certificateId, privateKey, authentication);
+    }
+
+    @PostMapping("/sign/user")
+    public void signCertificateUser(@RequestParam Long certificateId,@RequestParam String privateKey) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        certificateService.signCertificateUser(certificateId, privateKey, authentication);
     }
 }
