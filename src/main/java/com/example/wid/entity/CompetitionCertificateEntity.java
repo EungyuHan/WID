@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CompetitionCertificateEntityEntity implements BaseCertificateEntity {
+public class CompetitionCertificateEntity implements BaseCertificateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +25,7 @@ public class CompetitionCertificateEntityEntity implements BaseCertificateEntity
     private String term;
 
     @Builder
-    public CompetitionCertificateEntityEntity(CertificateInfoEntity certificateInfo, String competitionName, String achievement, String organizer, String summary, String term) {
+    public CompetitionCertificateEntity(CertificateInfoEntity certificateInfo, String competitionName, String achievement, String organizer, String summary, String term) {
         this.certificateInfo = certificateInfo;
         this.competitionName = competitionName;
         this.achievement = achievement;
@@ -35,13 +35,12 @@ public class CompetitionCertificateEntityEntity implements BaseCertificateEntity
     }
 
     public String serializeCertificateForSignature() {
-        String serializedCompetitionCertificate = "{\n"
-                + "\"competitionName\": \"" + competitionName + "\",\n"
+        String serializedCompetitionCertificate =
+                "\"competitionName\": \"" + competitionName + "\",\n"
                 + "\"achievement\": \"" + achievement + "\",\n"
                 + "\"organizer\": \"" + organizer + "\",\n"
                 + "\"summary\": \"" + summary + "\",\n"
-                + "\"term\": \"" + term + "\"\n"
-                + "}";
+                + "\"term\": \"" + term + "\"\n";
         return serializedCompetitionCertificate;
     }
 }

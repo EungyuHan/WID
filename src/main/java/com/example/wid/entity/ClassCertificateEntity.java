@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 // 전자서명 중 수업에 대한 증명을 위한 인증서를 저장하기 위한 클래스
-public class ClassCertificateEntityEntity implements BaseCertificateEntity {
+public class ClassCertificateEntity implements BaseCertificateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +29,7 @@ public class ClassCertificateEntityEntity implements BaseCertificateEntity {
     private String term;
 
     @Builder
-    public ClassCertificateEntityEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term) {
+    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term) {
         this.certificateInfo = certificateInfo;
         this.name = name;
         this.studentId = studentId;
@@ -41,14 +41,13 @@ public class ClassCertificateEntityEntity implements BaseCertificateEntity {
 
     @Override
     public String serializeCertificateForSignature() {
-        String serializedClassCertificate = "{\n"
-                + "\"name\": \"" + name + "\",\n"
+        String serializedClassCertificate =
+                "\"name\": \"" + name + "\",\n"
                 + "\"studentId\": \"" + studentId + "\",\n"
                 + "\"subject\": \"" + subject + "\",\n"
                 + "\"professor\": \"" + professor + "\",\n"
                 + "\"summary\": \"" + summary + "\",\n"
-                + "\"term\": \"" + term + "\"\n"
-                + "}";
+                + "\"term\": \"" + term + "\"\n";
         return serializedClassCertificate;
     }
 }

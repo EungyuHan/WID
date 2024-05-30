@@ -27,8 +27,9 @@ public class CertificateService {
     private final ClassCertificateRepository classCertificateRepository;
     private final CompetitionCertificateRepository competitionCertificateRepository;
     private final CertificateInfoRepository certificateInfoRepository;
-
     private final SignatureInfoRepository signatureInfoRepository;
+
+    private final String ISSUER_SIGNATURE = "\"issuerSignature\" : ";
 
     @Autowired
     public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CompetitionCertificateRepository competitionCertificateRepository, CertificateInfoRepository certificateInfoRepository, SignatureInfoRepository signatureInfoRepository) {
@@ -171,8 +172,10 @@ public class CertificateService {
             if(Boolean.TRUE.equals(signatureInfo.getIsUserSigned())) throw new InvalidCertificateException("이미 서명하였습니다.");
 
             String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature()
-                    + "\n\"issuerSignature\":"
-                    + signatureInfo.getIssuerSignature();
+                    + ISSUER_SIGNATURE
+                    + "\""
+                    + signatureInfo.getIssuerSignature()
+                    + "\"";
             byte[] signData = signData(serializedClassCertificate, privateKey);
 
             signatureInfo.setUserSignature(Base64.getEncoder().encodeToString(signData));
@@ -184,6 +187,55 @@ public class CertificateService {
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("서명에 실패하였습니다.");
+        }
+    }
+
+    public boolean verifyCertificate(Long certificateId){
+        try{
+            // 인증서 정보 가져오기
+            CertificateInfoEntity certificateInfo = null;
+            if(certificateInfoRepository.findById(certificateId).isPresent()){
+                certificateInfo = certificateInfoRepository.findById(certificateId).get();
+            } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+
+            // 인증서 정보에 저장된 증명서 가져오기
+            BaseCertificateEntity certificate = getCertificate(certificateId, certificateInfo.getCertificateType());
+            if(certificate == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+            // 서명 정보 가져오기
+            SignatureInfoEntity signatureInfo = certificateInfo.getSignatureInfo();
+
+            PublicKey issuerPublicKey = KeyFactory
+                    .getInstance("RSA")
+                    .generatePublic(new X509EncodedKeySpec(Base64
+                            .getDecoder()
+                            .decode(signatureInfo.getIssuerPublicKey().getBytes())
+                    ));
+            String serializedClassCertificate = certificate.serializeCertificateForSignature();
+            if(signatureInfo.getIssuerSignature() == null) throw new InvalidCertificateException("발급자 서명이 존재하지 않습니다.");
+            byte[] decodedIssuerSignature = Base64.getDecoder().decode(signatureInfo.getIssuerSignature().getBytes());
+            boolean verifyIssuerSignature = verifySignature(serializedClassCertificate, decodedIssuerSignature, issuerPublicKey);
+            if(!verifyIssuerSignature) return false;
+
+            PublicKey userPublicKey = KeyFactory
+                    .getInstance("RSA")
+                    .generatePublic(new X509EncodedKeySpec(Base64
+                            .getDecoder()
+                            .decode(signatureInfo.getUserPublicKey().getBytes())
+                    ));
+            String serializedClassCertificateWithIssuerSignature = serializedClassCertificate
+                    + ISSUER_SIGNATURE
+                    + "\""
+                    + signatureInfo.getIssuerSignature()
+                    + "\"";
+            if(signatureInfo.getUserSignature() == null) throw new InvalidCertificateException("사용자 서명이 존재하지 않습니다.");
+            byte[] decodedUserSignature = Base64.getDecoder().decode(signatureInfo.getUserSignature().getBytes());
+            boolean verifyUserSignature = verifySignature(serializedClassCertificateWithIssuerSignature, decodedUserSignature, userPublicKey);
+            if(!verifyUserSignature) return false;
+            
+            return true;
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -214,13 +266,13 @@ public class CertificateService {
         }
     }
     public boolean saveCertificate(BaseCertificateEntity baseCertificateEntity, CertificateInfoEntity certificateInfoEntity) {
-        if(baseCertificateEntity instanceof ClassCertificateEntityEntity classCertificateEntity){
-            classCertificateEntity = (ClassCertificateEntityEntity) baseCertificateEntity;
+        if(baseCertificateEntity instanceof ClassCertificateEntity classCertificateEntity){
+            classCertificateEntity = (ClassCertificateEntity) baseCertificateEntity;
             classCertificateEntity.setCertificateInfo(certificateInfoEntity);
             classCertificateRepository.save(classCertificateEntity);
             return true;
-        } else if(baseCertificateEntity instanceof CompetitionCertificateEntityEntity competitionCertificateEntity){
-            competitionCertificateEntity = (CompetitionCertificateEntityEntity) baseCertificateEntity;
+        } else if(baseCertificateEntity instanceof CompetitionCertificateEntity competitionCertificateEntity){
+            competitionCertificateEntity = (CompetitionCertificateEntity) baseCertificateEntity;
             competitionCertificateEntity.setCertificateInfo(certificateInfoEntity);
             competitionCertificateRepository.save(competitionCertificateEntity);
             return true;

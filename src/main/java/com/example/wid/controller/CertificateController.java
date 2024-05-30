@@ -45,4 +45,14 @@ public class CertificateController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateUser(certificateId, privateKey, authentication);
     }
+
+    @PostMapping("/verify")
+    public String verifyCertificate(@RequestParam Long certificateId) {
+        boolean verify = certificateService.verifyCertificate(certificateId);
+        if(verify) {
+            return "Certificate is verified";
+        } else {
+            return "Certificate is not verified";
+        }
+    }
 }
