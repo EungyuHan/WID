@@ -1,16 +1,11 @@
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
-import { useAuth } from './AuthContext.jsx';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
-const { token } = useAuth();
+const ProtectedRoute = ({ component: Component }) => {
+    const { token } = useAuth();
 
-return (
-    <Route
-    {...rest}
-    element={token ? <Component {...rest} /> : <Navigate to="/" />}
-    />
-);
+    return token ? <Component /> : <Navigate to="/" />;
 };
 
 export default ProtectedRoute;
