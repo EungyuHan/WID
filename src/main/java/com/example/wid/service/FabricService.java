@@ -24,11 +24,23 @@ public class FabricService {
 
     public void run() throws GatewayException, CommitException {
         initLedger();
-        getAllAssets();
-        createAsset();
+//        getAllAssets();
+        getAllEntries();
+//        createAsset();
+        createUnivClassAsset(assetId, "John Doe", "202312345", "2024/03/02~2024/06/21", "Blockchain Portfolio Management", "Capstone");
+        createCompetitionAsset();
         transferAssetAsync();
         readAssetById();
         updateNonExistentAsset();
+    }
+
+    public void getAll() throws GatewayException {
+        System.out.println("==============GET ALL ASSETS==============");
+        getAllEntries();
+    }
+
+    public void addAsset() throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        createUnivClassAsset("did10", "하하", "202012345", "2024", "TEST NEW ASSETS", "캡스톤");
     }
 
     private void initLedger() throws EndorseException, SubmitException, CommitStatusException, CommitException {
@@ -37,12 +49,20 @@ public class FabricService {
         System.out.println("*** Transaction committed successfully");
     }
 
-    private void getAllAssets() throws GatewayException {
-        System.out.println("GetAllAssets");
-        System.out.println("\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger");
-        var result = contract.evaluateTransaction("GetAllAssets");
+    public void getAllEntries() throws GatewayException {
+        System.out.println("\n--> Evaluate Transaction: GetAllEntries, function returns all the current assets on the ledger");
+
+        var result = contract.evaluateTransaction("GetAllEntries");
+
         System.out.println("*** Result: " + prettyJson(result));
     }
+
+//    public void getAllAssets() throws GatewayException {
+//        System.out.println("GetAllAssets");
+//        System.out.println("\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger");
+//        var result = contract.evaluateTransaction("GetAllAssets");
+//        System.out.println("*** Result: " + prettyJson(result));
+//    }
 
     private String prettyJson(final byte[] json) {
         return prettyJson(new String(json, StandardCharsets.UTF_8));
@@ -106,4 +126,21 @@ public class FabricService {
             System.out.println("Status code: " + e.getCode());
         }
     }
+
+    private void createUnivClassAsset(String assetId, String name, String studentID, String term, String summary, String subject) throws EndorseException, SubmitException, CommitStatusException, CommitException {
+        System.out.println("\n--> Submit Transaction: CreateUnivClassAsset, creates new UnivClassAsset with did, name, studentID, term, summary, subject arguments");
+
+        contract.submitTransaction("CreateUnivClassAsset", assetId, name, studentID, term, summary, subject);
+
+        System.out.println("*** Transaction committed successfully");
+    }
+
+    private void createCompetitionAsset() throws EndorseException, SubmitException, CommitStatusException, CommitException {
+        System.out.println("\n--> Submit Transaction: CreateCompetitionAsset, creates new CompetitionAsset with did, name, competitionName, achievement, organizer, summary arguments");
+
+        contract.submitTransaction("CreateCompetitionAsset", "comp" + Instant.now().toEpochMilli(), "Jane Doe", "K-Hackathon", "1st place", "JBNU Software Engineering", "Blockchain-based service");
+
+        System.out.println("*** Transaction committed successfully");
+    }
+
 }
