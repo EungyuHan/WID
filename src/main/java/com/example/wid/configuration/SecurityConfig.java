@@ -46,6 +46,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/", "/login", "/register/**", "/error").permitAll() // 해당 경로는 모두 허용
                 .requestMatchers("/h2-console/**").permitAll() // 해당 경로는 모두 허용
+                .requestMatchers("/did/**").permitAll()
 
                 .requestMatchers("/rsa/**", "/folder/**").authenticated() // 해당 경로는 인증된 사용자만 허용
 
