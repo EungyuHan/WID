@@ -22,31 +22,31 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
-    @PostMapping("/class")
+    @PostMapping("/user/class")
     public void createClassCertificate(ClassCertificateDTO classCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.CLASS_CERTIFICATE);
     }
 
-    @PostMapping("competition")
+    @PostMapping("/user/competition")
     public void createCompetitionCertificate(ClassCertificateDTO classCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.COMPETITION_CERTIFICATE);
     }
 
-    @PostMapping("/sign/issuer")
+    @PostMapping("/issuer/sign")
     public void signCertificateIssuer(@RequestParam Long certificateId,@RequestParam String privateKey) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateIssuer(certificateId, privateKey, authentication);
     }
 
-    @PostMapping("/sign/user")
+    @PostMapping("/user/sign")
     public void signCertificateUser(@RequestParam Long certificateId,@RequestParam String privateKey) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateUser(certificateId, privateKey, authentication);
     }
 
-    @PostMapping("/verify")
+    @PostMapping("/verifier/verify")
     public String verifyCertificate(@RequestParam Long certificateId) {
         boolean verify = certificateService.verifyCertificate(certificateId);
         if(verify) {

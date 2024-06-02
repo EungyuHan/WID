@@ -47,12 +47,12 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/register/**", "/error").permitAll() // 해당 경로는 모두 허용
                 .requestMatchers("/h2-console/**").permitAll() // 해당 경로는 모두 허용
 
-                .requestMatchers("/rsa/**").authenticated() // 해당 경로는 인증된 사용자만 허용
+                .requestMatchers("/rsa/**", "/folder/**").authenticated() // 해당 경로는 인증된 사용자만 허용
 
                 .requestMatchers("/admin").hasRole("ADMIN") // 해당 경로는 ADMIN 권한만 허용
-                .requestMatchers("/user").hasRole("USER") // 해당 경로는 USER 권한만 허용
-                .requestMatchers("/issuer").hasRole("ISSUER") // 해당 경로는 ISSUER 권한만 허용
-                .requestMatchers("/verifier").hasRole("VERIFIER") // 해당 경로는 VERIFIER 권한만 허용
+                .requestMatchers("/user", "/certificate/user/**").hasRole("USER") // 해당 경로는 USER 권한만 허용
+                .requestMatchers("/issuer", "/certificate/issuer/**").hasRole("ISSUER") // 해당 경로는 ISSUER 권한만 허용
+                .requestMatchers("/verifier", "/certificate/verifier/**").hasRole("VERIFIER") // 해당 경로는 VERIFIER 권한만 허용
         );
 
         http.sessionManagement((session) -> session

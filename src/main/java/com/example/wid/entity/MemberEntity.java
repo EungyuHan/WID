@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -36,6 +39,15 @@ public class MemberEntity extends BaseEntity {
     private String phone;
     @Column(unique = true, columnDefinition = "TEXT")
     private String publicKey;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FolderEntity> folders;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<CertificateInfoEntity> userCertificates;
+
+    @OneToMany(mappedBy = "issuer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<CertificateInfoEntity> issuedCertificates = new ArrayList<>();
 
     @Builder
     public MemberEntity(Role role, BelongEntity belong, String username, String password, String email, String name, String phone, String publicKey) {

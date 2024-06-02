@@ -15,7 +15,7 @@ public class CompetitionCertificateEntity implements BaseCertificateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_info_id")
     private CertificateInfoEntity certificateInfo;
     private String competitionName;

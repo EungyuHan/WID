@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 // 증명서에 대한 소유등을 저장하기 위한 클래스
 @Entity(name = "certificate_info")
 @Getter
@@ -17,10 +19,10 @@ public class CertificateInfoEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private MemberEntity user;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "issuer_id")
     private MemberEntity issuer;
     @Column(name = "certificate_type")
@@ -30,9 +32,11 @@ public class CertificateInfoEntity extends BaseEntity {
     private String storedFilename;
     private String originalFilename;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "signature_info_id", nullable = true)
     private SignatureInfoEntity signatureInfo;
+    @OneToMany(mappedBy = "certificate", fetch = FetchType.LAZY)
+    private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
     public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String storedFilename, String originalFilename, SignatureInfoEntity signatureInfo) {
