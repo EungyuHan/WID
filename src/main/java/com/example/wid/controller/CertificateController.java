@@ -41,18 +41,8 @@ public class CertificateController {
     }
 
     @PostMapping("/user/sign")
-    public void signCertificateUser(@RequestParam Long certificateId,@RequestParam String privateKey) {
+    public void signCertificateUser(@RequestParam Long certificateId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.signCertificateUser(certificateId, privateKey, authentication);
-    }
-
-    @PostMapping("/verifier/verify")
-    public String verifyCertificate(@RequestParam Long certificateId) {
-        boolean verify = certificateService.verifyCertificate(certificateId);
-        if(verify) {
-            return "Certificate is verified";
-        } else {
-            return "Certificate is not verified";
-        }
+        certificateService.signCertificateUser(certificateId, authentication);
     }
 }

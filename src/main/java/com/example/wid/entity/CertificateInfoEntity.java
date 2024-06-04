@@ -34,12 +34,12 @@ public class CertificateInfoEntity extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "signature_info_id", nullable = true)
-    private SignatureInfoEntity signatureInfo;
+    private EncryptInfoEntity signatureInfo;
     @OneToMany(mappedBy = "certificate", fetch = FetchType.LAZY)
     private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
-    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String storedFilename, String originalFilename, SignatureInfoEntity signatureInfo) {
+    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String storedFilename, String originalFilename, EncryptInfoEntity signatureInfo) {
         this.user = user;
         this.issuer = issuer;
         this.certificateType = certificateType;

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class RsaController {
     }
 
     @GetMapping("/generate")
-    public ResponseEntity generateRsaKeyPair() throws NoSuchAlgorithmException {
+    public ResponseEntity generateRsaKeyPair() throws NoSuchAlgorithmException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Optional<String> privateKey = rsaService.generateRsaKeyPair(authentication);
         if(privateKey.isEmpty()) {

@@ -13,8 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.crypto.Cipher;
 import java.io.File;
 import java.io.IOException;
+
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -27,17 +29,16 @@ public class CertificateService {
     private final ClassCertificateRepository classCertificateRepository;
     private final CompetitionCertificateRepository competitionCertificateRepository;
     private final CertificateInfoRepository certificateInfoRepository;
-    private final SignatureInfoRepository signatureInfoRepository;
+    private final EncryptInfoRepository encryptInfoRepository;
 
-    private final String ISSUER_SIGNATURE = "\"issuerSignature\" : ";
 
     @Autowired
-    public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CompetitionCertificateRepository competitionCertificateRepository, CertificateInfoRepository certificateInfoRepository, SignatureInfoRepository signatureInfoRepository) {
+    public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CompetitionCertificateRepository competitionCertificateRepository, CertificateInfoRepository certificateInfoRepository, EncryptInfoRepository encryptInfoRepository) {
         this.memberRepository = memberRepository;
         this.classCertificateRepository = classCertificateRepository;
         this.competitionCertificateRepository = competitionCertificateRepository;
         this.certificateInfoRepository = certificateInfoRepository;
-        this.signatureInfoRepository = signatureInfoRepository;
+        this.encryptInfoRepository = encryptInfoRepository;
     }
 
     // 증명서 생성
@@ -114,40 +115,31 @@ public class CertificateService {
 
             // 서명 정보 생성
             String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature();
-            byte[] signData = signData(serializedClassCertificate, privateKey);
+            byte[] encryptData = encrypt(serializedClassCertificate, privateKey);
 
-            SignatureInfoEntity signatureInfoEntity = SignatureInfoEntity.builder()
-                    .issuerSignature(serializedClassCertificate)
+            EncryptInfoEntity encryptInfoEntity = EncryptInfoEntity.builder()
+                    .issuerEncrypt(serializedClassCertificate)
                     .issuerPublicKey(issuer.getPublicKey())
                     .issuerSignedAt(new java.util.Date())
-                    .issuerSignature(Base64.getEncoder().encodeToString(signData))
+                    .issuerEncrypt(Base64.getEncoder().encodeToString(encryptData))
                     .build();
 
             // 서명 정보 저장
-            SignatureInfoEntity savedSignatureInfo = signatureInfoRepository.save(signatureInfoEntity);
+            EncryptInfoEntity savedSignatureInfo = encryptInfoRepository.save(encryptInfoEntity);
             certificateInfo.setSignatureInfo(savedSignatureInfo);
             certificateInfoRepository.save(certificateInfo);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             throw new IllegalArgumentException("서명에 실패하였습니다.");
         }
     }
     
     // 사용자가 서명
-    public void signCertificateUser(Long certificateId, String encodedPrivateKey, Authentication authentication){
+    public void signCertificateUser(Long certificateId, Authentication authentication){
         try{
             MemberEntity user = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
                 user = memberRepository.findByUsername(authentication.getName()).get();
             } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
-
-            // 인코딩된 개인키와 공개키를 PrivateKey, PublicKey 객체로 변환
-            PrivateKey privateKey = KeyFactory
-                    .getInstance("RSA")
-                    .generatePrivate(new PKCS8EncodedKeySpec(Base64
-                            .getDecoder()
-                            .decode(encodedPrivateKey.getBytes())
-                    ));
             PublicKey publicKey = KeyFactory
                     .getInstance("RSA")
                     .generatePublic(new X509EncodedKeySpec(Base64
@@ -155,7 +147,6 @@ public class CertificateService {
                             .decode(user.getPublicKey().getBytes())
                     ));
 
-            if(!verifyKey(publicKey, privateKey)) throw new InvalidKeyPairException();
             CertificateInfoEntity certificateInfo = null;
             if(certificateInfoRepository.findById(certificateId).isPresent()){
                 certificateInfo = certificateInfoRepository.findById(certificateId).get();
@@ -167,100 +158,53 @@ public class CertificateService {
             if(certificateInfo.getUser() != user) throw new InvalidCertificateException("인증서에 대한 권한이 없습니다.");
 
             // 올바른 서명정보인지 확인
-            SignatureInfoEntity signatureInfo = certificateInfo.getSignatureInfo();
-            if(signatureInfo == null) throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
-            if(Boolean.TRUE.equals(signatureInfo.getIsUserSigned())) throw new InvalidCertificateException("이미 서명하였습니다.");
+            EncryptInfoEntity encryptInfo = certificateInfo.getSignatureInfo();
+            if(encryptInfo == null) throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
+            if(Boolean.TRUE.equals(encryptInfo.getIsUserSigned())) throw new InvalidCertificateException("이미 서명하였습니다.");
 
-            String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature()
-                    + ISSUER_SIGNATURE
-                    + "\""
-                    + signatureInfo.getIssuerSignature()
-                    + "\"";
-            byte[] signData = signData(serializedClassCertificate, privateKey);
+            String issuerEncrypt = encryptInfo.getIssuerEncrypt();
+            byte[] encryptData = encrypt(issuerEncrypt, publicKey);
 
-            signatureInfo.setUserSignature(Base64.getEncoder().encodeToString(signData));
-            signatureInfo.setUserPublicKey(user.getPublicKey());
-            signatureInfo.setUserSignedAt(new java.util.Date());
-            signatureInfo.setIsUserSigned(true);
-            signatureInfoRepository.save(signatureInfo);
+            encryptInfo.setUserEncrypt(Base64.getEncoder().encodeToString(encryptData));
+            encryptInfo.setUserPublicKey(user.getPublicKey());
+            encryptInfo.setUserSignedAt(new java.util.Date());
+            encryptInfo.setIsUserSigned(true);
+            encryptInfoRepository.save(encryptInfo);
 
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("서명에 실패하였습니다.");
-        }
-    }
-
-    public boolean verifyCertificate(Long certificateId){
-        try{
-            // 인증서 정보 가져오기
-            CertificateInfoEntity certificateInfo = null;
-            if(certificateInfoRepository.findById(certificateId).isPresent()){
-                certificateInfo = certificateInfoRepository.findById(certificateId).get();
-            } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
-
-            // 인증서 정보에 저장된 증명서 가져오기
-            BaseCertificateEntity certificate = getCertificate(certificateId, certificateInfo.getCertificateType());
-            if(certificate == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
-            // 서명 정보 가져오기
-            SignatureInfoEntity signatureInfo = certificateInfo.getSignatureInfo();
-
-            PublicKey issuerPublicKey = KeyFactory
-                    .getInstance("RSA")
-                    .generatePublic(new X509EncodedKeySpec(Base64
-                            .getDecoder()
-                            .decode(signatureInfo.getIssuerPublicKey().getBytes())
-                    ));
-            String serializedClassCertificate = certificate.serializeCertificateForSignature();
-            if(signatureInfo.getIssuerSignature() == null) throw new InvalidCertificateException("발급자 서명이 존재하지 않습니다.");
-            byte[] decodedIssuerSignature = Base64.getDecoder().decode(signatureInfo.getIssuerSignature().getBytes());
-            boolean verifyIssuerSignature = verifySignature(serializedClassCertificate, decodedIssuerSignature, issuerPublicKey);
-            if(!verifyIssuerSignature) return false;
-
-            PublicKey userPublicKey = KeyFactory
-                    .getInstance("RSA")
-                    .generatePublic(new X509EncodedKeySpec(Base64
-                            .getDecoder()
-                            .decode(signatureInfo.getUserPublicKey().getBytes())
-                    ));
-            String serializedClassCertificateWithIssuerSignature = serializedClassCertificate
-                    + ISSUER_SIGNATURE
-                    + "\""
-                    + signatureInfo.getIssuerSignature()
-                    + "\"";
-            if(signatureInfo.getUserSignature() == null) throw new InvalidCertificateException("사용자 서명이 존재하지 않습니다.");
-            byte[] decodedUserSignature = Base64.getDecoder().decode(signatureInfo.getUserSignature().getBytes());
-            boolean verifyUserSignature = verifySignature(serializedClassCertificateWithIssuerSignature, decodedUserSignature, userPublicKey);
-            if(!verifyUserSignature) return false;
-            
-            return true;
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | SignatureException | InvalidKeyException e) {
-            e.printStackTrace();
-            return false;
+        } catch (InvalidKeySpecException e) {
+            throw new IllegalArgumentException("InvalidKeySpecException");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException("NoSuchAlgorithmException");
+        } catch (Exception e) {
+            throw new RuntimeException("서명에 실패하였습니다.");
         }
     }
 
     // 클래스 내부 메소드
     // 테스트를 위해 public으로 선언 , 실제 서비스에서는 private로 변경
-    public byte[] signData(String data, PrivateKey privateKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initSign(privateKey);
-        signature.update(data.getBytes());
-        return signature.sign();
+    public byte[] encrypt(String data, Key key) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        return cipher.doFinal(data.getBytes());
     }
 
-    public boolean verifySignature(String data, byte[] signatureBytes, PublicKey publicKey) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initVerify(publicKey);
-        signature.update(data.getBytes());
-        return signature.verify(signatureBytes);
+    public byte[] decrypt(byte[] encryptedData, Key key) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        return cipher.doFinal(encryptedData);
     }
 
     public boolean verifyKey(PublicKey publicKey, PrivateKey privateKey) {
-        String testString = "Hello, World!";
         try {
-            byte[] signatureBytes = signData(testString, privateKey);
-            return verifySignature(testString, signatureBytes, publicKey);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            String testData = "Test data";
+
+            // Encrypt with private key and decrypt with public key
+            byte[] encryptedData = encrypt(testData, publicKey);
+            byte[] decryptedData = decrypt(encryptedData, privateKey);
+
+            // Compare original data with decrypted data
+            return testData.equals(new String(decryptedData));
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
