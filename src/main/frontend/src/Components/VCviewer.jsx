@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from 'react';
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import axios from 'axios';
 
 function VCviewer(props) {
@@ -42,7 +42,6 @@ function VCviewer(props) {
         }
         else{
             const searchList = vcdata.filter((data) => data.summary.includes(search));
-            console.log(searchList);
             return searchList.map((data)=> (
                 <VC_List_Container>
                 <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
@@ -162,8 +161,5 @@ const DeleteVCbutton = styled.button`
         color: black;
     }
 `    
-
-
-
 
 export default VCviewer;

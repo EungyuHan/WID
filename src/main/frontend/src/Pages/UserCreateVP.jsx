@@ -5,7 +5,8 @@ import Button from '../Components/Button';
 import { Link } from 'react-router-dom';
 import SetItemNameModal from '../Components/SetItemNameModal';
 import VCviewer from '../Components/VCviewer';
-import UserSendPage from './UserSendPage';
+import UserSendModal from '../Components/UserSendModal';
+
 
 
 function UserCreateVP() {
@@ -85,10 +86,10 @@ function UserCreateVP() {
 
     const submit = () => {
         // 현재 내용이 비워져있지는 않은지등에 대한 검사가 필요하다.
-        if(item == 0){
+        if(item === 0){
             alert("현재 제출할 내용이 없습니다.");
         }
-        else if(content.length == 0) {
+        else if(content.length === 0) {
             alert("현재 추가된 VC가 없습니다 VC를 추가해주세요");
         }
         else{
@@ -135,7 +136,7 @@ function UserCreateVP() {
             
             <Waves/>
             {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
-            {isSubmitClicked && <UserSendPage ></UserSendPage>}
+            {isSubmitClicked && <UserSendModal></UserSendModal>}
         </BackGround>
     )
 }

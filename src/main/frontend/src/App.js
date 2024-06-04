@@ -4,7 +4,7 @@ import UserMainPage from "./Pages/UserMainPage";
 import { BrowserRouter ,Route, Routes} from 'react-router-dom';
 import UserCreateVC from "./Pages/UserCreateVC";
 import UserCreateVP from "./Pages/UserCreateVP";
-import UserSendPage from "./Pages/UserSendPage";
+import UserSendModal from "./Components/UserSendModal";
 import ProtectedRoute from "./LoginComponent/ProtectedRoute";
 import { AuthProvider } from "./LoginComponent/AuthContext";
 
@@ -17,7 +17,7 @@ function App() {
           <Route path="/MainPage" element={<ProtectedRoute component={UserMainPage} />} />
           <Route path="/CreateVC" element={<ProtectedRoute component={UserCreateVC} />} />
           <Route path="/CreateVP" element={<ProtectedRoute component={UserCreateVP} />} />
-          <Route path="/Working" element={<ProtectedRoute component={UserSendPage} />} />
+          <Route path="/Working" element={<ProtectedRoute component={UserSendModal} />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
