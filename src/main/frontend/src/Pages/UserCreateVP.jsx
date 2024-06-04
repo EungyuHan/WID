@@ -135,7 +135,7 @@ function UserCreateVP() {
             
             <Waves/>
             {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
-            {isSubmitClicked && <UserSendPage ></UserSendPage> }
+            {isSubmitClicked && <UserSendPage ></UserSendPage>}
         </BackGround>
     )
 }

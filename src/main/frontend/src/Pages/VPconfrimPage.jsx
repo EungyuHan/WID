@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from 'react';
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import axios from 'axios';
 import Waves from '../Components/Waves';
 
@@ -9,7 +9,7 @@ function VPconfirmPage() {
     return(
         <BackGround>
             
-
+        
             <Waves/>
         </BackGround>
     )

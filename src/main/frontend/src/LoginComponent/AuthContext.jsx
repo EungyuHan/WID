@@ -1,9 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
+
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState("");
+    const [token, setToken] = useState("토큰있음~");
 
     const login = (token) => {
     setToken(token);
