@@ -57,24 +57,21 @@ public class CertificateService {
             userEntity = memberRepository.findByUsername(authentication.getName()).get();
         } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
 
-        MultipartFile file = certificateDTO.getFile();
-        String originalFilename = file.getOriginalFilename();
-        String storedFilename = System.currentTimeMillis() + "_" + originalFilename;
-        // 파일 저장 경로 설정
-        // 저장경로 상대경로로 수정 요망
-        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + storedFilename;
-        file.transferTo(new File(savePath));
 
         CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
                 .issuer(issuerEntity)
                 .user(userEntity)
                 .certificateType(certificateType)
-                .originalFilename(originalFilename)
-                .storedFilename(storedFilename)
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
 
-        BaseCertificateEntity baseCertificateEntity = certificateDTO.toCertificateEntity(certificateType);
+        MultipartFile file = certificateDTO.getFile();
+        // 파일 저장 경로 설정
+        // 저장경로 상대경로로 수정 요망
+        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + certificateDTO.getStoredFilename();
+        file.transferTo(new File(savePath));
+
+        BaseCertificateEntity baseCertificateEntity = certificateDTO.toCertificateEntity();
         if(Boolean.FALSE.equals(saveCertificate(baseCertificateEntity, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
     }
     // issuer가 서명
@@ -106,7 +103,9 @@ public class CertificateService {
             if(certificateInfoRepository.findById(certificateId).isPresent()){
                 certificateInfo = certificateInfoRepository.findById(certificateId).get();
             } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
-            if(certificateInfo.getSignatureInfo() != null) throw new InvalidCertificateException("이미 서명된 인증서입니다.");
+            if(encryptInfoRepository.findByCertificateInfoId(certificateId).isPresent()){
+                throw new InvalidCertificateException("이미 서명된 인증서입니다.");
+            }
 
             // 인증서 정보에 저장된 하위 증명서 가져오기
             CertificateType certificateType = certificateInfo.getCertificateType();
@@ -117,17 +116,16 @@ public class CertificateService {
             String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature();
             byte[] encryptData = encrypt(serializedClassCertificate, privateKey);
 
+            CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfo);
             EncryptInfoEntity encryptInfoEntity = EncryptInfoEntity.builder()
                     .issuerEncrypt(serializedClassCertificate)
                     .issuerPublicKey(issuer.getPublicKey())
-                    .issuerSignedAt(new java.util.Date())
                     .issuerEncrypt(Base64.getEncoder().encodeToString(encryptData))
+                    .certificateInfo(savedCertificateInfo)
                     .build();
 
             // 서명 정보 저장
-            EncryptInfoEntity savedSignatureInfo = encryptInfoRepository.save(encryptInfoEntity);
-            certificateInfo.setSignatureInfo(savedSignatureInfo);
-            certificateInfoRepository.save(certificateInfo);
+            encryptInfoRepository.save(encryptInfoEntity);
         } catch (Exception e) {
             throw new IllegalArgumentException("서명에 실패하였습니다.");
         }
@@ -158,19 +156,19 @@ public class CertificateService {
             if(certificateInfo.getUser() != user) throw new InvalidCertificateException("인증서에 대한 권한이 없습니다.");
 
             // 올바른 서명정보인지 확인
-            EncryptInfoEntity encryptInfo = certificateInfo.getSignatureInfo();
-            if(encryptInfo == null) throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
-            if(Boolean.TRUE.equals(encryptInfo.getIsUserSigned())) throw new InvalidCertificateException("이미 서명하였습니다.");
+            EncryptInfoEntity encryptInfo = null;
+            if(encryptInfoRepository.findByCertificateInfoId(certificateId).isPresent()){
+                encryptInfo = encryptInfoRepository.findByCertificateInfoId(certificateId).get();
+            } else throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
 
             String issuerEncrypt = encryptInfo.getIssuerEncrypt();
             byte[] encryptData = encrypt(issuerEncrypt, publicKey);
 
-            encryptInfo.setUserEncrypt(Base64.getEncoder().encodeToString(encryptData));
-            encryptInfo.setUserPublicKey(user.getPublicKey());
-            encryptInfo.setUserSignedAt(new java.util.Date());
-            encryptInfo.setIsUserSigned(true);
-            encryptInfoRepository.save(encryptInfo);
+            String encodedUserEncrypt = Base64.getEncoder().encodeToString(encryptData);
 
+            // 블록체인 네트워크 연동 후 encryptInfo
+            encryptInfo.setUserEncrypt(encodedUserEncrypt);
+            encryptInfoRepository.save(encryptInfo);
         } catch (InvalidKeySpecException e) {
             throw new IllegalArgumentException("InvalidKeySpecException");
         } catch (NoSuchAlgorithmException e) {

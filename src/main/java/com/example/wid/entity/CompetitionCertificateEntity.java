@@ -24,14 +24,19 @@ public class CompetitionCertificateEntity implements BaseCertificateEntity {
     private String summary;
     private String term;
 
+    private String originalFilename;
+    private String storedFilename;
+
     @Builder
-    public CompetitionCertificateEntity(CertificateInfoEntity certificateInfo, String competitionName, String achievement, String organizer, String summary, String term) {
+    public CompetitionCertificateEntity(CertificateInfoEntity certificateInfo, String competitionName, String achievement, String organizer, String summary, String term, String originalFilename, String storedFilename) {
         this.certificateInfo = certificateInfo;
         this.competitionName = competitionName;
         this.achievement = achievement;
         this.organizer = organizer;
         this.summary = summary;
         this.term = term;
+        this.originalFilename = originalFilename;
+        this.storedFilename = storedFilename;
     }
 
     public String serializeCertificateForSignature() {

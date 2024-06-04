@@ -40,13 +40,13 @@ public class MemberEntity extends BaseEntity {
     @Column(unique = true, columnDefinition = "TEXT")
     private String publicKey;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<FolderEntity> folders;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CertificateInfoEntity> userCertificates;
 
-    @OneToMany(mappedBy = "issuer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "issuer", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CertificateInfoEntity> issuedCertificates = new ArrayList<>();
 
     @Builder

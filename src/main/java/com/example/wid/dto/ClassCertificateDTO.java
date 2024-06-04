@@ -24,8 +24,10 @@ public class ClassCertificateDTO implements BaseCertificateDTO {
     // 수업 인증서 발급자 이메일
     // 이슈어가 누군지 식별하기 위함
     private String issuerEmail;
-
     private MultipartFile file;
+
+    private String originalFilename;
+    private String storedFilename;
 
     @Builder
     public ClassCertificateDTO(String studentId, String subject, String professor, String summary, String startDate, String endDate, String issuerEmail, MultipartFile file) {
@@ -37,19 +39,21 @@ public class ClassCertificateDTO implements BaseCertificateDTO {
         this.endDate = endDate;
         this.issuerEmail = issuerEmail;
         this.file = file;
+
+        this.originalFilename = file.getOriginalFilename();
+        storedFilename = System.currentTimeMillis() + "_" + originalFilename;
     }
 
     @Override
-    public BaseCertificateEntity toCertificateEntity(CertificateType certificateType) {
-        if(certificateType != CertificateType.CLASS_CERTIFICATE)
-            throw new InvalidCertificateException("잘못된 증명서 정보입니다.");
-
+    public BaseCertificateEntity toCertificateEntity() {
         return ClassCertificateEntity.builder()
                 .studentId(this.studentId)
                 .subject(this.subject)
                 .professor(this.professor)
                 .summary(this.summary)
                 .term(this.startDate + " ~ " + this.endDate)
+                .originalFilename(this.originalFilename)
+                .storedFilename(this.storedFilename)
                 .build();
     }
 }

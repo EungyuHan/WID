@@ -28,8 +28,11 @@ public class ClassCertificateEntity implements BaseCertificateEntity {
     private String summary;
     private String term;
 
+    private String originalFilename;
+    private String storedFilename;
+
     @Builder
-    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term) {
+    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term, String originalFilename, String storedFilename) {
         this.certificateInfo = certificateInfo;
         this.name = name;
         this.studentId = studentId;
@@ -37,6 +40,8 @@ public class ClassCertificateEntity implements BaseCertificateEntity {
         this.professor = professor;
         this.summary = summary;
         this.term = term;
+        this.originalFilename = originalFilename;
+        this.storedFilename = storedFilename;
     }
 
     @Override

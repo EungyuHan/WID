@@ -26,6 +26,9 @@ public class CompetitionCertificateDTO implements BaseCertificateDTO {
 
     private MultipartFile file;
 
+    private String originalFilename;
+    private String storedFilename;
+
     @Builder
     public CompetitionCertificateDTO(String competitionName, String achievement, String organizer, String summary, String startDate, String endDate, String issuerEmail, MultipartFile file) {
         this.competitionName = competitionName;
@@ -36,13 +39,13 @@ public class CompetitionCertificateDTO implements BaseCertificateDTO {
         this.endDate = endDate;
         this.issuerEmail = issuerEmail;
         this.file = file;
+
+        this.originalFilename = file.getOriginalFilename();
+        this.storedFilename = System.currentTimeMillis() + "_" + originalFilename;
     }
 
     @Override
-    public BaseCertificateEntity toCertificateEntity(CertificateType certificateType) {
-        if(certificateType != CertificateType.COMPETITION_CERTIFICATE)
-            throw new InvalidCertificateException("잘못된 증명서 정보입니다.");
-
+    public BaseCertificateEntity toCertificateEntity() {
         return CompetitionCertificateEntity.builder()
                 .competitionName(this.competitionName)
                 .achievement(this.achievement)

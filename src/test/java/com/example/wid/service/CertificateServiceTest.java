@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
@@ -38,8 +37,6 @@ class CertificateServiceTest {
     private CertificateInfoRepository certificateInfoRepository;
     @Autowired
     private EncryptInfoRepository encryptInfoRepository;
-
-    private final String ISSUER_SIGNATURE = "\"issuerSignature\" : ";
 
     MemberEntity issuerEntity;
     MemberEntity userEntity;
@@ -89,10 +86,10 @@ class CertificateServiceTest {
     @AfterEach
     void tearDown() {
         memberRepository.deleteAll();
+        encryptInfoRepository.deleteAll();
         classCertificateRepository.deleteAll();
         competitionCertificateRepository.deleteAll();
         certificateInfoRepository.deleteAll();
-        encryptInfoRepository.deleteAll();
     }
     @Test
     @DisplayName("수업 인증서 생성 성공")
@@ -186,7 +183,7 @@ class CertificateServiceTest {
         CertificateInfoEntity certificateInfo = certificateInfoRepository.findAll().get(0);
         EncryptInfoEntity encryptInfoEntity = encryptInfoRepository.findAll().get(0);
 
-        assertEquals(certificateInfo.getSignatureInfo().getId(), encryptInfoEntity.getId());
+        assertEquals(encryptInfoEntity.getCertificateInfo().getId(), certificateInfo.getId());
     }
     @Test
     @DisplayName("대회 인증서 이슈어 1차 서명 성공")
@@ -218,7 +215,7 @@ class CertificateServiceTest {
         CertificateInfoEntity certificateInfo = certificateInfoRepository.findAll().get(0);
         EncryptInfoEntity encryptInfoEntity = encryptInfoRepository.findAll().get(0);
 
-        assertEquals(certificateInfo.getSignatureInfo().getId(), encryptInfoEntity.getId());
+        assertEquals(encryptInfoEntity.getCertificateInfo().getId(), certificateInfo.getId());
     }
     @Test
     @DisplayName("수업 인증서 유저 2차 서명 성공")
@@ -238,41 +235,32 @@ class CertificateServiceTest {
                         .decode(encodedIssuerPrivateKey.getBytes())
                 ));
 
-        byte[] signData = certificateService.encrypt(classCertificate.serializeCertificateForSignature(), issuerPrivateKey);
-        String encodedSignature = Base64.getEncoder().encodeToString(signData);
-
-        EncryptInfoEntity signatureInfo = EncryptInfoEntity.builder()
-                .issuerPublicKey(encodedIssuerPublicKey)
-                .issuerEncrypt(encodedSignature)
-                .issuerSignedAt(null)
-                .userPublicKey(encodedUserPublicKey)
-                .userEncrypt(null)
-                .userSignedAt(null)
-                .isUserSigned(false)
-                .build();
-        EncryptInfoEntity savedSignatureInfo = encryptInfoRepository.save(signatureInfo);
+        byte[] encryptData = certificateService.encrypt(classCertificate.serializeCertificateForSignature(), issuerPrivateKey);
+        String encodedSignature = Base64.getEncoder().encodeToString(encryptData);
 
         CertificateInfoEntity certificateInfo = CertificateInfoEntity.builder()
                 .issuer(issuerEntity)
                 .user(userEntity)
                 .certificateType(CertificateType.CLASS_CERTIFICATE)
-                .signatureInfo(savedSignatureInfo)
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfo);
 
-        classCertificate.setCertificateInfo(savedCertificateInfo);
-        ClassCertificateEntity savedClassCertificate = classCertificateRepository.save(classCertificate);
+        EncryptInfoEntity encryptInfo = EncryptInfoEntity.builder()
+                .issuerPublicKey(encodedIssuerPublicKey)
+                .issuerEncrypt(encodedSignature)
+                .userEncrypt(null)
+                .certificateInfo(savedCertificateInfo)
+                .build();
+        EncryptInfoEntity savedEncryptInfo = encryptInfoRepository.save(encryptInfo);
 
-        assertEquals(savedCertificateInfo.getSignatureInfo().getId(), savedSignatureInfo.getId());
-        assertEquals(savedClassCertificate.getCertificateInfo().getId(), savedCertificateInfo.getId());
+        classCertificate.setCertificateInfo(savedCertificateInfo);
+        classCertificateRepository.save(classCertificate);
 
         Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
         assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId(), userAuthentication));
 
-        EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedSignatureInfo.getId()).get();
+        EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedEncryptInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserEncrypt());
-        assertNotNull(updatedSignatureInfo.getUserSignedAt());
-        assertTrue(updatedSignatureInfo.getIsUserSigned());
     }
     @Test
     @DisplayName("대회 인증서 유저 2차 서명 성공")
@@ -294,37 +282,29 @@ class CertificateServiceTest {
         byte[] signData = certificateService.encrypt(competitionCertificate.serializeCertificateForSignature(), issuerPrivateKey);
         String encodedSignature = Base64.getEncoder().encodeToString(signData);
 
-        EncryptInfoEntity signatureInfo = EncryptInfoEntity.builder()
-                .issuerPublicKey(encodedIssuerPublicKey)
-                .issuerEncrypt(encodedSignature)
-                .issuerSignedAt(null)
-                .userPublicKey(encodedUserPublicKey)
-                .userEncrypt(null)
-                .userSignedAt(null)
-                .isUserSigned(false)
-                .build();
-        EncryptInfoEntity savedSignatureInfo = encryptInfoRepository.save(signatureInfo);
-
         CertificateInfoEntity certificateInfo = CertificateInfoEntity.builder()
                 .issuer(issuerEntity)
                 .user(userEntity)
                 .certificateType(CertificateType.COMPETITION_CERTIFICATE)
-                .signatureInfo(savedSignatureInfo)
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfo);
 
-        competitionCertificate.setCertificateInfo(savedCertificateInfo);
-        CompetitionCertificateEntity savedCompetitionCertificate = competitionCertificateRepository.save(competitionCertificate);
+        EncryptInfoEntity encryptInfo = EncryptInfoEntity.builder()
+                .issuerPublicKey(encodedIssuerPublicKey)
+                .issuerEncrypt(encodedSignature)
+                .userEncrypt(null)
+                .certificateInfo(savedCertificateInfo)
+                .build();
+        EncryptInfoEntity savedEncryptInfo = encryptInfoRepository.save(encryptInfo);
 
-        assertEquals(savedCertificateInfo.getSignatureInfo().getId(), savedSignatureInfo.getId());
-        assertEquals(savedCompetitionCertificate.getCertificateInfo().getId(), savedCertificateInfo.getId());
+
+        competitionCertificate.setCertificateInfo(savedCertificateInfo);
+        competitionCertificateRepository.save(competitionCertificate);
 
         Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
         assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId(), userAuthentication));
 
-        EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedSignatureInfo.getId()).get();
+        EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedEncryptInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserEncrypt());
-        assertNotNull(updatedSignatureInfo.getUserSignedAt());
-        assertTrue(updatedSignatureInfo.getIsUserSigned());
     }
 }

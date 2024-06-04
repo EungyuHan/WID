@@ -20,7 +20,7 @@ public class FolderEntity {
     @JoinColumn(name = "member_id")
     MemberEntity user;
     private String folderName;
-    @OneToMany(mappedBy = "folder", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     List<FolderCertificateEntity> folderCertificates;
 
     @Builder

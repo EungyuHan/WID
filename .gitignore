@@ -38,3 +38,6 @@ out/
 
 ### Setting ###
 *.yml
+
+### TestFile ###
+*.txt
