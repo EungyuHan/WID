@@ -63,7 +63,7 @@ class MemberServiceTest {
         // then
         AlreadyExistsMemberException thrown = assertThrows(AlreadyExistsMemberException.class,
                 () -> memberService.registerMember(secondRegisterDTO, Role.ROLE_USER));
-        assertEquals("Member already exists", thrown.getMessage());
+        assertEquals("이미 존재하는 회원입니다.", thrown.getMessage());
     }
 
     @Test

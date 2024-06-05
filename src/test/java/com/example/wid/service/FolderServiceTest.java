@@ -1,5 +1,6 @@
 package com.example.wid.service;
 
+import com.example.wid.WidApplication;
 import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.entity.FolderEntity;
 import com.example.wid.entity.MemberEntity;
@@ -21,7 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest()
 @Transactional
 class FolderServiceTest {
     @Autowired
@@ -48,6 +49,7 @@ class FolderServiceTest {
                 .build();
         memberRepository.save(user);
     }
+
     @AfterEach
     void tearDown() {
         folderCertificateRepository.deleteAll();
@@ -55,6 +57,7 @@ class FolderServiceTest {
         certificateInfoRepository.deleteAll();
         memberRepository.deleteAll();
     }
+
     @Test
     void createFolder() {
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
