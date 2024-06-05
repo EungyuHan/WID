@@ -17,16 +17,20 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private SecretKey secretKey;
+    private Long expiredMs;
     private final CustomUserDetailsService customUserDetailsService;
 
 
     // @Value 어노테이션으로 .yml 파일에 있는 jwt.secret 값 가져옴
-    public JwtUtil(@Value("${jwt.secret}") String secret, CustomUserDetailsService customUserDetailsService) {
+    public JwtUtil(@Value("${jwt.secret}") String secret
+            , @Value("${jwt.expiration}") Long expiredMs
+            , CustomUserDetailsService customUserDetailsService) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.expiredMs = expiredMs;
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    public String createJwtToken(String username, String role, Long expiredMs) {
+    public String createJwtToken(String username, String role) {
         return Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)

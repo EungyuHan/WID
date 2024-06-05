@@ -66,6 +66,7 @@ class CertificateServiceTest {
                 .name("issuer")
                 .phone("01011111111")
                 .publicKey(encodedIssuerPublicKey)
+                .privateKey(encodedIssuerPrivateKey)
                 .build();
         KeyPair keyGenerator2 = keyPairGenerator.genKeyPair();
 
@@ -80,6 +81,7 @@ class CertificateServiceTest {
                 .name("user")
                 .phone("01022222222")
                 .publicKey(encodedUserPublicKey)
+                .privateKey(encodedUserPrivateKey)
                 .build();
         memberRepository.save(issuerEntity);
         memberRepository.save(userEntity);
@@ -170,7 +172,7 @@ class CertificateServiceTest {
         assertEquals(savedCertificateInfo.getId(), classCertificateRepository.findByCertificateInfo_Id(savedCertificateInfo.getId()).get().getCertificateInfo().getId());
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(issuerEntity.getUsername(), issuerEntity.getPassword());
-        assertDoesNotThrow(() -> certificateService.signCertificateIssuer(savedCertificateInfo.getId(), encodedIssuerPrivateKey, authentication));
+        assertDoesNotThrow(() -> certificateService.signCertificateIssuer(savedCertificateInfo.getId(), authentication));
 
         assertEquals(1, encryptInfoRepository.findAll().size());
         CertificateInfoEntity certificateInfo = certificateInfoRepository.findAll().get(0);
@@ -180,7 +182,7 @@ class CertificateServiceTest {
     }
     @Test
     @DisplayName("대회 인증서 이슈어 1차 서명 성공")
-    void signCompetitionCertificateIssuer() throws Exception {
+    void signCompetitionCertificateIssuer() {
         CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
                 .issuer(issuerEntity)
                 .user(userEntity)
@@ -202,7 +204,7 @@ class CertificateServiceTest {
         assertEquals(savedCertificateInfo.getId(), competitionCertificateRepository.findByCertificateInfo_Id(savedCertificateInfo.getId()).get().getCertificateInfo().getId());
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(issuerEntity.getUsername(), issuerEntity.getPassword());
-        assertDoesNotThrow(() -> certificateService.signCertificateIssuer(savedCertificateInfo.getId(), encodedIssuerPrivateKey, authentication));
+        assertDoesNotThrow(() -> certificateService.signCertificateIssuer(savedCertificateInfo.getId(), authentication));
 
         assertEquals(1, encryptInfoRepository.findAll().size());
         CertificateInfoEntity certificateInfo = certificateInfoRepository.findAll().get(0);

@@ -50,9 +50,9 @@ public class SecurityConfig {
                 .requestMatchers("/rsa/**", "/folder/**").authenticated() // 해당 경로는 인증된 사용자만 허용
 
                 .requestMatchers("/admin").hasRole("ADMIN") // 해당 경로는 ADMIN 권한만 허용
-                .requestMatchers("/user", "/certificate/user/**").hasRole("USER") // 해당 경로는 USER 권한만 허용
-                .requestMatchers("/issuer", "/certificate/issuer/**").hasRole("ISSUER") // 해당 경로는 ISSUER 권한만 허용
-                .requestMatchers("/verifier", "/certificate/verifier/**").hasRole("VERIFIER") // 해당 경로는 VERIFIER 권한만 허용
+                .requestMatchers("/certificate/user/**").hasRole("USER") // 해당 경로는 USER 권한만 허용
+                .requestMatchers("/certificate/issuer/**").hasRole("ISSUER") // 해당 경로는 ISSUER 권한만 허용
+                .requestMatchers("/certificate/verifier/**").hasRole("VERIFIER") // 해당 경로는 VERIFIER 권한만 허용
         );
 
         http.sessionManagement((session) -> session

@@ -1,9 +1,6 @@
 package com.example.wid.controller.handler;
 
-import com.example.wid.controller.exception.AlreadyExistsMemberException;
-import com.example.wid.controller.exception.InvalidCertificateException;
-import com.example.wid.controller.exception.InvalidKeyPairException;
-import com.example.wid.controller.exception.UserNotFoundException;
+import com.example.wid.controller.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,6 +32,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCertificateException.class)
     public ResponseEntity<String> handleInvalidCertificateException(InvalidCertificateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(EncryptionException.class)
+    public ResponseEntity<String> handleEncryptionException(EncryptionException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());

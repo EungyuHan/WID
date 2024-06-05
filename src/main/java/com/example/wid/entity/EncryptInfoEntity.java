@@ -21,7 +21,7 @@ public class EncryptInfoEntity extends BaseEntity {
     private String issuerEncrypt;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String issuerPublicKey;
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_info_id")
     CertificateInfoEntity certificateInfo;
 

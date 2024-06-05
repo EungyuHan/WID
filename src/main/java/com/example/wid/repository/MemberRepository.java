@@ -14,8 +14,4 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     Optional<MemberEntity> findByUsername(String username);
     Optional<MemberEntity> findByEmail(String email);
     Boolean existsByUsernameOrEmailOrPhone(String username, String email, String phone);
-    @Transactional
-    @Modifying
-    @Query("UPDATE MemberEntity m SET m.publicKey = :publicKey WHERE m.username = :username")
-    void updatePublicKeyByUsername(String username, String publicKey);
 }

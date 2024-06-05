@@ -21,12 +21,10 @@ import java.util.Map;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final Long expiredMs;
 
     public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.expiredMs = 1000L * 60 * 60 * 24 * 7; // 7일
     }
 
     // 로그인 시도시 실행하는 메소드
@@ -59,7 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwtToken(username, role, expiredMs);
+        String token = jwtUtil.createJwtToken(username, role);
 
         // 응답의 Content-Type을 application/json으로 설정
         response.setContentType("application/json");

@@ -1,15 +1,15 @@
 package com.example.wid.controller;
 
 import com.example.wid.dto.ClassCertificateDTO;
+import com.example.wid.dto.CompetitionCertificateDTO;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -23,26 +23,34 @@ public class CertificateController {
     }
 
     @PostMapping("/user/class")
-    public void createClassCertificate(ClassCertificateDTO classCertificateDTO) throws IOException{
+    public ResponseEntity<String> createClassCertificate(@ModelAttribute ClassCertificateDTO classCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.CLASS_CERTIFICATE);
+
+        return ResponseEntity.ok("수업 증명서 생성 완료");
     }
 
     @PostMapping("/user/competition")
-    public void createCompetitionCertificate(ClassCertificateDTO classCertificateDTO) throws IOException{
+    public ResponseEntity<String> createCompetitionCertificate(@ModelAttribute CompetitionCertificateDTO competitionCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.COMPETITION_CERTIFICATE);
+        certificateService.createCertificate(competitionCertificateDTO, authentication, CertificateType.COMPETITION_CERTIFICATE);
+
+        return ResponseEntity.ok("대회 증명서 생성 완료");
     }
 
     @PostMapping("/issuer/sign")
-    public void signCertificateIssuer(@RequestParam Long certificateId,@RequestParam String privateKey) throws Exception {
+    public ResponseEntity<String> signCertificateIssuer(@RequestBody Long certificateId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.signCertificateIssuer(certificateId, privateKey, authentication);
+        certificateService.signCertificateIssuer(certificateId, authentication);
+
+        return ResponseEntity.ok("증명서 1차 서명 완료");
     }
 
     @PostMapping("/user/sign")
-    public void signCertificateUser(@RequestParam Long certificateId) throws Exception {
+    public ResponseEntity<String> signCertificateUser(@RequestBody Long certificateId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateUser(certificateId, authentication);
+
+        return ResponseEntity.ok("증명서 2차 서명 완료");
     }
 }

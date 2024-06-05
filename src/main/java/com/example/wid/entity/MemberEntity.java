@@ -39,6 +39,8 @@ public class MemberEntity extends BaseEntity {
     private String phone;
     @Column(unique = true, columnDefinition = "TEXT")
     private String publicKey;
+    @Column(unique = true, columnDefinition = "TEXT")
+    private String privateKey;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<FolderEntity> folders;
@@ -50,7 +52,7 @@ public class MemberEntity extends BaseEntity {
     private List<CertificateInfoEntity> issuedCertificates = new ArrayList<>();
 
     @Builder
-    public MemberEntity(Role role, BelongEntity belong, String username, String password, String email, String name, String phone, String publicKey) {
+    public MemberEntity(Role role, BelongEntity belong, String username, String password, String email, String name, String phone, String publicKey, String privateKey) {
         this.role = role;
         this.belong = belong;
         this.username = username;
@@ -59,6 +61,7 @@ public class MemberEntity extends BaseEntity {
         this.name = name;
         this.phone = phone;
         this.publicKey = publicKey;
+        this.privateKey = privateKey;
     }
 
     public String getRole() {
