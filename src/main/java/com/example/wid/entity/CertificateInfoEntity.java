@@ -28,13 +28,15 @@ public class CertificateInfoEntity extends BaseEntity {
     @Column(name = "certificate_type")
     @Enumerated(EnumType.STRING)
     private CertificateType certificateType;
+    private String removedByte;
     @OneToMany(mappedBy = "certificate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
-    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType) {
+    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte) {
         this.user = user;
         this.issuer = issuer;
         this.certificateType = certificateType;
+        this.removedByte = removedByte;
     }
 }

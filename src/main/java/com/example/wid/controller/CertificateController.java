@@ -35,13 +35,13 @@ public class CertificateController {
     }
 
     @PostMapping("/issuer/sign")
-    public void signCertificateIssuer(@RequestParam Long certificateId,@RequestParam String privateKey) {
+    public void signCertificateIssuer(@RequestParam Long certificateId,@RequestParam String privateKey) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateIssuer(certificateId, privateKey, authentication);
     }
 
     @PostMapping("/user/sign")
-    public void signCertificateUser(@RequestParam Long certificateId) {
+    public void signCertificateUser(@RequestParam Long certificateId) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateUser(certificateId, authentication);
     }

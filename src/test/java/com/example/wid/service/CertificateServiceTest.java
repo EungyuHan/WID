@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
@@ -82,14 +83,6 @@ class CertificateServiceTest {
                 .build();
         memberRepository.save(issuerEntity);
         memberRepository.save(userEntity);
-    }
-    @AfterEach
-    void tearDown() {
-        memberRepository.deleteAll();
-        encryptInfoRepository.deleteAll();
-        classCertificateRepository.deleteAll();
-        competitionCertificateRepository.deleteAll();
-        certificateInfoRepository.deleteAll();
     }
     @Test
     @DisplayName("수업 인증서 생성 성공")
@@ -187,7 +180,7 @@ class CertificateServiceTest {
     }
     @Test
     @DisplayName("대회 인증서 이슈어 1차 서명 성공")
-    void signCompetitionCertificateIssuer(){
+    void signCompetitionCertificateIssuer() throws Exception {
         CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
                 .issuer(issuerEntity)
                 .user(userEntity)
@@ -235,7 +228,7 @@ class CertificateServiceTest {
                         .decode(encodedIssuerPrivateKey.getBytes())
                 ));
 
-        byte[] encryptData = certificateService.encrypt(classCertificate.serializeCertificateForSignature(), issuerPrivateKey);
+        byte[] encryptData = certificateService.encrypt(classCertificate.serializeCertificateForSignature().getBytes(), issuerPrivateKey);
         String encodedSignature = Base64.getEncoder().encodeToString(encryptData);
 
         CertificateInfoEntity certificateInfo = CertificateInfoEntity.builder()
@@ -261,6 +254,21 @@ class CertificateServiceTest {
 
         EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedEncryptInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserEncrypt());
+
+        ClassCertificateEntity classCertificateEntity = classCertificateRepository.findAll().get(0);
+        CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
+        // 증명서 암호화 결과 가져오기
+        String s = classCertificateEntity.serializeCertificateForSignature();
+        byte[] issuerEncrypt = certificateService.encrypt(s.getBytes(), issuerPrivateKey);
+        // 암호화된 결과에서 20byte 제거
+        byte[] removedByte = new byte[20];
+        System.arraycopy(issuerEncrypt, issuerEncrypt.length-20, removedByte, 0, 20);
+        String encodedRemovedData = Base64.getEncoder().encodeToString(removedByte);
+        // 비즈니스 로직 결과로 테이블에 저장된 20byte 가져오기
+        String entityRemovedByte = certificateInfoEntity.getRemovedByte();
+
+        // 테이블에 저장된 20byte와 증명서 암호화 결과의 20byte가 같은지 비교
+        assertEquals(encodedRemovedData, entityRemovedByte);
     }
     @Test
     @DisplayName("대회 인증서 유저 2차 서명 성공")
@@ -279,7 +287,7 @@ class CertificateServiceTest {
                         .decode(encodedIssuerPrivateKey.getBytes())
                 ));
 
-        byte[] signData = certificateService.encrypt(competitionCertificate.serializeCertificateForSignature(), issuerPrivateKey);
+        byte[] signData = certificateService.encrypt(competitionCertificate.serializeCertificateForSignature().getBytes(), issuerPrivateKey);
         String encodedSignature = Base64.getEncoder().encodeToString(signData);
 
         CertificateInfoEntity certificateInfo = CertificateInfoEntity.builder()
@@ -306,5 +314,20 @@ class CertificateServiceTest {
 
         EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedEncryptInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserEncrypt());
+
+        CompetitionCertificateEntity competitionCertificateEntity = competitionCertificateRepository.findAll().get(0);
+        CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
+        // 증명서 암호화 결과 가져오기
+        String s = competitionCertificateEntity.serializeCertificateForSignature();
+        byte[] issuerEncrypt = certificateService.encrypt(s.getBytes(), issuerPrivateKey);
+        // 암호화된 결과에서 20byte 제거
+        byte[] removedByte = new byte[20];
+        System.arraycopy(issuerEncrypt, issuerEncrypt.length-20, removedByte, 0, 20);
+        String encodedRemovedData = Base64.getEncoder().encodeToString(removedByte);
+        // 비즈니스 로직 결과로 테이블에 저장된 20byte 가져오기
+        String entityRemovedByte = certificateInfoEntity.getRemovedByte();
+
+        // 테이블에 저장된 20byte와 증명서 암호화 결과의 20byte가 같은지 비교
+        assertEquals(encodedRemovedData, entityRemovedByte);
     }
 }
