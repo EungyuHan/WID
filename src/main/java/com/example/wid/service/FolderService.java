@@ -71,4 +71,21 @@ public class FolderService {
             } else throw new InvalidCertificateException("유효하지 않은 인증서입니다.");
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<CertificateInfoEntity> getCertificatesInFolder(Long folderId, Authentication authenticatoin) {
+        FolderEntity folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new InvalidCertificateException("Invalid folder ID"));
+
+        MemberEntity user = memberRepository.findByUsername(authenticatoin.getName())
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new InvalidFolderException();
+        }
+
+        return folder.getFolderCertificates().stream()
+                .map(FolderCertificateEntity::getCertificate)
+                .toList();
+    }
 }

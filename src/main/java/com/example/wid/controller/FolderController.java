@@ -1,10 +1,13 @@
 package com.example.wid.controller;
 
+import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,5 +34,12 @@ public class FolderController {
     public void insertCertificates(@RequestParam Long folderId, @RequestParam List<Long> certificateIds) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         folderService.insertCertificates(folderId, certificateIds, authentication);
+    }
+
+    @GetMapping("certificates")
+    public ResponseEntity<List<CertificateInfoEntity>> getCertificatesInFolder(@RequestParam Long folderId) {
+        Authentication authenticatoin = SecurityContextHolder.getContext().getAuthentication();
+        List<CertificateInfoEntity> certificates = folderService.getCertificatesInFolder(folderId, authenticatoin);
+        return ResponseEntity.ok(certificates);
     }
 }
