@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,30 +47,49 @@ public class FolderService {
         folderRepository.save(folder);
     }
 
-    @Transactional
-    public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
-        FolderEntity folder = null;
-        if(folderRepository.findById(folderCertificatesDTO.getFolderId()).isPresent()){
-            folder = folderRepository.findById(folderCertificatesDTO.getFolderId()).get();
-        } else throw new InvalidFolderException();
+public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
+    FolderEntity folder = folderRepository.findById(folderCertificatesDTO.getFolderId())
+            .orElseThrow(InvalidFolderException::new);
 
-        MemberEntity user = null;
-        if(memberRepository.findByUsername(authentication.getName()).isPresent()){
-            user = memberRepository.findByUsername(authentication.getName()).get();
-        } else throw new UserNotFoundException();
+    MemberEntity user = memberRepository.findByUsername(authentication.getName())
+            .orElseThrow(UserNotFoundException::new);
 
-        for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
-            if(certificateInfoRepository.findById(certificateId).isPresent()){
-                CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId).get();
-                if(!certificateInfo.getUser().getId().equals(user.getId())){
-                    throw new InvalidCertificateException("인증서 소유자가 아닙니다.");
-                }
+    if (folder.getFolderCertificates() == null) {
+        folder.setFolderCertificates(new ArrayList<>());
+    }
 
-                folderCertificateRepository.save(FolderCertificateEntity.builder()
-                        .folder(folder)
-                        .certificate(certificateInfo)
-                        .build());
-            } else throw new InvalidCertificateException("유효하지 않은 인증서입니다.");
+    for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
+        CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
+                .orElseThrow(() -> new InvalidCertificateException("유효하지 않은 인증서입니다."));
+
+        if (!certificateInfo.getUser().getId().equals(user.getId())) {
+            throw new InvalidCertificateException("인증서 소유자가 아닙니다.");
         }
+
+        FolderCertificateEntity folderCertificate = FolderCertificateEntity.builder()
+                .folder(folder)
+                .certificate(certificateInfo)
+                .build();
+        folderCertificateRepository.save(folderCertificate);
+        folder.getFolderCertificates().add(folderCertificate);
+    }
+
+    folderRepository.save(folder);
+}
+
+    public List<CertificateInfoEntity> getCertificatesInFolder(Long folderId, Authentication authenticatoin) {
+        FolderEntity folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new InvalidCertificateException("Invalid folder ID"));
+
+        MemberEntity user = memberRepository.findByUsername(authenticatoin.getName())
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new InvalidFolderException();
+        }
+
+        return folder.getFolderCertificates().stream()
+                .map(FolderCertificateEntity::getCertificate)
+                .toList();
     }
 }

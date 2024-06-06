@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 // 증명서에 대한 소유등을 저장하기 위한 클래스
@@ -15,6 +19,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class CertificateInfoEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,5 +45,10 @@ public class CertificateInfoEntity extends BaseEntity {
         this.issuer = issuer;
         this.certificateType = certificateType;
         this.removedByte = removedByte;
+    }
+
+    @JsonProperty("certificate_type")
+    public CertificateType getCertificaType() {
+        return certificateType;
     }
 }
