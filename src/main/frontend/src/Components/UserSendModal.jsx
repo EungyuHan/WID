@@ -1,22 +1,30 @@
 import React,{ useState } from 'react';
 import styled from 'styled-components';
 import Button from './Button';
+import axios from 'axios';
 
-
-function UserSendPage() {
-  
+function UserSendPage(props) {
     const [search, setSearch] = useState("");
     const [selectedCompany, setSelected] = useState([]);
-    //유저 전송페이지에서는 전송하고자하는 회사를 선택하고 보낼 수 있어야한다.
-    //되도록 간단하게 작업해두자
-    //이 파트 그냥 일단 모달창으로 작업해두는게 나을 것 같다.
 
     let companyList = ["삼성", "LG", "네이버", "페이스북", "아마존", "정승 네트워크"];
 
     const addCompany = (company) => {
+      if(selectedCompany.includes(company)){
+        alert("이미 있어용");
+      }
+      else{
         const newList = [...selectedCompany, company];
         setSelected(newList);
+      }
+        
 
+    }
+
+    const deleteItem = (companyName) => {
+      const newList = selectedCompany.filter(company => company !== companyName);
+      setSelected(newList);
+      
     }
 
     const renderCompanyList = (search) => {
@@ -44,8 +52,8 @@ function UserSendPage() {
     }
 
     const renderSelectedCompany = () => {
-      return selectedCompany.map((scompany)=> (
-        <SelectedItem>{scompany}</SelectedItem>
+      return selectedCompany.map((company)=> (
+        <SelectedItem onClick={()=>{deleteItem(company)}}>{company}</SelectedItem>
       ))
     }
 
@@ -119,6 +127,7 @@ const CompanyDiv = styled.div`
   justify-content : space-evenly;
   align-items: center;
   margin-top:2%;
+  box-shadow: 0.5px 0.5px 2px black;
 `
 
 
@@ -137,19 +146,26 @@ const SelectedListDiv = styled.div`
   background-color: white; 
   border-radius: 10px;
   overflow: auto;
+  
 `
-const SelectedItem = styled.div`
+const SelectedItem = styled.button`
   position: relative;
   height: 20%;
   width: 90%;
   margin:auto;
   margin-top:2%;
   border-radius: 10px;
+  border : none;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   color: white;
   background-color: #384ce9;
+  &:hover {
+      background-color: #e05454;
+      color: white;
+    }
+  box-shadow: 0.5px 0.5px 2px black;
 `
 
 const VCSearch = styled.div`
@@ -162,7 +178,7 @@ const VCSearch = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    
+    box-shadow: 0.5px 0.5px 2px black;
 `
 
 const Input = styled.input`

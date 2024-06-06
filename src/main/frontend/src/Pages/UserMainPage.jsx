@@ -1,6 +1,6 @@
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import React,{ useState , useRef} from 'react';
-import Button from '../Components/Button';
+import { useNavigate } from 'react-router-dom';
 import Waves from '../Components/Waves';
 import axios from 'axios';
 import CheckPrivateModal from '../Components/CheckPrivateModal';
@@ -10,7 +10,10 @@ import HelpModal from '../Components/HelpModal';
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 const [isHelpClicked, setHelp] = useState(false);
+const [test, setTest] = useState(false);
 const refs = useRef({});
+const navigate = useNavigate();
+
 
 const goToRef = (index) => {  
     if(refs.current[index]){
@@ -21,6 +24,53 @@ const goToRef = (index) => {
 const toggleHelp = () => {
     setHelp(!isHelpClicked);
 }
+
+const handleNavigate = (destination) => {
+    // 서버에 JWT 토큰이 제대로 발행되어있는지 확인하는 코드 
+
+    navigate(destination);
+}
+
+const renderContent = (test) => {
+    if(test === false){
+        return(
+            <ContentsConatiner>
+
+            </ContentsConatiner>
+        )
+    }
+    else{
+        return (
+            <ContentsConatiner>
+                    <InformationDiv ref={el => refs.current['personalInfo'] = el}>
+                        <h3 >Personal Information</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3  ref={el => refs.current['education'] = el}>Education</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3 ref={el => refs.current['achievement'] = el} >Achivement</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3 ref={el => refs.current['interest'] = el}>Interests</h3>
+                        
+                    </InformationDiv>
+                </ContentsConatiner>
+        )
+    }
+}
+
+const renderNavList = () => {
+    
+}
+
 
 
 return (
@@ -44,148 +94,15 @@ return (
         </NavBar>
         <UpNavBar>
         <UpNavBarTop>
-            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 관리</UpNavButton>
-            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 발급</UpNavButton>
-            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 제출</UpNavButton>
+            <UpNavButton onClick={()=>{handleNavigate('/CreateVP')}}>활동내역 관리</UpNavButton>
+            <UpNavButton onClick={()=>{handleNavigate('/CreateVC')}}>활동내역 발급</UpNavButton>
+            <UpNavButton onClick={()=>{handleNavigate('/Working')}}>활동내역 제출</UpNavButton>
             <UpNavButton onClick={toggleHelp}>도움말</UpNavButton>
         </UpNavBarTop>
         <UpNavBarBottom>
-            <ContentsConatiner>
-                <InformationDiv ref={el => refs.current['personalInfo'] = el}>
-                    <h3 >Personal Information</h3>
-                    <div>내용 </div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용 </div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3  ref={el => refs.current['education'] = el}>Education</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3 ref={el => refs.current['achievement'] = el} >Achivement</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3 ref={el => refs.current['interest'] = el}>Interests</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-            </ContentsConatiner>
+
+        {renderContent(test)}            
+            
         </UpNavBarBottom>
         </UpNavBar>
         { PKchecked && (<CheckPrivateModal/>)}
