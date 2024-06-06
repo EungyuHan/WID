@@ -17,13 +17,9 @@ public class FabricTestController {
     }
 
     @GetMapping("/blockchain")
-    public String runBlockchainOperations() {
-        try {
-            fabricService.run();
-            return "Blockchain operations completed successfully.";
-        } catch (Exception e) {
-            return "Error during blockchain operations: " + e.getMessage();
-        }
+    public String runBlockchainOperations() throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        fabricService.initLedger();
+        return "Init Ledger";
     }
 
     @GetMapping("/getAllAssets")
@@ -43,14 +39,5 @@ public class FabricTestController {
 //        Long parsedLong = Long.parseLong(didId);
         fabricService.readUCAssetById(didId);
         return "read UnivClass Assets";
-    }
-
-    @PostMapping("/createTest")
-    public void test() throws EndorseException, CommitException, SubmitException, CommitStatusException {
-        String a = "fdsafdsf";
-        String b = "fweavsdfewsd";
-        String c = "frwaesfadvc";
-        String d = "ghbtefdrgre";
-        fabricService.createEncryptedAsset(a, b, c, d);
     }
 }
