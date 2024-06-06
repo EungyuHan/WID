@@ -170,7 +170,7 @@ public class FabricService {
         System.out.println("*** Transaction committed successfully");
     }
 
-    private void createEncryptedAsset(String assetId, String encryptedstring, String addedstring, String type) throws EndorseException, SubmitException, CommitStatusException, CommitException {
+    public void createEncryptedAsset(String assetId, String encryptedstring, String addedstring, String type) throws EndorseException, SubmitException, CommitStatusException, CommitException {
         System.out.println("\n--> Submit Transaction: CreateEncryptedCompetition, creates new EncryptedCompetition with did, name, studentID, term, summary, subject arguments");
 
         contract.submitTransaction("CreateEncryptedAsset", assetId, encryptedstring, addedstring, type);

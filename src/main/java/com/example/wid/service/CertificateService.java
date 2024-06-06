@@ -9,6 +9,10 @@ import com.example.wid.entity.*;
 import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.repository.*;
+import org.hyperledger.fabric.client.CommitException;
+import org.hyperledger.fabric.client.CommitStatusException;
+import org.hyperledger.fabric.client.EndorseException;
+import org.hyperledger.fabric.client.SubmitException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -30,6 +34,7 @@ import java.util.Base64;
 
 @Service
 public class CertificateService {
+    private final FabricService fabricService;
     private final MemberRepository memberRepository;
     private final ClassCertificateRepository classCertificateRepository;
     private final CompetitionCertificateRepository competitionCertificateRepository;
@@ -38,7 +43,13 @@ public class CertificateService {
 
 
     @Autowired
-    public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CompetitionCertificateRepository competitionCertificateRepository, CertificateInfoRepository certificateInfoRepository, EncryptInfoRepository encryptInfoRepository) {
+    public CertificateService(FabricService fabricService,
+                              MemberRepository memberRepository,
+                              ClassCertificateRepository classCertificateRepository,
+                              CompetitionCertificateRepository competitionCertificateRepository,
+                              CertificateInfoRepository certificateInfoRepository,
+                              EncryptInfoRepository encryptInfoRepository) {
+        this.fabricService = fabricService;
         this.memberRepository = memberRepository;
         this.classCertificateRepository = classCertificateRepository;
         this.competitionCertificateRepository = competitionCertificateRepository;
@@ -189,9 +200,13 @@ public class CertificateService {
 
             // 블록체인 네트워크 연동 후 encryptInfo 삭제하는 코드 추가 필요
             // 블록체인 네트워크에 업로드하는 코드 추가 필요
-            encryptInfo.setUserEncrypt(encodedUserEncrypt);
-            encryptInfoRepository.save(encryptInfo);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+            String didId = "did" + certificateInfo.getId();
+            fabricService.createEncryptedAsset(didId,
+                    encodedUserEncrypt,
+                    certificateInfo.getRemovedByte(),
+                    certificateInfo.getCertificateType().toString());;
+            encryptInfoRepository.delete(encryptInfo);
+        } catch (Exception e) {
             throw new EncryptionException(e.getMessage());
         }
     }

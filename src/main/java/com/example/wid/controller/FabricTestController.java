@@ -36,11 +36,11 @@ public class FabricTestController {
 
     @GetMapping("/addNewAssets")
     public String addNewAssets() throws EndorseException, CommitException, SubmitException, CommitStatusException {
-        fabricService.addAsset();
+//        fabricService.addAsset();
         return "New Assets Added";
     }
 
-    @GetMapping("/readUCAssets")
+    @GetMapping("/readEncryptedAssets")
     public String readdUCAssets() throws GatewayException {
         fabricService.readUCAssetById();
         return "read UnivClass Assets";
