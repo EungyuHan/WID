@@ -33,7 +33,8 @@ public class CertificateInfoEntity extends BaseEntity {
     private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
-    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte) {
+    public CertificateInfoEntity(Long id, MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte) {
+        this.id = id;
         this.user = user;
         this.issuer = issuer;
         this.certificateType = certificateType;

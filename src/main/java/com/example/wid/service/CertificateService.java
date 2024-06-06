@@ -84,8 +84,8 @@ public class CertificateService {
         MultipartFile file = certificateDTO.getFile();
         // 파일 저장 경로 설정
         // 저장경로 상대경로로 수정 요망
-        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + certificateDTO.getStoredFilename();
-        file.transferTo(new File(savePath));
+//        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + certificateDTO.getStoredFilename();
+//        file.transferTo(new File(savePath));
 
         BaseCertificateEntity baseCertificateEntity = certificateDTO.toCertificateEntity();
         if(Boolean.FALSE.equals(saveCertificate(baseCertificateEntity, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
@@ -150,8 +150,8 @@ public class CertificateService {
     }
     
     // 사용자가 서명
-    public void signCertificateUser(Long certificateId, Authentication authentication) {
-        try{
+    public void signCertificateUser(Long certificateId, Authentication authentication) throws Exception {
+//        try{
 
             MemberEntity user = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
@@ -206,9 +206,27 @@ public class CertificateService {
                     certificateInfo.getRemovedByte(),
                     certificateInfo.getCertificateType().toString());
             encryptInfoRepository.delete(encryptInfo);
-        } catch (Exception e) {
-            throw new EncryptionException(e.getMessage());
-        }
+//        } catch (EndorseException e) {
+//            throw new RuntimeException(e);
+//        } catch (CommitException e) {
+//            throw new RuntimeException(e);
+//        } catch (SubmitException e) {
+//            throw new RuntimeException(e);
+//        } catch (CommitStatusException e) {
+//            throw new RuntimeException(e);
+//        } catch (NoSuchPaddingException e) {
+//            throw new RuntimeException(e);
+//        } catch (IllegalBlockSizeException e) {
+//            throw new RuntimeException(e);
+//        } catch (InvalidKeySpecException e) {
+//            throw new RuntimeException(e);
+//        } catch (NoSuchAlgorithmException e) {
+//            throw new RuntimeException(e);
+//        } catch (BadPaddingException e) {
+//            throw new RuntimeException(e);
+//        } catch (InvalidKeyException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     // 클래스 내부 메소드

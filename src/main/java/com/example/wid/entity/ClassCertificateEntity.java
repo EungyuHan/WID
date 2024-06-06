@@ -32,7 +32,8 @@ public class ClassCertificateEntity implements BaseCertificateEntity {
     private String storedFilename;
 
     @Builder
-    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term, String originalFilename, String storedFilename) {
+    public ClassCertificateEntity(Long id, CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term, String originalFilename, String storedFilename) {
+        this.id = id;
         this.certificateInfo = certificateInfo;
         this.name = name;
         this.studentId = studentId;

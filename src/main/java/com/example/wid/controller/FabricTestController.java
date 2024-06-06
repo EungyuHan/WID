@@ -3,9 +3,7 @@ package com.example.wid.controller;
 import com.example.wid.service.FabricService;
 import org.hyperledger.fabric.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/did")
@@ -19,13 +17,9 @@ public class FabricTestController {
     }
 
     @GetMapping("/blockchain")
-    public String runBlockchainOperations() {
-        try {
-            fabricService.run();
-            return "Blockchain operations completed successfully.";
-        } catch (Exception e) {
-            return "Error during blockchain operations: " + e.getMessage();
-        }
+    public String runBlockchainOperations() throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        fabricService.initLedger();
+        return "Init Ledger";
     }
 
     @GetMapping("/getAllAssets")
@@ -40,10 +34,10 @@ public class FabricTestController {
         return "New Assets Added";
     }
 
-    @GetMapping("/readEncryptedAssets")
-    public String readdUCAssets() throws GatewayException {
-        fabricService.readUCAssetById();
+    @PostMapping("/readEncryptedAssets")
+    public String readdUCAssets(@RequestParam("didId") Long didId) throws GatewayException {
+//        Long parsedLong = Long.parseLong(didId);
+        fabricService.readUCAssetById(didId);
         return "read UnivClass Assets";
     }
-
 }
