@@ -1,5 +1,6 @@
 package com.example.wid.service;
 
+import com.example.wid.dto.FolderCertificatesDTO;
 import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.entity.FolderEntity;
 import com.example.wid.entity.MemberEntity;
@@ -89,8 +90,11 @@ class FolderServiceTest {
 
         List<Long> certificateIds = List.of(saved1.getId(), saved2.getId());
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-
-        folderService.insertCertificates(folder.getId(), certificateIds, authentication);
+        FolderCertificatesDTO folderCertificatesDTO = FolderCertificatesDTO.builder()
+                .folderId(folder.getId())
+                .certificateIds(certificateIds)
+                .build();
+        folderService.insertCertificates(folderCertificatesDTO, authentication);
 
         assertEquals(2, folderCertificateRepository.findAll().size());
 

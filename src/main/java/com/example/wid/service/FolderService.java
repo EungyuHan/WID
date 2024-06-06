@@ -3,6 +3,7 @@ package com.example.wid.service;
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.controller.exception.InvalidFolderException;
 import com.example.wid.controller.exception.UserNotFoundException;
+import com.example.wid.dto.FolderCertificatesDTO;
 import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.entity.FolderCertificateEntity;
 import com.example.wid.entity.FolderEntity;
@@ -46,10 +47,10 @@ public class FolderService {
     }
 
     @Transactional
-    public void insertCertificates(Long folderId, List<Long> certificateIds, Authentication authentication) {
+    public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
         FolderEntity folder = null;
-        if(folderRepository.findById(folderId).isPresent()){
-            folder = folderRepository.findById(folderId).get();
+        if(folderRepository.findById(folderCertificatesDTO.getFolderId()).isPresent()){
+            folder = folderRepository.findById(folderCertificatesDTO.getFolderId()).get();
         } else throw new InvalidFolderException();
 
         MemberEntity user = null;
@@ -57,7 +58,7 @@ public class FolderService {
             user = memberRepository.findByUsername(authentication.getName()).get();
         } else throw new UserNotFoundException();
 
-        for (Long certificateId : certificateIds) {
+        for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
             if(certificateInfoRepository.findById(certificateId).isPresent()){
                 CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId).get();
                 if(!certificateInfo.getUser().getId().equals(user.getId())){
