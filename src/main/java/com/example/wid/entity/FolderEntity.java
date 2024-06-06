@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "folder")
@@ -20,8 +21,8 @@ public class FolderEntity {
     @JoinColumn(name = "member_id")
     MemberEntity user;
     private String folderName;
-    @OneToMany(fetch = FetchType.LAZY)
-    List<FolderCertificateEntity> folderCertificates;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<FolderCertificateEntity> folderCertificates = new ArrayList<>();
 
     @Builder
     public FolderEntity(MemberEntity user, String folderName) {
