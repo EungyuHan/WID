@@ -1,6 +1,7 @@
 package com.example.wid.controller;
 
 import com.example.wid.entity.CertificateInfoEntity;
+import com.example.wid.dto.FolderCertificatesDTO;
 import com.example.wid.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -25,15 +26,15 @@ public class FolderController {
     }
 
     @PostMapping("/create")
-    public void createFolder(@RequestParam String folderName) {
+    public void createFolder(@RequestBody String folderName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         folderService.createFolder(folderName, authentication);
     }
 
     @PostMapping("/insert/certificates")
-    public void insertCertificates(@RequestParam Long folderId, @RequestParam List<Long> certificateIds) {
+    public void insertCertificates(@RequestBody FolderCertificatesDTO folderCertificatesDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        folderService.insertCertificates(folderId, certificateIds, authentication);
+        folderService.insertCertificates(folderCertificatesDTO, authentication);
     }
 
     @GetMapping("certificates")

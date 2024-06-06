@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,8 +43,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     //로그인 성공시 실행하는 메소드 (여기서 JWT를 발급하면 됨)
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
-            throws IOException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         // authentication.getPrincipal -> 특정한 유저 확인 가능
         // 받아온 User를 customUserDetails에 저장
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -59,20 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String token = jwtUtil.createJwtToken(username, role);
 
-        // 응답의 Content-Type을 application/json으로 설정
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        // 토큰 정보를 포함하는 객체 생성
-        Map<String, String> tokenInfo = new HashMap<>();
-        tokenInfo.put("token", token);
-
-        // Jackson 라이브러리를 사용하여 tokenInfo 객체를 JSON 문자열로 변환
-        String tokenJson = new ObjectMapper().writeValueAsString(tokenInfo);
-
-        // 응답 바디에 JSON 문자열 쓰기
-        response.getWriter().write(tokenJson);
-        response.getWriter().flush();
+        response.addHeader("Authorization", "Bearer " + token);
     }
 
     //로그인 실패시 실행하는 메소드
@@ -85,6 +70,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 실패 메시지를 포함하는 객체 생성
         Map<String, String> error = new HashMap<>();
         error.put("error", "로그인에 실패하였습니다.");
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         // Jackson 라이브러리를 사용하여 error 객체를 JSON 문자열로 변환
         try {

@@ -3,6 +3,7 @@ package com.example.wid.service;
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.controller.exception.InvalidFolderException;
 import com.example.wid.controller.exception.UserNotFoundException;
+import com.example.wid.dto.FolderCertificatesDTO;
 import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.entity.FolderCertificateEntity;
 import com.example.wid.entity.FolderEntity;
@@ -46,33 +47,8 @@ public class FolderService {
         folderRepository.save(folder);
     }
 
-//    public void insertCertificates(Long folderId, List<Long> certificateIds, Authentication authentication) {
-//        FolderEntity folder = null;
-//        if(folderRepository.findById(folderId).isPresent()){
-//            folder = folderRepository.findById(folderId).get();
-//        } else throw new InvalidFolderException();
-//
-//        MemberEntity user = null;
-//        if(memberRepository.findByUsername(authentication.getName()).isPresent()){
-//            user = memberRepository.findByUsername(authentication.getName()).get();
-//        } else throw new UserNotFoundException();
-//
-//        for (Long certificateId : certificateIds) {
-//            if(certificateInfoRepository.findById(certificateId).isPresent()){
-//                CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId).get();
-//                if(!certificateInfo.getUser().getId().equals(user.getId())){
-//                    throw new InvalidCertificateException("인증서 소유자가 아닙니다.");
-//                }
-//
-//                folderCertificateRepository.save(FolderCertificateEntity.builder()
-//                        .folder(folder)
-//                        .certificate(certificateInfo)
-//                        .build());
-//            } else throw new InvalidCertificateException("유효하지 않은 인증서입니다.");
-//        }
-//    }
-public void insertCertificates(Long folderId, List<Long> certificateIds, Authentication authentication) {
-    FolderEntity folder = folderRepository.findById(folderId)
+public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
+    FolderEntity folder = folderRepository.findById(folderCertificatesDTO.getFolderId())
             .orElseThrow(InvalidFolderException::new);
 
     MemberEntity user = memberRepository.findByUsername(authentication.getName())
@@ -82,7 +58,7 @@ public void insertCertificates(Long folderId, List<Long> certificateIds, Authent
         folder.setFolderCertificates(new ArrayList<>());
     }
 
-    for (Long certificateId : certificateIds) {
+    for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
         CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
                 .orElseThrow(() -> new InvalidCertificateException("유효하지 않은 인증서입니다."));
 

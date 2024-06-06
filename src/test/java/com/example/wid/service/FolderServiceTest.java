@@ -1,8 +1,7 @@
 package com.example.wid.service;
 
-import com.example.wid.WidApplication;
+import com.example.wid.dto.FolderCertificatesDTO;
 import com.example.wid.entity.CertificateInfoEntity;
-import com.example.wid.entity.FolderCertificateEntity;
 import com.example.wid.entity.FolderEntity;
 import com.example.wid.entity.MemberEntity;
 import com.example.wid.entity.enums.CertificateType;
@@ -93,8 +92,11 @@ class FolderServiceTest {
 
         List<Long> certificateIds = List.of(saved1.getId(), saved2.getId());
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-
-        folderService.insertCertificates(folder.getId(), certificateIds, authentication);
+        FolderCertificatesDTO folderCertificatesDTO = FolderCertificatesDTO.builder()
+                .folderId(folder.getId())
+                .certificateIds(certificateIds)
+                .build();
+        folderService.insertCertificates(folderCertificatesDTO, authentication);
 
         assertEquals(2, folderCertificateRepository.findAll().size());
 
@@ -111,7 +113,7 @@ class FolderServiceTest {
                 .folderName("folder")
                 .user(user)
                 .build();
-        folderRepository.save(folder);
+        FolderEntity savedFolder = folderRepository.save(folder);
 
         // Create certificates and associate them with the folder
         CertificateInfoEntity certificate1 = CertificateInfoEntity.builder()
@@ -125,10 +127,14 @@ class FolderServiceTest {
                 .certificateType(CertificateType.COMPETITION_CERTIFICATE)
                 .build();
         CertificateInfoEntity saved2 = certificateInfoRepository.save(certificate2);
-
+        List<Long> certificateIds = List.of(saved1.getId(), saved2.getId());
+        FolderCertificatesDTO folderCertificatesDTO = FolderCertificatesDTO.builder()
+                .folderId(savedFolder.getId())
+                .certificateIds(certificateIds)
+                .build();
         // Add certificates to the folder
-        folderService.insertCertificates(folder.getId(), List.of(saved1.getId(), saved2.getId()),
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        folderService.insertCertificates(folderCertificatesDTO, authentication);
 
         // Now let's test the method to retrieve certificates in a folder
         Authentication auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
