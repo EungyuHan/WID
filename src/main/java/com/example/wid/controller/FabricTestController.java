@@ -39,4 +39,11 @@ public class FabricTestController {
         fabricService.addAsset();
         return "New Assets Added";
     }
+
+    @GetMapping("/readUCAssets")
+    public String readdUCAssets() throws GatewayException {
+        fabricService.readUCAssetById();
+        return "read UnivClass Assets";
+    }
+
 }
