@@ -204,7 +204,7 @@ public class CertificateService {
             fabricService.createEncryptedAsset(didId,
                     encodedUserEncrypt,
                     certificateInfo.getRemovedByte(),
-                    certificateInfo.getCertificateType().toString());;
+                    certificateInfo.getCertificateType().toString());
             encryptInfoRepository.delete(encryptInfo);
         } catch (Exception e) {
             throw new EncryptionException(e.getMessage());
