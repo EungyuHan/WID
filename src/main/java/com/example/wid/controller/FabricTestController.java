@@ -3,9 +3,7 @@ package com.example.wid.controller;
 import com.example.wid.service.FabricService;
 import org.hyperledger.fabric.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/did")
@@ -40,10 +38,19 @@ public class FabricTestController {
         return "New Assets Added";
     }
 
-    @GetMapping("/readEncryptedAssets")
-    public String readdUCAssets() throws GatewayException {
-        fabricService.readUCAssetById();
+    @PostMapping("/readEncryptedAssets")
+    public String readdUCAssets(@RequestParam("didId") Long didId) throws GatewayException {
+//        Long parsedLong = Long.parseLong(didId);
+        fabricService.readUCAssetById(didId);
         return "read UnivClass Assets";
     }
 
+    @PostMapping("/createTest")
+    public void test() throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        String a = "fdsafdsf";
+        String b = "fweavsdfewsd";
+        String c = "frwaesfadvc";
+        String d = "ghbtefdrgre";
+        fabricService.createEncryptedAsset(a, b, c, d);
+    }
 }

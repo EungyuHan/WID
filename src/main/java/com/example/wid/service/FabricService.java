@@ -35,24 +35,10 @@ public class FabricService {
         updateNonExistentAsset();
     }
 
-    public void getAll() throws GatewayException {
-        System.out.println("==============GET ALL ASSETS==============");
-        getAllEntries();
+    public void readUCAssetById(Long id) throws GatewayException {
+        String index = "did" + id;
+        readEncryptedAssetById(index);
     }
-
-    public void addAsset() throws EndorseException, CommitException, SubmitException, CommitStatusException {
-//        createEncryptedUnivClass("did111", "33333333", "44444444");
-//        createEncryptedCompetition("did222", "66666666", "55555555");
-        createEncryptedAsset("did4", "77777777", "88888888", "교내 대회");
-        String sample = "HJDUfpMpt+r3cSn/Asw2IorbStkrDk3OiMeiXRRWWC2+KV0gsQAgwL0E5b+/Rjk4GW4PWUKu49oCDQBgPG2ECDAxJVP3G9oTr36ShjGFzp4I3VyXtsIxYO14943Pklh0XsKuMpoDZdpTfupfOl2vyJv3El8l9mR4/onLwJhLeuaa6GPvFXfQ30TBzNzkUG53uUMlqi2rfNxzbq/taJMYtDuva83Jq96xgdPJjia4grXDrE8MJXo+C3OwtBuTc9oDyAsDUcsXj3iLfD0q/rhuwx7kfGPCj00V+0wEjUTmaQsWdMmyMRxsd+9twrQLejQ7lfneQR4jIuQIHNVgVMgFHg==";
-//        createUnivClassAsset("did11", sample, "22", "dd", "af", "adf");
-
-    }
-
-    public void readUCAssetById() throws GatewayException {
-        readEncryptedAssetById("did4");
-    }
-
 
     private void initLedger() throws EndorseException, SubmitException, CommitStatusException, CommitException {
         System.out.println("\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger");

@@ -4,6 +4,11 @@ import com.example.wid.dto.ClassCertificateDTO;
 import com.example.wid.dto.CompetitionCertificateDTO;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.service.CertificateService;
+import com.example.wid.service.FabricService;
+import org.hyperledger.fabric.client.CommitException;
+import org.hyperledger.fabric.client.CommitStatusException;
+import org.hyperledger.fabric.client.EndorseException;
+import org.hyperledger.fabric.client.SubmitException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,9 +22,11 @@ import java.io.IOException;
 @RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
+    private final FabricService fabricService;
     @Autowired
-    public CertificateController(CertificateService certificateService) {
+    public CertificateController(CertificateService certificateService, FabricService fabricService) {
         this.certificateService = certificateService;
+        this.fabricService = fabricService;
     }
 
     @PostMapping("/user/class")
@@ -47,7 +54,7 @@ public class CertificateController {
     }
 
     @PostMapping("/user/sign")
-    public ResponseEntity<String> signCertificateUser(@RequestBody Long certificateId) {
+    public ResponseEntity<String> signCertificateUser(@RequestBody Long certificateId) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.signCertificateUser(certificateId, authentication);
 
