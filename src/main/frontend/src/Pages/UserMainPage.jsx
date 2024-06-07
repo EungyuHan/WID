@@ -1,6 +1,6 @@
-import styled,{keyframes} from 'styled-components';
-import React,{ useState , useRef} from 'react';
-import Button from '../Components/Button';
+import styled from 'styled-components';
+import React,{ useState , useRef , useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import Waves from '../Components/Waves';
 import axios from 'axios';
 import CheckPrivateModal from '../Components/CheckPrivateModal';
@@ -10,7 +10,18 @@ import HelpModal from '../Components/HelpModal';
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 const [isHelpClicked, setHelp] = useState(false);
+const [test, setTest] = useState(false);
+const [vpData, setVPdata] = useState([]);
 const refs = useRef({});
+const navigate = useNavigate();
+
+
+useEffect(() => {
+    axios.get('http://localhost:3001/VP')
+    .then(response => {
+        setVPdata(response.data);
+    })
+},[])
 
 const goToRef = (index) => {  
     if(refs.current[index]){
@@ -21,6 +32,57 @@ const goToRef = (index) => {
 const toggleHelp = () => {
     setHelp(!isHelpClicked);
 }
+
+const handleNavigate = (destination) => {
+    // 서버에 JWT 토큰이 제대로 발행되어있는지 확인하는 코드 
+    navigate(destination);
+}
+
+const renderContent = (test) => {
+    if(test === false){
+        return(
+            <ContentsConatiner>
+                <WelcomeTextArea>
+                    <WelcomeText>생성된 활동내역 리스트가 존재하지 않습니다</WelcomeText>
+                </WelcomeTextArea>
+            </ContentsConatiner>
+        )
+    }
+    else{
+        return (
+            <ContentsConatiner>
+                    <InformationDiv ref={el => refs.current['personalInfo'] = el}>
+                        <h3 >Personal Information</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
+
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3  ref={el => refs.current['education'] = el}>Education</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3 ref={el => refs.current['achievement'] = el} >Achivement</h3>
+                        
+                    </InformationDiv>
+                    <InformationDiv>
+                        <h3 ref={el => refs.current['interest'] = el}>Interests</h3>
+                        
+                    </InformationDiv>
+                </ContentsConatiner>
+        )
+    }
+}
+
+const renderNavList = () => {
+    const newlistName = vpData.map(item => Object.keys(item)[0]);
+    return newlistName.map((itemName)=> (
+        <NavButton>{itemName}</NavButton>
+    ))
+}
+
 
 
 return (
@@ -35,157 +97,20 @@ return (
             <UserprofileContainer>
                 <UserProfile></UserProfile>
             </UserprofileContainer>
-            <NavButton onClick={()=>goToRef('personalInfo')}>PERSONAL INFORMATION</NavButton>
-            <NavButton onClick={()=>goToRef('experience')}>EXPERIENCE</NavButton>
-            <NavButton onClick={()=>goToRef('education')}>EDUCATION</NavButton>
-            <NavButton onClick={()=>goToRef('achievement')}>ACHIVEMENTS</NavButton>
-            <NavButton onClick={()=>goToRef('interest')}>INTERESTS</NavButton>
+            {renderNavList()}
         </NavBarRight>
         </NavBar>
         <UpNavBar>
         <UpNavBarTop>
-            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 관리</UpNavButton>
-            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 발급</UpNavButton>
-            <UpNavButton onClick={()=>{setPKchecked(true)}}>활동내역 제출</UpNavButton>
+            <UpNavButton onClick={()=>{handleNavigate('/CreateVP')}}>활동내역 관리</UpNavButton>
+            <UpNavButton onClick={()=>{handleNavigate('/CreateVC')}}>활동내역 발급</UpNavButton>
+            <UpNavButton onClick={()=>{handleNavigate('/Working')}}>활동내역 제출</UpNavButton>
             <UpNavButton onClick={toggleHelp}>도움말</UpNavButton>
         </UpNavBarTop>
         <UpNavBarBottom>
-            <ContentsConatiner>
-                <InformationDiv ref={el => refs.current['personalInfo'] = el}>
-                    <h3 >Personal Information</h3>
-                    <div>내용 </div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용 </div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3  ref={el => refs.current['education'] = el}>Education</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3 ref={el => refs.current['achievement'] = el} >Achivement</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-                <InformationDiv>
-                    <h3 ref={el => refs.current['interest'] = el}>Interests</h3>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                    <div>내용</div>
-                </InformationDiv>
-            </ContentsConatiner>
+
+        {renderContent(test)}            
+            
         </UpNavBarBottom>
         </UpNavBar>
         { PKchecked && (<CheckPrivateModal/>)}
@@ -332,6 +257,18 @@ const ContentsConatiner = styled.div`
     justify-content: center;
     border-radius: 10px;
     overflow: auto;
+`
+
+const WelcomeTextArea = styled.div`
+    position: relative;
+    height:100%;
+    width:100%;
+    display: flex;
+    justify-content : center;
+    align-items : center;
+`
+const WelcomeText = styled.h4`
+    color: White;
 `
 
 const InformationDiv = styled.div`

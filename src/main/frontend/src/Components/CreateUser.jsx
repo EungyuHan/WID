@@ -36,13 +36,12 @@ function CreateUser(props){
     }
     
     const sendUserInfo = () => {
-        /* 모두 작성이 완료된 유저 정보를 서버로 전송하는 코드 */ 
         props.UserInfo.name = name;
         props.UserInfo.email = email;
         props.UserInfo.phone = phone;
-        props.UserInfo.username = id;
+        props.UserInfo.id = id;
         props.UserInfo.password = password;
-        console.log(props.UserInfo);
+        axios.post('http://localhost:3001/user', props.UserInfo)
         getPrivateKey();
         setCreated(true);
         
@@ -53,7 +52,7 @@ function CreateUser(props){
     }
 
     const closeModal = () => {
-       
+        
             props.onClose();
         
     }
@@ -158,7 +157,6 @@ const ModalContent = styled.div`
     background-color: #cacfd3;
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
-
 `
 const Create = styled.input`
     padding: 10px 25px;

@@ -1,14 +1,21 @@
 import Button from '../Components/Button';
 import React,{ useState } from 'react';
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import Waves from '../Components/Waves';
 import {Link} from 'react-router-dom';
 import { pdfjs } from 'react-pdf';
 import PDFpreviewer from '../Components/PDFpreviewer';
 import ConfirmSubmitModal from '../Components/ConfirmSubmitModal';
+import axios from 'axios';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function UserCreateVC() {
+    const [name, setName] = useState("");
+    const [school, setSchool] = useState("");
+    const [major, setMajor] = useState("");
+    const [subject, setSubject] = useState("");
+    const [issuer, setIssuer] = useState("");
+    const [term, setTerm] = useState("");
 
     const [file, setFile] = useState(null);
     const [isModalopen, setModal] = useState(false);
@@ -24,8 +31,10 @@ function UserCreateVC() {
         }
     }
 
-    const toggleModal = () => {
-        /* 제출확인 모달창이 뜨기전에 확인해야하는 필수 제출 요소들이 체크되었는지 확인. */
+
+    const submit = () => {
+        axios.post()
+
         setModal(!isModalopen);
     }
 
@@ -51,17 +60,17 @@ function UserCreateVC() {
             <ContentContainer>
                 <FormContainer>
                     <form>
-                    <FormH4>신청인  <FormInput></FormInput></FormH4>
-                    <FormH4>학교    <FormInput></FormInput></FormH4>
-                    <FormH4>전공 <FormInput></FormInput></FormH4>
-                    <FormH4>과목 <FormInput></FormInput></FormH4>
-                    <FormH4>요청대상 <FormInput></FormInput></FormH4>
-                    <FormH4>작업기간 <FormInput></FormInput></FormH4>
+                    <FormH4>신청인  <FormInput onChange={(e)=>{setName(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>학교    <FormInput onChange={(e)=>{setSchool(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>전공 <FormInput onChange={(e)=>{setMajor(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>과목 <FormInput onChange={(e)=>{setSubject(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>요청대상 <FormInput onChange={(e)=>{setIssuer(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>작업기간 <FormInput onChange={(e)=>{setTerm(e.target.value);}}></FormInput></FormH4>
                     <div style={{background:'white', width:'50%'}}><input type={'file'} 
                     onChange={handleFileChange}></input></div>
                     </form>
                     <div style={{right:'10%'}}></div>
-                    <Button name={'제출하기'} onClick={toggleModal}></Button>
+                    <Button name={'제출하기'} onClick={submit}></Button>
                 </FormContainer>
     
                 <DescriptionContainer>
@@ -144,6 +153,7 @@ const FormInput = styled.input`
     margin: 2px 2px;
     border-radius: 5px;
     border: none;
+    box-shadow: 0.5px 0.5px 2px black;
 `
 
 const DescriptionContainer = styled.div`

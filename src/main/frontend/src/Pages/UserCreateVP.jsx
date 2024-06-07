@@ -5,6 +5,8 @@ import Button from '../Components/Button';
 import { Link } from 'react-router-dom';
 import SetItemNameModal from '../Components/SetItemNameModal';
 import VCviewer from '../Components/VCviewer';
+import UserSendModal from '../Components/UserSendModal';
+
 
 
 function UserCreateVP() {
@@ -13,11 +15,14 @@ function UserCreateVP() {
     const [isModalOpen, setIsModalOpen] = useState(false); 
     const [contentsList , setContentList] = useState([]);
     const [show, setShow] = useState(false);
+    const [content, setContent] = useState([]);
+    const [focusIndex, setFocus] = useState(0);
+    const [isSubmitClicked, setSubmit] = useState(false);
 
-    const toggleDiv = () => {
+    const toggleDiv = (focus) => {
     setShow(!show);
+    setFocus(focus);
     };
-
     
     const addItem = () => {
         setModal();
@@ -35,14 +40,13 @@ function UserCreateVP() {
         const newContentsList = [...contentsList, {id: newItemID, name: newName}];
         setItemList(newItemList);
         setContentList(newContentsList);
-        console.log(newItemList);
     }
 
 
     const renderItemList = () => {
         return itemList.map((itemName, index) => (
                 <ItemListContainer key={itemName.id} 
-                onClick={toggleDiv}>
+                onClick={()=>{toggleDiv(itemName.id)}}>
                 <h4>{itemName.name}</h4>
                 </ItemListContainer>
                 )
@@ -50,15 +54,49 @@ function UserCreateVP() {
     }
 
     const renderContentList = () => {
-        return contentsList.map((contentName, index)=>(
+        return contentsList.map((contentName)=>(
             <ContentsListDiv key={contentName.id}>
-                <h4>{contentName.name}</h4>
-                <div>내용입니다.</div>
+                <h3>{contentName.name}</h3>
+                <hr></hr>
+                    <div>
+                    {renderMatchingContent(contentName.id)}
+                    </div>
+                
             </ContentsListDiv>
         )
-        )
+    )
     }
 
+
+    const renderMatchingContent = (id) => {
+        const matchedContents = content.filter(item => item.id === id-1);
+
+        return matchedContents.length > 0 ? (
+                matchedContents.map((item, idx) => (
+                    <div>
+                        <h4 key={idx}>{item.content.summary}</h4>
+                        <div key={idx}>{"진행일자 :"+ item.content.term}</div>
+                        <div key={idx}>{"이슈어:" + item.content.professor}</div>
+                        <div key={idx}>{item.content.organizer}</div>
+                    </div>
+                    
+                    
+                ))) : null;
+    };
+
+    const submit = () => {
+        // 현재 내용이 비워져있지는 않은지등에 대한 검사가 필요하다.
+        if(item === 0){
+            alert("현재 제출할 내용이 없습니다.");
+        }
+        else if(content.length === 0) {
+            alert("현재 추가된 VC가 없습니다 VC를 추가해주세요");
+        }
+        else{
+            setSubmit(!isSubmitClicked);
+        }
+        
+    }
     
     
     return(
@@ -73,9 +111,7 @@ function UserCreateVP() {
                         </Link>
                 </HomeContainer>
                 <HelpContainer>
-                <Link to="/Help">
-                        <img src='img/Help.png' width={`75x`} height={`75px`} alt='Logo'></img>
-                        </Link>
+                <Button name="제출하기" onClick={submit}> </Button>
                 </HelpContainer>
 
                 <SelectBarDiv>
@@ -93,13 +129,14 @@ function UserCreateVP() {
                 <ContentDiv>
                     {renderContentList()}
                     <SlideVCdiv show={show}>
-                        <VCviewer/>
+                        <VCviewer content={content} setContent={setContent} focusIndex={focusIndex-1}/>
                     </SlideVCdiv>
                 </ContentDiv>
             </div>
             
             <Waves/>
             {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
+            {isSubmitClicked && <UserSendModal></UserSendModal>}
         </BackGround>
     )
 }
@@ -135,6 +172,9 @@ const HelpContainer = styled.div`
     width: 10%;
     height: 12%;
     right:5%;
+    display: flex;
+    justify-content: center;
+    
 `
 const SelectBarDiv = styled.div`
     position: fixed;
@@ -154,6 +194,7 @@ const ContentDiv = styled.div`
     height: 85%;
     border-radius : 15px;
     background-color: rgba(0, 0, 0, 0.25);
+    overflow:auto;
 `
 
 const ItemDiv = styled.div`
@@ -199,7 +240,7 @@ const ItemListContainer = styled.button`
 `
 const ContentsListDiv = styled.div`
     position: relative;
-    top: 5%;
+    top: 2%;
     width: 95%;
     height: auto;
     margin: auto;
