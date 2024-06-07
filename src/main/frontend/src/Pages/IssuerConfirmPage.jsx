@@ -8,13 +8,12 @@ import ConfirmCertificationModal from '../Components/ConfirmCertificationModal';
 import HelpModal from '../Components/HelpModal';
 
 
-function IssuerMainPage(props) {
+function IssuerConfirmPage(props) {
     const [PKchecked, setPKchecked] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isModalopen, setModal] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState('전체');
     const [isHelpClicked, setHelp] = useState(false);
-    const [isOK , setOK] = useState(false);
 
     const toggleDropdown = () => {
       setIsOpen(!isOpen);
@@ -28,10 +27,6 @@ function IssuerMainPage(props) {
       setHelp(!isHelpClicked);
   }
 
-  const toggleOK = () => {
-    setOK(!isOK);
-  }
-
 
 
     const handleCourseSelect = (course) => {
@@ -42,8 +37,6 @@ function IssuerMainPage(props) {
     const goToRef = (index) => {  
             index.current.scrollIntoView({ behavior: 'smooth' });
     };
-
-   
     
     const mails = [
         { id: 1, sender: 'qwer1216914@gmail.com', subject: '[소프트웨어공학캡스톤프로젝트] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-01' },
@@ -96,23 +89,11 @@ function IssuerMainPage(props) {
                 </UpNavBarTop>
               <UpNavBarBottom>
         
-              <CourseDropdown>
-              
-              <Label htmlFor="dropdown">요청명</Label>
-              <CourseDropdownButton onClick={toggleDropdown}>
-                {selectedCourse}
-              </CourseDropdownButton>
-              <CourseDropdownContent isOpen={isOpen}>
-                <a href="#" onClick={() => handleCourseSelect('전체')}>전체</a>
-                <a href="#" onClick={() => handleCourseSelect('소프트웨어공학캡스톤프로젝트')}>소프트웨어공학캡스톤프로젝트</a>
-                <a href="#" onClick={() => handleCourseSelect('데이터베이스')}>데이터베이스</a>
-                <a href="#" onClick={() => handleCourseSelect('학부연구생')}>학부연구생</a>
-              </CourseDropdownContent>
-            </CourseDropdown>
+             
             <Container>
-            <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>전체 요청 <span style={{ color: '#cf242a' }}>20</span></span></Text>
+            <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>인증 처리 목록 <span style={{ color: '#cf242a' }}>20</span></span></Text>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '20px', marginTop: '20px' }}>
-            <Button name={'요청 삭제하기'} onClick={toggleModal}></Button>
+           
                 </div>
                 <ContentsContainer>
                     <InformationDiv>
@@ -123,15 +104,15 @@ function IssuerMainPage(props) {
                 </ContentsContainer>
                 </Container>
                 <div style={{ textAlign: 'right', marginRight: '550px', marginTop: '200px' }}>
-            <Button name={'인증하기'} onClick={toggleModal}></Button>
+           
                 </div>
               </UpNavBarBottom>
             </UpNavBar>
             
           </div>
-          { isModalopen && (<CheckCertificationModal onClose={toggleOK}/>)}
+
+          { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
           { isHelpClicked && (<HelpModal onClose={toggleHelp}/>)}
-          { isOK && (<ConfirmCertificationModal onClose={toggleOK}/>)}
         </BackGround>
       );
     }
@@ -299,15 +280,12 @@ const Sender = styled.div`
   margin: 0;
   font-size: 14px;
   color: white;
-  margin-right: 5px;
+  margin-left: 20px;
   width: 200px; 
 `;
 
 
-const Checkbox = styled.input.attrs({ type: 'checkbox' })`
-  margin-right: 10px;
-  margin-left: 10px;
-`;
+
 
 
 const MailList = ({ mails, handleMailClick }) => {
@@ -316,7 +294,7 @@ const MailList = ({ mails, handleMailClick }) => {
         {mails.map((mail) => (
           <MailItem key={mail.id} onClick={() => handleMailClick(mail.id)}>
             
-              <Checkbox />
+              
               <MailInfo>
             <Sender>{mail.sender}</Sender>
           </MailInfo>
@@ -379,4 +357,4 @@ const Label = styled.label`
 
 
  
-export default IssuerMainPage;
+export default IssuerConfirmPage;

@@ -57,7 +57,7 @@ const DocumentDiv = styled.div`
 
 const PDFcontroller = styled.div`
     position: fixed;
-    height: 100px
+    height: 100px;
     width: 200px; /* 예시로 지정한 너비 */
     z-index:2;
     border-radius: 15px;
