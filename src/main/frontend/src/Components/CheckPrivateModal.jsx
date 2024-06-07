@@ -1,11 +1,17 @@
 import styled,{keyframes} from 'styled-components';
 import axios from 'axios';
 import Button from '../Components/Button';
+import ConfirmCertificationModal from '../Components/ConfirmCertificationModal';
 import React,{ useState } from 'react';
 
 
 function CheckPrivateModal(props) {
-    const [privateKey, setPrivateKey] = useState('')
+    const [privateKey, setPrivateKey] = useState('');
+
+    const handleConfirmClick = () => {
+        // ConfirmCertificationModal을 실행하기 위한 콜백 호출
+        props.onClicked(true);
+    };
 
     return(
         <Modals>
@@ -19,7 +25,8 @@ function CheckPrivateModal(props) {
                     </PrivateInput>
                 </div>
                 <div>
-                <Button name={"확인"}></Button>
+                <Button name={"확인"} onClick={props.onClose()} />
+               
                 </div>
                 
             </ModalContent>

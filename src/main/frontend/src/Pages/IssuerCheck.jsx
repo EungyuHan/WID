@@ -1,42 +1,22 @@
 import Button from '../Components/Button';
 import React,{ useState } from 'react';
-import styled from 'styled-components';
+import styled,{keyframes} from 'styled-components';
 import Waves from '../Components/Waves';
+import CheckPrivateModal from '../Components/CheckPrivateModal';
+
 import {Link} from 'react-router-dom';
 import { pdfjs } from 'react-pdf';
 import PDFpreviewer from '../Components/PDFpreviewer';
-import ConfirmSubmitModal from '../Components/ConfirmSubmitModal';
-import axios from 'axios';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-function UserCreateVC() {
-    const [name, setName] = useState("");
-    const [school, setSchool] = useState("");
-    const [major, setMajor] = useState("");
-    const [subject, setSubject] = useState("");
-    const [issuer, setIssuer] = useState("");
-    const [term, setTerm] = useState("");
 
-    const [file, setFile] = useState(null);
-    const [isModalopen, setModal] = useState(false);
+function IssuerCheck() {
+    const [PKchecked, setPKchecked] = useState(false);
+    const handleDownload = () => {
+        // PDF 파일 다운로드 로직 구현
+        // 예: window.open(pdfUrl, '_blank');
+      };
     
-    const handleFileChange = (event) =>{
-        const inputFile = event.target.files[0];
-        if(inputFile) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                setFile(event.target.result);
-            };
-            reader.readAsArrayBuffer(inputFile);
-        }
-    }
-
-
-    const submit = () => {
-        axios.post()
-
-        setModal(!isModalopen);
-    }
 
     return(
         <BackGround>
@@ -59,41 +39,42 @@ function UserCreateVC() {
             
             <ContentContainer>
                 <FormContainer>
-                    <form>
-                    <FormH4>신청인  <FormInput onChange={(e)=>{setName(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>학교    <FormInput onChange={(e)=>{setSchool(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>전공 <FormInput onChange={(e)=>{setMajor(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>과목 <FormInput onChange={(e)=>{setSubject(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>요청대상 <FormInput onChange={(e)=>{setIssuer(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>작업기간 <FormInput onChange={(e)=>{setTerm(e.target.value);}}></FormInput></FormH4>
-                    <div style={{background:'white', width:'50%'}}><input type={'file'} 
-                    onChange={handleFileChange}></input></div>
-                    </form>
-                    <div style={{right:'10%'}}></div>
-                    <Button name={'제출하기'} onClick={submit}></Button>
+                    <FormH4>신청인  <FormInput value='qwer1216914@gmail.com'/></FormH4>
+                    <FormH4>학  교  <FormInput value='전북대학교'/></FormH4>
+                    <FormH4>전  공 <FormInput value='소프트웨어공학과'/></FormH4>
+                    <FormH4>과  목 <FormInput value='소프트웨어공학캡스톤프로젝트'/></FormH4>
+                    <FormH4>요청대상 <FormInput value='김순태 교수님'/></FormH4>
+                    <FormH4>작업기간 <FormInput value='2023.03 ~ 2023.12'/></FormH4>
                 </FormContainer>
     
                 <DescriptionContainer>
                     <FormH4>설명</FormH4>
-                    <DescriptionTextarea></DescriptionTextarea>
+                    <textarea value="소프트웨어공학캡스톤 프로젝트 과목에서 팀프로젝트로 논문을 작성하였습니다" />
                 </DescriptionContainer>
+               
                 
+                <RightContainer>
+                <div style={{ textAlign: 'right' }}>
+                  <Button onClick={()=>{setPKchecked(true)}} name="인증하기"/>
+                </div>
                 <PreviewContainer>
-                    <FormH4>미리보기</FormH4>
-                    <PDFpreviewer file={file}></PDFpreviewer>
+                <RightTopContainer>
+                <FormH4>증명서번호 <FormInput value='12255'/></FormH4>
+                <button onClick={handleDownload}>다운로드</button>  
+                </RightTopContainer>  
+                    <PDFpreviewer></PDFpreviewer>
                 </PreviewContainer>
+                </RightContainer>
                 
             </ContentContainer>
-            
+            { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
             </div>
-            { isModalopen && <ConfirmSubmitModal></ConfirmSubmitModal>}
             <Waves></Waves>
         </BackGround>
+   
+        
     )
 }
-
-
-
 const BackGround = styled.div`
     position: fixed;
     background: linear-gradient(to right, #FFFFFF, #0083b0);
@@ -102,6 +83,7 @@ const BackGround = styled.div`
     padding: 0px;
     display: flex;
 `
+
 const LogoContainer = styled.div`
     position: fixed; 
     width: 60%;
@@ -130,19 +112,20 @@ const ContentContainer = styled.div`
     left: 50%;
     width: 90%;
     height: 87%;
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgba(0, 0, 0, 0.4);
     transform: translate(-50%);
     border-radius: 15px;
 `
 const FormContainer = styled.div`
     position: absolute;
     top: 2%;
-    left: 5%;
+    left: 4%;
     width: 45%;
-    height: 60%;
+    height: 65%;
 `
 
 const FormH4 = styled.h4`
+    size: 5;
     margin: auto;
     padding: 5px 10px;
     color: white;
@@ -153,32 +136,42 @@ const FormInput = styled.input`
     margin: 2px 2px;
     border-radius: 5px;
     border: none;
-    box-shadow: 0.5px 0.5px 2px black;
 `
 
 const DescriptionContainer = styled.div`
     position: absolute;
     width: 45%;
-    top: 57%;
+    top: 67%;
     left: 4%;
 `
 
-const DescriptionTextarea = styled.textarea`
-    width: 100%;  
-    height: 200px;
-    border-radius: 10px;
-`
-
-const PreviewContainer = styled.div`
+const RightContainer = styled.div`
     position: absolute;
-    top: 2%;
-    right: 4%;
     width: 45%;
-    height: 97%;
+    height: 100%;
+    right: 4%;
+    background-color: transparent;
+    `
+
+const RightTopContainer = styled.div`
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-right: 250px;
+`
+const PreviewContainer = styled.div`
+    position: relative;
+    top: 1%;
+    height: 90%;
     overflow: auto;
     border-radius: 10px;
-    background-color: #5c5c5c;
+    background-color: gray;
 `
 
 
-export default UserCreateVC;
+
+
+
+
+
+export default IssuerCheck;
