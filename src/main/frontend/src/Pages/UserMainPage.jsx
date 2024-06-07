@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React,{ useState , useRef} from 'react';
+import React,{ useState , useRef , useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Waves from '../Components/Waves';
 import axios from 'axios';
@@ -11,12 +11,17 @@ function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 const [isHelpClicked, setHelp] = useState(false);
 const [test, setTest] = useState(false);
+const [vpData, setVPdata] = useState([]);
 const refs = useRef({});
 const navigate = useNavigate();
 
-const DummyData = {
-    
-}
+
+useEffect(() => {
+    axios.get('http://localhost:3001/VP')
+    .then(response => {
+        setVPdata(response.data);
+    })
+},[])
 
 const goToRef = (index) => {  
     if(refs.current[index]){
@@ -30,7 +35,6 @@ const toggleHelp = () => {
 
 const handleNavigate = (destination) => {
     // 서버에 JWT 토큰이 제대로 발행되어있는지 확인하는 코드 
-
     navigate(destination);
 }
 
@@ -53,7 +57,7 @@ const renderContent = (test) => {
                     </InformationDiv>
                     <InformationDiv>
                         <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
-                        
+
                     </InformationDiv>
                     <InformationDiv>
                         <h3  ref={el => refs.current['education'] = el}>Education</h3>
@@ -73,11 +77,10 @@ const renderContent = (test) => {
 }
 
 const renderNavList = () => {
-    
-
-    return(
-        <NavButton onClick={()=>goToRef('personalInfo')}>PERSONAL INFORMATION</NavButton>
-    )
+    const newlistName = vpData.map(item => Object.keys(item)[0]);
+    return newlistName.map((itemName)=> (
+        <NavButton>{itemName}</NavButton>
+    ))
 }
 
 
@@ -94,12 +97,7 @@ return (
             <UserprofileContainer>
                 <UserProfile></UserProfile>
             </UserprofileContainer>
-            {renderNavList}
-             <NavButton onClick={()=>goToRef('personalInfo')}>프로젝트</NavButton>
-            <NavButton onClick={()=>goToRef('experience')}>EXPERIENCE</NavButton>
-            <NavButton onClick={()=>goToRef('education')}>EDUCATION</NavButton>
-            <NavButton onClick={()=>goToRef('achievement')}>ACHIVEMENTS</NavButton>
-            <NavButton onClick={()=>goToRef('interest')}>INTERESTS</NavButton>
+            {renderNavList()}
         </NavBarRight>
         </NavBar>
         <UpNavBar>

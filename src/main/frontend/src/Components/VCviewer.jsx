@@ -31,12 +31,12 @@ function VCviewer(props) {
         if(!search){
             return vcdata.map((data)=>(
                 <VC_List_Container>
-                <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
-                <VCcontentDiv width={'20%'}>
-                    <AddVCbutton onClick={()=>{addVC(data , props.focusIndex)}}>추가</AddVCbutton>
-                    <DeleteVCbutton onClick={()=>{deleteVC(data.summary)}}>삭제</DeleteVCbutton>
-                    
-                </VCcontentDiv>
+                    <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
+                    <VCcontentDiv width={'20%'}>
+                        <AddVCbutton onClick={()=>{addVC(data , props.focusIndex)}}>추가</AddVCbutton>
+                        <DeleteVCbutton onClick={()=>{deleteVC(data.summary)}}>삭제</DeleteVCbutton>
+                        
+                    </VCcontentDiv>
                 </VC_List_Container>
         ))
         }
