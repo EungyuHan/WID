@@ -14,6 +14,9 @@ const [test, setTest] = useState(false);
 const refs = useRef({});
 const navigate = useNavigate();
 
+const DummyData = {
+    
+}
 
 const goToRef = (index) => {  
     if(refs.current[index]){
@@ -35,7 +38,9 @@ const renderContent = (test) => {
     if(test === false){
         return(
             <ContentsConatiner>
-
+                <WelcomeTextArea>
+                    <WelcomeText>생성된 활동내역 리스트가 존재하지 않습니다</WelcomeText>
+                </WelcomeTextArea>
             </ContentsConatiner>
         )
     }
@@ -69,6 +74,10 @@ const renderContent = (test) => {
 
 const renderNavList = () => {
     
+
+    return(
+        <NavButton onClick={()=>goToRef('personalInfo')}>PERSONAL INFORMATION</NavButton>
+    )
 }
 
 
@@ -85,7 +94,8 @@ return (
             <UserprofileContainer>
                 <UserProfile></UserProfile>
             </UserprofileContainer>
-            <NavButton onClick={()=>goToRef('personalInfo')}>PERSONAL INFORMATION</NavButton>
+            {renderNavList}
+             <NavButton onClick={()=>goToRef('personalInfo')}>프로젝트</NavButton>
             <NavButton onClick={()=>goToRef('experience')}>EXPERIENCE</NavButton>
             <NavButton onClick={()=>goToRef('education')}>EDUCATION</NavButton>
             <NavButton onClick={()=>goToRef('achievement')}>ACHIVEMENTS</NavButton>
@@ -249,6 +259,18 @@ const ContentsConatiner = styled.div`
     justify-content: center;
     border-radius: 10px;
     overflow: auto;
+`
+
+const WelcomeTextArea = styled.div`
+    position: relative;
+    height:100%;
+    width:100%;
+    display: flex;
+    justify-content : center;
+    align-items : center;
+`
+const WelcomeText = styled.h4`
+    color: White;
 `
 
 const InformationDiv = styled.div`
