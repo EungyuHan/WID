@@ -1,14 +1,18 @@
 package com.example.wid.service;
 
+import com.example.wid.controller.exception.InvalidFolderException;
+import com.example.wid.controller.exception.VerifierNotFoundException;
 import com.example.wid.dto.FolderCertificatesDTO;
 import com.example.wid.entity.CertificateInfoEntity;
 import com.example.wid.entity.FolderEntity;
 import com.example.wid.entity.MemberEntity;
+import com.example.wid.entity.SentCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.repository.CertificateInfoRepository;
 import com.example.wid.repository.FolderCertificateRepository;
 import com.example.wid.repository.FolderRepository;
 import com.example.wid.repository.MemberRepository;
+import com.example.wid.repository.SentCertificateRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +39,8 @@ class FolderServiceTest {
     private CertificateInfoRepository certificateInfoRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private SentCertificateRepository sentCertificateRepository;
 
     private MemberEntity user;
 
@@ -151,4 +157,51 @@ class FolderServiceTest {
         assertTrue(certificatesInFolder.stream().anyMatch(cert -> cert.getId().equals(saved1.getId())));
         assertTrue(certificatesInFolder.stream().anyMatch(cert -> cert.getId().equals(saved2.getId())));
     }
+
+    @Test
+    void sendCertificatesToVerifier() {
+
+        MemberEntity verifier = MemberEntity.builder()
+                .username("verifier")
+                .password("123456789")
+                .email("verifier@verifier.com")
+                .name("verifier")
+                .phone("01033333333")
+                .build();
+        memberRepository.save(verifier);
+
+        FolderEntity folder = FolderEntity.builder()
+                .folderName("folder1")
+                .user(user)
+                .build();
+        folderRepository.save(folder);
+
+        CertificateInfoEntity certificate1 = CertificateInfoEntity.builder()
+                .user(user)
+                .certificateType(CertificateType.CLASS_CERTIFICATE)
+                .build();
+        CertificateInfoEntity saved1 = certificateInfoRepository.save(certificate1);
+
+        CertificateInfoEntity certificate2 = CertificateInfoEntity.builder()
+                .user(user)
+                .certificateType(CertificateType.COMPETITION_CERTIFICATE)
+                .build();
+        CertificateInfoEntity saved2 = certificateInfoRepository.save(certificate2);
+
+        List<Long> certificateIds = List.of(saved1.getId(), saved2.getId());
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+
+        FolderCertificatesDTO folderCertificatesDTO = FolderCertificatesDTO.builder()
+                .folderId(folder.getId())
+                .certificateIds(certificateIds)
+                .build();
+
+        folderService.insertCertificates(folderCertificatesDTO, authentication);
+
+        folderService.sendCertificatesToVerifier(folder.getId(), verifier.getId(), authentication);
+
+        assertEquals(2, folderCertificateRepository.findAll().size());
+    }
+
 }

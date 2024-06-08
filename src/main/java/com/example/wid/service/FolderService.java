@@ -3,15 +3,14 @@ package com.example.wid.service;
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.controller.exception.InvalidFolderException;
 import com.example.wid.controller.exception.UserNotFoundException;
+import com.example.wid.controller.exception.VerifierNotFoundException;
 import com.example.wid.dto.FolderCertificatesDTO;
-import com.example.wid.entity.CertificateInfoEntity;
-import com.example.wid.entity.FolderCertificateEntity;
-import com.example.wid.entity.FolderEntity;
-import com.example.wid.entity.MemberEntity;
+import com.example.wid.entity.*;
 import com.example.wid.repository.CertificateInfoRepository;
 import com.example.wid.repository.FolderCertificateRepository;
 import com.example.wid.repository.FolderRepository;
 import com.example.wid.repository.MemberRepository;
+import com.example.wid.repository.SentCertificateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,14 @@ public class FolderService {
     private final FolderCertificateRepository folderCertificateRepository;
     private final CertificateInfoRepository certificateInfoRepository;
     private final MemberRepository memberRepository;
+    private final SentCertificateRepository sentCertificateRepository;
     @Autowired
-    public FolderService(FolderRepository folderRepository, FolderCertificateRepository folderCertificateRepository, CertificateInfoRepository certificateInfoRepository, MemberRepository memberRepository) {
+    public FolderService(FolderRepository folderRepository, FolderCertificateRepository folderCertificateRepository, CertificateInfoRepository certificateInfoRepository, MemberRepository memberRepository, SentCertificateRepository sentCertificateRepository) {
         this.folderRepository = folderRepository;
         this.folderCertificateRepository = folderCertificateRepository;
         this.certificateInfoRepository = certificateInfoRepository;
         this.memberRepository = memberRepository;
+        this.sentCertificateRepository = sentCertificateRepository;
     }
 
     public void createFolder(String folderName, Authentication authentication) {
@@ -79,7 +80,7 @@ public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Auth
 
     public List<CertificateInfoEntity> getCertificatesInFolder(Long folderId, Authentication authenticatoin) {
         FolderEntity folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new InvalidCertificateException("Invalid folder ID"));
+                .orElseThrow(() -> new InvalidFolderException());
 
         MemberEntity user = memberRepository.findByUsername(authenticatoin.getName())
                 .orElseThrow(UserNotFoundException::new);
@@ -91,5 +92,34 @@ public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Auth
         return folder.getFolderCertificates().stream()
                 .map(FolderCertificateEntity::getCertificate)
                 .toList();
+    }
+
+    @Transactional
+    public void sendCertificatesToVerifier(Long folderId, Long verifierId, Authentication authentication) {
+        FolderEntity folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new InvalidFolderException());
+
+        MemberEntity verifier = memberRepository.findById(verifierId)
+                .orElseThrow(() -> new VerifierNotFoundException());
+
+        MemberEntity user = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new InvalidFolderException();
+        }
+
+        List<FolderCertificateEntity> folderCertificateEntityList = folder.getFolderCertificates();
+
+        for (FolderCertificateEntity folderCertificate : folderCertificateEntityList) {
+
+            SentCertificateEntity sentCertificate = SentCertificateEntity.builder()
+                    .certificate(folderCertificate.getCertificate())
+                    .verifier(verifier)
+                    .build();
+            sentCertificate.setCertificate(folderCertificate.getCertificate());
+            sentCertificate.setVerifier(verifier);
+            sentCertificateRepository.save(sentCertificate);
+        }
     }
 }
