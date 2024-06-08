@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class CertificateInfoEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CertificateType certificateType;
     private String removedByte;
+    @ColumnDefault("false")
+    private Boolean isSigned;
     @OneToMany(mappedBy = "certificate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FolderCertificateEntity> folderCertificates;
 
