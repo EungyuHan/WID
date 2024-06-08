@@ -1,10 +1,9 @@
-import styled,{keyframes} from 'styled-components';
+import styled  from 'styled-components';
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../Components/Button';
 import axios from 'axios';
 import CheckPrivateModal from '../Components/CheckPrivateModal';
-import CheckCertificationModal from '../Components/CheckCertificationModal';
-import ConfirmCertificationModal from '../Components/ConfirmCertificationModal';
 import HelpModal from '../Components/HelpModal';
 
 
@@ -14,6 +13,7 @@ function IssuerConfirmPage(props) {
     const [isModalopen, setModal] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState('전체');
     const [isHelpClicked, setHelp] = useState(false);
+    const navigate = useNavigate();
 
     const toggleDropdown = () => {
       setIsOpen(!isOpen);
@@ -34,9 +34,6 @@ function IssuerConfirmPage(props) {
         setIsOpen(false);
       };
 
-    const goToRef = (index) => {  
-            index.current.scrollIntoView({ behavior: 'smooth' });
-    };
     
     const mails = [
         { id: 1, sender: 'qwer1216914@gmail.com', subject: '[소프트웨어공학캡스톤프로젝트] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-01' },
@@ -80,20 +77,20 @@ function IssuerConfirmPage(props) {
             </LogoBar>
             <UpNavBar>
               <UpNavBarTop>
-                <UpNavButton onClick={()=>{setPKchecked(true)}}>인증 요청</UpNavButton>
-                <UpNavButton onClick={()=>{setPKchecked(true)}}>인증 확인</UpNavButton>
-                <UpNavButton onClick={toggleHelp}>도움말</UpNavButton>
+                <UpNavButton onClick={()=> {navigate('/AdminPage')}}>인증 요청</UpNavButton>
+                <UpNavButton >인증 확인</UpNavButton>
+                <UpNavButton >도움말</UpNavButton>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginRight: '80px', flex: 1 }}>
                 <Text>안녕하세요, <span style={{ borderBottom: '1px solid black' }}>사용자</span>님</Text>
                 </div>
                 </UpNavBarTop>
               <UpNavBarBottom>
         
-             
+            
             <Container>
             <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>인증 처리 목록 <span style={{ color: '#cf242a' }}>20</span></span></Text>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '20px', marginTop: '20px' }}>
-           
+          
                 </div>
                 <ContentsContainer>
                     <InformationDiv>
@@ -104,7 +101,7 @@ function IssuerConfirmPage(props) {
                 </ContentsContainer>
                 </Container>
                 <div style={{ textAlign: 'right', marginRight: '550px', marginTop: '200px' }}>
-           
+          
                 </div>
               </UpNavBarBottom>
             </UpNavBar>
@@ -112,7 +109,7 @@ function IssuerConfirmPage(props) {
           </div>
 
           { PKchecked && (<CheckPrivateModal></CheckPrivateModal>)}
-          { isHelpClicked && (<HelpModal onClose={toggleHelp}/>)}
+          { isHelpClicked && (<HelpModal />)}
         </BackGround>
       );
     }
@@ -192,8 +189,8 @@ const UpNavButton = styled.button`
     transition: background-color 1s ease;
     box-shadow: none;
     &:hover {
-       background-color: #FFFFFF;
-       color:black;
+      background-color: #FFFFFF;
+      color:black;
     } 
     
 ` 

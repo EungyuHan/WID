@@ -1,9 +1,9 @@
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
 
 
-function ConfirmCertificationModal() {
+function ConfirmSubmitModal() {
     const [isChecked,setIsChecked] = useState(false);
 
 
@@ -11,7 +11,6 @@ function ConfirmCertificationModal() {
     return(
         <Modals>
             <ModalContent>
-            
                     <FormH4>인 증 명  <FormInput value='[프로젝트] 소프트웨어공학캡스톤프로젝트'/></FormH4>
                     <FormH4>신 청 인  <FormInput value='Name'/></FormH4>
                     <FormH4>만료기한  <FormInput value='2025.09.11'/></FormH4>
@@ -96,4 +95,4 @@ const InformDiv = styled.div`
 const InformText = styled.h4`
     margin:10px;
 `
-export default ConfirmCertificationModal;
+export default ConfirmSubmitModal;

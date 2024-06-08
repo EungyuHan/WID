@@ -10,7 +10,6 @@ import HelpModal from '../Components/HelpModal';
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 const [isHelpClicked, setHelp] = useState(false);
-const [test, setTest] = useState(false);
 const [vpData, setVPdata] = useState([]);
 const refs = useRef({});
 const navigate = useNavigate();
@@ -38,8 +37,8 @@ const handleNavigate = (destination) => {
     navigate(destination);
 }
 
-const renderContent = (test) => {
-    if(test === false){
+const renderContent = () => {
+    if(vpData === []){
         return(
             <ContentsConatiner>
                 <WelcomeTextArea>
@@ -83,8 +82,6 @@ const renderNavList = () => {
     ))
 }
 
-
-
 return (
     <BackGround>
         <div style={{ zIndex: 1 }}>
@@ -108,9 +105,7 @@ return (
             <UpNavButton onClick={toggleHelp}>도움말</UpNavButton>
         </UpNavBarTop>
         <UpNavBarBottom>
-
-        {renderContent(test)}            
-            
+        {renderContent()}            
         </UpNavBarBottom>
         </UpNavBar>
         { PKchecked && (<CheckPrivateModal/>)}
@@ -197,8 +192,8 @@ const NavButton = styled.button`
     transition: background-color 0.5s ease;
     box-shadow: none;
     &:hover {
-       background-color: #FFFFFF;
-       color: black;
+        background-color: #FFFFFF;
+        color: black;
     } 
 `
 
@@ -242,8 +237,8 @@ const UpNavButton = styled.button`
     transition: background-color 1s ease;
     box-shadow: none;
     &:hover {
-       background-color: #FFFFFF;
-       color:black;
+        background-color: #FFFFFF;
+        color:black;
     } 
     
 ` 

@@ -1,29 +1,28 @@
-import styled,{keyframes} from 'styled-components';
-import { useState, useMemo } from 'react';
+import styled from 'styled-components';
+import { useState, useMemo , useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../Components/Button';
 import axios from 'axios';
-import CheckPrivateModal from '../Components/CheckPrivateModal';
-import CheckCertificationModal from '../Components/CheckCertificationModal';
-import ConfirmCertificationModal from '../Components/ConfirmCertificationModal';
 import HelpModal from '../Components/HelpModal';
-
+import Waves from '../Components/Waves';
 
 function IssuerMainPage(props) {
-    const [PKchecked, setPKchecked] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isModalopen, setModal] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState('전체');
     const [isHelpClicked, setHelp] = useState(false);
     const [isOK , setOK] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        //처음에 요청받은 데이터를 불러오기 위한 axios코드 
+    }, [])
 
     const toggleDropdown = () => {
       setIsOpen(!isOpen);
     };
 
-    const toggleModal = () => {
-      /* 제출확인 모달창이 뜨기전에 확인해야하는 필수 제출 요소들이 체크되었는지 확인. */
-      setModal(!isModalopen);
-  }
+
     const toggleHelp = () => {
       setHelp(!isHelpClicked);
   }
@@ -32,29 +31,22 @@ function IssuerMainPage(props) {
     setOK(!isOK);
   }
 
-
-
     const handleCourseSelect = (course) => {
         setSelectedCourse(course);
         setIsOpen(false);
       };
 
-    const goToRef = (index) => {  
-            index.current.scrollIntoView({ behavior: 'smooth' });
-    };
 
-   
-    
     const mails = [
         { id: 1, sender: 'qwer1216914@gmail.com', subject: '[소프트웨어공학캡스톤프로젝트] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-01' },
-        { id: 2, sender: 'ivyksy0215@naver.com',  subject: '[데이터베이스] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-02' },
+        { id: 2, sender: 'ivyksy0215@naver.com',  subject: '[데이터베이스] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-02'},
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
+        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03'},
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
@@ -65,11 +57,13 @@ function IssuerMainPage(props) {
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
         { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
     ];
-    
-      const handleMailClick = (id) => {
-        console.log(`메일 ID ${id}를 클릭했습니다.`);
-        // 이후에 선택된 메일에 대한 동작을 처리할 수 있습니다.
-      };
+
+      const handleNavigate = () => {
+        const data = { userId: '싸발', token: 'abc123' };
+        navigate('/Working2', { state: data });
+      }
+
+
       const filteredMails = useMemo(() => {
         if (selectedCourse === '전체') {
           return mails;
@@ -77,6 +71,28 @@ function IssuerMainPage(props) {
           return mails.filter(mail => mail.subject.includes(`[${selectedCourse}]`));
         }
       }, [selectedCourse, mails]);
+
+      
+
+      const MailList = (props) => {
+        return (
+          <MailListContainer>
+            {props.mails.map((mail) => (
+              <MailItem key={mail.id} onClick={() => {handleNavigate()}}>
+                  <MailInfo>
+                    <Sender>{mail.sender}</Sender>
+                  </MailInfo>
+                  <MailInfo>
+                    <Subject>{mail.subject}</Subject>
+                  </MailInfo>
+                  <MailInfo>
+                    <Date>{mail.date}</Date>
+                  </MailInfo>
+              </MailItem>
+            ))}
+          </MailListContainer>
+        );
+      };
     
     
       return (
@@ -87,8 +103,8 @@ function IssuerMainPage(props) {
             </LogoBar>
             <UpNavBar>
               <UpNavBarTop>
-                <UpNavButton onClick={()=>{setPKchecked(true)}}>인증 요청</UpNavButton>
-                <UpNavButton onClick={()=>{setPKchecked(true)}}>인증 확인</UpNavButton>
+                <UpNavButton>인증 요청</UpNavButton>
+                <UpNavButton onClick={()=> {navigate('/AdminConfirmPage')}}>인증 확인</UpNavButton>
                 <UpNavButton onClick={toggleHelp}>도움말</UpNavButton>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginRight: '80px', flex: 1 }}>
                 <Text>안녕하세요, <span style={{ borderBottom: '1px solid black' }}>사용자</span>님</Text>
@@ -112,26 +128,21 @@ function IssuerMainPage(props) {
             <Container>
             <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>전체 요청 <span style={{ color: '#cf242a' }}>20</span></span></Text>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '20px', marginTop: '20px' }}>
-            <Button name={'요청 삭제하기'} onClick={toggleModal}></Button>
                 </div>
                 <ContentsContainer>
                     <InformationDiv>
                     
-                    <MailList mails={filteredMails} handleMailClick={handleMailClick} />
+                    <MailList mails={filteredMails} handleNavigate = {handleNavigate}/>
                     
                   </InformationDiv>
                 </ContentsContainer>
                 </Container>
-                <div style={{ textAlign: 'right', marginRight: '550px', marginTop: '200px' }}>
-            <Button name={'인증하기'} onClick={toggleModal}></Button>
-                </div>
               </UpNavBarBottom>
             </UpNavBar>
             
           </div>
-          { isModalopen && (<CheckCertificationModal onClose={toggleOK}/>)}
           { isHelpClicked && (<HelpModal onClose={toggleHelp}/>)}
-          { isOK && (<ConfirmCertificationModal onClose={toggleOK}/>)}
+        <Waves/>
         </BackGround>
       );
     }
@@ -155,10 +166,6 @@ const Text = styled.div`
 
 `
 
-// const YourComponent = ({ id, setID }) => {
-//     const setPKchecked = () => {
-//     };
-// `
 const LogoBar = styled.div`
     position: relative;
     width: auto;
@@ -211,8 +218,8 @@ const UpNavButton = styled.button`
     transition: background-color 1s ease;
     box-shadow: none;
     &:hover {
-       background-color: #FFFFFF;
-       color:black;
+      background-color: #FFFFFF;
+      color:black;
     } 
     
 ` 
@@ -253,12 +260,12 @@ const InformationDiv = styled.div`
 const MailListContainer = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: auto; /* 각 열의 너비를 지정합니다. */
+  grid-template-columns: auto;
   grid-gap: 10px;
 `;
 
 const MailItem = styled.div`
-  display: flex; /* 열을 가로로 배치합니다. */
+  display: flex; 
     align-items: flex-start;
     grid-template-columns: auto auto auto auto;
     gap: 10px;
@@ -272,7 +279,7 @@ const MailItem = styled.div`
 
 const MailInfo = styled.div`
   white-space: nowrap;
-  overflow: hidden; /* 텍스트가 넘칠 경우 숨깁니다. */
+  overflow: hidden; 
   text-overflow: ellipsis;
 `;
 
@@ -283,7 +290,7 @@ const Subject = styled.div`
   font-weight: bold;
   color: white;
   white-space: nowrap;
-  overflow: hidden; /* 텍스트가 넘칠 경우 숨깁니다. */
+  overflow: hidden; 
   text-overflow: ellipsis;
   width: 500px; 
 `;
@@ -303,35 +310,6 @@ const Sender = styled.div`
   width: 200px; 
 `;
 
-
-const Checkbox = styled.input.attrs({ type: 'checkbox' })`
-  margin-right: 10px;
-  margin-left: 10px;
-`;
-
-
-const MailList = ({ mails, handleMailClick }) => {
-    return (
-      <MailListContainer>
-        {mails.map((mail) => (
-          <MailItem key={mail.id} onClick={() => handleMailClick(mail.id)}>
-            
-              <Checkbox />
-              <MailInfo>
-            <Sender>{mail.sender}</Sender>
-          </MailInfo>
-          <MailInfo>
-            <Subject>{mail.subject}</Subject>
-          </MailInfo>
-          <MailInfo>
-            <Date>{mail.date}</Date>
-          </MailInfo>
-          </MailItem>
-        ))}
-      </MailListContainer>
-    //   <CreateUserButton onClick={makeUser}>인증하기</CreateUserButton>
-    );
-  };
 
   const CourseDropdown = styled.div`
   position: relative;
@@ -376,7 +354,4 @@ const Label = styled.label`
 `;
 
 
-
-
- 
 export default IssuerMainPage;

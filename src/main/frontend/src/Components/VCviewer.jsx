@@ -5,12 +5,14 @@ import axios from 'axios';
 function VCviewer(props) {
     const [vcdata, setVCdata] = useState([]);
     const [search, setSearch] = useState("");
+    const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         axios.get('http://localhost:3001/vccontent')
         .then(response => {
             setVCdata(response.data);
             console.log(vcdata);
+            setLoading(false);
         })
     },[])
 
@@ -54,6 +56,10 @@ function VCviewer(props) {
             ))
         }
             
+    }
+
+    if(loading) {
+        return <div>loading</div>
     }
     
 

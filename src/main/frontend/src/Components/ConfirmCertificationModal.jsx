@@ -1,12 +1,18 @@
 import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from './Button';
+import axios from 'axios';
 
-
-function ConfirmCertificationModal() {
+function ConfirmCertificationModal(props) {
     const [isChecked,setIsChecked] = useState(false);
+    const navigate = useNavigate();
 
+    const submit = () => {
+        //axios 통신으로 데이터 보내기
 
+        navigate('/AdminPage');
+    }
 
     return(
         <Modals>
@@ -18,20 +24,18 @@ function ConfirmCertificationModal() {
             
                 <h3 style={{color:'white'}}>인증 유의사항</h3>
                 <InformDiv>
-                    <InformText>해당 내역은 내크워크 내에 저장되며 만료기한까지 유효합니다.</InformText>
+                    <InformText>해당 내역은 네크워크 내에 저장되며 만료기한까지 유효합니다.</InformText>
                     <InformText> </InformText>
                     <InformText> </InformText>
                     <InformText>이슈어의 키로 암호화되기 때문에 해당 내용을 증명해준</InformText>
                     <InformText>교수님의 성함이 블록체인 내에 저장이 된다는 사실을 고지합니다.</InformText>
-                    {/* <h5>해당 내용은 일정기간 이후 자동으로 파기되며 
-                    새롭게 신청서를 작성해주셔야 합니다.</h5> */}
                 </InformDiv>
                 <div>
                 <h4>상기의 내용을 확인하였습니다.</h4>
                 <input style={{background:'white', width:'25px', height:'25px',margin:'auto'}} type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
                 </div>
-                
-                <Button name={'인증완료'} disabled={!isChecked}></Button>
+                <Button name={'인증완료'}  disabled={!isChecked} onClick={submit}></Button>
+
             </ModalContent>
         </Modals>
     )
