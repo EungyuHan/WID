@@ -133,7 +133,7 @@ class FolderServiceTest {
                 .certificateIds(certificateIds)
                 .build();
         // Add certificates to the folder
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
         folderService.insertCertificates(folderCertificatesDTO, authentication);
 
         // Now let's test the method to retrieve certificates in a folder
