@@ -38,7 +38,7 @@ public class FolderController {
     }
 
     @GetMapping("certificates")
-    public ResponseEntity<List<CertificateInfoEntity>> getCertificatesInFolder(@RequestParam Long folderId) {
+    public ResponseEntity<List<CertificateInfoEntity>> getCertificatesInFolder(@RequestBody Long folderId) {
         Authentication authenticatoin = SecurityContextHolder.getContext().getAuthentication();
         List<CertificateInfoEntity> certificates = folderService.getCertificatesInFolder(folderId, authenticatoin);
         return ResponseEntity.ok(certificates);
