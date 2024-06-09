@@ -11,6 +11,7 @@ import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -36,15 +37,18 @@ public class CertificateInfoEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CertificateType certificateType;
     private String removedByte;
+    @ColumnDefault("false")
+    private Boolean isSigned;
     @OneToMany(mappedBy = "certificate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
-    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte) {
+    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte, Boolean isSigned) {
         this.user = user;
         this.issuer = issuer;
         this.certificateType = certificateType;
         this.removedByte = removedByte;
+        this.isSigned = isSigned;
     }
 
     @JsonProperty("certificate_type")

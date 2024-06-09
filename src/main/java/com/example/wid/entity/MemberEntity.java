@@ -43,10 +43,10 @@ public class MemberEntity extends BaseEntity {
     private String privateKey;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<FolderEntity> folders;
+    private List<FolderEntity> folders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CertificateInfoEntity> userCertificates;
+    private List<CertificateInfoEntity> userCertificates = new ArrayList<>();
 
     @OneToMany(mappedBy = "issuer", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CertificateInfoEntity> issuedCertificates = new ArrayList<>();

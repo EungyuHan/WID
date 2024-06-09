@@ -1,8 +1,12 @@
 package com.example.wid.controller;
 
 import com.example.wid.dto.ClassCertificateDTO;
+import com.example.wid.dto.ClassCertificateJson;
 import com.example.wid.dto.CompetitionCertificateDTO;
+import com.example.wid.dto.base.BaseCertificateJson;
+import com.example.wid.entity.MemberEntity;
 import com.example.wid.entity.enums.CertificateType;
+import com.example.wid.repository.MemberRepository;
 import com.example.wid.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/certificate")
@@ -36,6 +41,15 @@ public class CertificateController {
         certificateService.createCertificate(competitionCertificateDTO, authentication, CertificateType.COMPETITION_CERTIFICATE);
 
         return ResponseEntity.ok("대회 증명서 생성 완료");
+    }
+
+    @GetMapping("/issuer/list")
+    public ResponseEntity<List<BaseCertificateJson>> getCertificateListIssuer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<BaseCertificateJson> issuerCertificates = certificateService.getIssuerCertificates(authentication);
+        if(issuerCertificates.isEmpty())
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(issuerCertificates);
     }
 
     @PostMapping("/issuer/sign")
