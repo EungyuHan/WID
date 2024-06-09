@@ -3,10 +3,7 @@ package com.example.wid.service;
 import com.example.wid.controller.exception.InvalidFolderException;
 import com.example.wid.controller.exception.VerifierNotFoundException;
 import com.example.wid.dto.FolderCertificatesDTO;
-import com.example.wid.entity.CertificateInfoEntity;
-import com.example.wid.entity.FolderEntity;
-import com.example.wid.entity.MemberEntity;
-import com.example.wid.entity.SentCertificateEntity;
+import com.example.wid.entity.*;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.repository.CertificateInfoRepository;
 import com.example.wid.repository.FolderCertificateRepository;
@@ -188,20 +185,24 @@ class FolderServiceTest {
                 .build();
         CertificateInfoEntity saved2 = certificateInfoRepository.save(certificate2);
 
-        List<Long> certificateIds = List.of(saved1.getId(), saved2.getId());
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 
-        FolderCertificatesDTO folderCertificatesDTO = FolderCertificatesDTO.builder()
-                .folderId(folder.getId())
-                .certificateIds(certificateIds)
+        FolderCertificateEntity folderCertificate = FolderCertificateEntity.builder()
+                .folder(folder)
+                .certificate(saved1)
                 .build();
+        folderCertificateRepository.save(folderCertificate);
 
-        folderService.insertCertificates(folderCertificatesDTO, authentication);
+        FolderCertificateEntity folderCertificate2 = FolderCertificateEntity.builder()
+                .folder(folder)
+                .certificate(saved2)
+                .build();
+        folderCertificateRepository.save(folderCertificate2);
 
         folderService.sendCertificatesToVerifier(folder.getId(), verifier.getId(), authentication);
 
         assertEquals(2, folderCertificateRepository.findAll().size());
+        assertEquals(1, sentCertificateRepository.findAll().size());
     }
 
 }

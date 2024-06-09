@@ -24,6 +24,9 @@ public class FolderEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<FolderCertificateEntity> folderCertificates = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<SentCertificateEntity> sentCertificates = new ArrayList<>();
+
     @Builder
     public FolderEntity(MemberEntity user, String folderName) {
         this.user = user;

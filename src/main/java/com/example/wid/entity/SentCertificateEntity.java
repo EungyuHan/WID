@@ -1,7 +1,6 @@
 package com.example.wid.entity;
 
 import com.example.wid.entity.base.BaseEntity;
-import com.example.wid.entity.enums.CertificateType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,16 +17,16 @@ public class SentCertificateEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certificate_id")
-    private CertificateInfoEntity certificate;
+    @JoinColumn(name = "folder_id")
+    private FolderEntity folder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "verifier_id")
     private MemberEntity verifier;
 
     @Builder
-    public SentCertificateEntity(CertificateInfoEntity certificate, MemberEntity verifier) {
-        this.certificate = certificate;
+    public SentCertificateEntity(FolderEntity folder, MemberEntity verifier) {
+        this.folder = folder;
         this.verifier = verifier;
     }
 }

@@ -51,6 +51,9 @@ public class MemberEntity extends BaseEntity {
     @OneToMany(mappedBy = "issuer", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CertificateInfoEntity> issuedCertificates = new ArrayList<>();
 
+    @OneToMany(mappedBy = "verifier", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<SentCertificateEntity> sentCertificates = new ArrayList<>();
+
     @Builder
     public MemberEntity(Role role, BelongEntity belong, String username, String password, String email, String name, String phone, String publicKey, String privateKey) {
         this.role = role;

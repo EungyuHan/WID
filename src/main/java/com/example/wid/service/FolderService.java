@@ -48,35 +48,35 @@ public class FolderService {
         folderRepository.save(folder);
     }
 
-public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
-    FolderEntity folder = folderRepository.findById(folderCertificatesDTO.getFolderId())
-            .orElseThrow(InvalidFolderException::new);
+    public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
+        FolderEntity folder = folderRepository.findById(folderCertificatesDTO.getFolderId())
+                .orElseThrow(InvalidFolderException::new);
 
-    MemberEntity user = memberRepository.findByUsername(authentication.getName())
-            .orElseThrow(UserNotFoundException::new);
+        MemberEntity user = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
 
-    if (folder.getFolderCertificates() == null) {
-        folder.setFolderCertificates(new ArrayList<>());
-    }
-
-    for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
-        CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
-                .orElseThrow(() -> new InvalidCertificateException("유효하지 않은 인증서입니다."));
-
-        if (!certificateInfo.getUser().getId().equals(user.getId())) {
-            throw new InvalidCertificateException("인증서 소유자가 아닙니다.");
+        if (folder.getFolderCertificates() == null) {
+            folder.setFolderCertificates(new ArrayList<>());
         }
 
-        FolderCertificateEntity folderCertificate = FolderCertificateEntity.builder()
-                .folder(folder)
-                .certificate(certificateInfo)
-                .build();
-        folderCertificateRepository.save(folderCertificate);
-        folder.getFolderCertificates().add(folderCertificate);
-    }
+        for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
+            CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("유효하지 않은 인증서입니다."));
 
-    folderRepository.save(folder);
-}
+            if (!certificateInfo.getUser().getId().equals(user.getId())) {
+                throw new InvalidCertificateException("인증서 소유자가 아닙니다.");
+            }
+
+            FolderCertificateEntity folderCertificate = FolderCertificateEntity.builder()
+                    .folder(folder)
+                    .certificate(certificateInfo)
+                    .build();
+            folderCertificateRepository.save(folderCertificate);
+            folder.getFolderCertificates().add(folderCertificate);
+        }
+
+        folderRepository.save(folder);
+    }
 
     public List<CertificateInfoEntity> getCertificatesInFolder(Long folderId, Authentication authenticatoin) {
         FolderEntity folder = folderRepository.findById(folderId)
@@ -109,17 +109,12 @@ public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Auth
             throw new InvalidFolderException();
         }
 
-        List<FolderCertificateEntity> folderCertificateEntityList = folder.getFolderCertificates();
-
-        for (FolderCertificateEntity folderCertificate : folderCertificateEntityList) {
-
-            SentCertificateEntity sentCertificate = SentCertificateEntity.builder()
-                    .certificate(folderCertificate.getCertificate())
-                    .verifier(verifier)
-                    .build();
-            sentCertificate.setCertificate(folderCertificate.getCertificate());
-            sentCertificate.setVerifier(verifier);
-            sentCertificateRepository.save(sentCertificate);
-        }
+        SentCertificateEntity sentCertificate = SentCertificateEntity.builder()
+                .folder(folder)
+                .verifier(verifier)
+                .build();
+        folder.getSentCertificates().add(sentCertificate);
+        verifier.getSentCertificates().add(sentCertificate);
+        sentCertificateRepository.save(sentCertificate);
     }
 }
