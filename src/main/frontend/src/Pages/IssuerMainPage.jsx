@@ -60,7 +60,7 @@ function IssuerMainPage(props) {
 
       const handleNavigate = () => {
         const data = { userId: '싸발', token: 'abc123' };
-        navigate('/Working2', { state: data });
+        navigate("/AdminCheckPage", { state: data });
       }
 
 
@@ -126,7 +126,7 @@ function IssuerMainPage(props) {
               </CourseDropdownContent>
             </CourseDropdown>
             <Container>
-            <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>전체 요청 <span style={{ color: '#cf242a' }}>20</span></span></Text>
+            <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>전체 요청 <span style={{ color: '#cf242a' }}>{mails.length}</span></span></Text>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '20px', marginTop: '20px' }}>
                 </div>
                 <ContentsContainer>
@@ -252,7 +252,7 @@ const InformationDiv = styled.div`
     background-color: transparent;
     margin: auto;
     overflow: hidden;
-    border-radius: 5px;
+    
     margin-top:10px;
     margin-bottom: 10px;
 `;
@@ -274,6 +274,10 @@ const MailItem = styled.div`
   height: 100%;
   background-color: transparent;
   border-bottom: 1px solid white;
+  &:hover {
+      background-color: #ffffff40;
+      color: black;
+    }
     
 `;
 

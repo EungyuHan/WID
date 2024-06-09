@@ -37,8 +37,10 @@ const handleNavigate = (destination) => {
     navigate(destination);
 }
 
+
+
 const renderContent = () => {
-    if(vpData === []){
+    if(vpData.length == 0){
         return(
             <ContentsConatiner>
                 <WelcomeTextArea>
@@ -51,7 +53,7 @@ const renderContent = () => {
         return (
             <ContentsConatiner>
                     <InformationDiv ref={el => refs.current['personalInfo'] = el}>
-                        <h3 >Personal Information</h3>
+                        <h3 ></h3>
                         
                     </InformationDiv>
                     <InformationDiv>
@@ -249,7 +251,6 @@ const ContentsConatiner = styled.div`
     top:2%;
     width:90%;
     height:96%;
-    justify-content: center;
     border-radius: 10px;
     overflow: auto;
 `
