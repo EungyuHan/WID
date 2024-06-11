@@ -114,7 +114,7 @@ function IssuerMainPage(props) {
         
               <CourseDropdown>
               
-              <Label htmlFor="dropdown">요청명</Label>
+              <Label htmlFor="dropdown">과목명</Label>
               <CourseDropdownButton onClick={toggleDropdown}>
                 {selectedCourse}
               </CourseDropdownButton>
@@ -229,8 +229,8 @@ const Container = styled.div`
     top: 20%;
     left: 2%;
     background-color: #383838;
-    width: 65%;
-    height: 70%;
+    width: 75%;
+    height: 90%;
     border-radius: 5px;
     `
 const ContentsContainer = styled.div`

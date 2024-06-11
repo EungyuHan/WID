@@ -6,10 +6,15 @@ function VPverifiyModal(props) {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(0);
     useEffect(()=> {
-        setTimeout(()=>{setLoading(!loading)},3000);
+        setTimeout(()=>{setLoading(!loading)},2000);
         setData(data+5);
     },[])
     //불러온 데이터 (인증완료여부)에 따라서 다른 화면을 보여줘야함.
+
+    const renderContents = () => {
+        // 화면을 랜더링하기 위한 함수.
+    }
+
         return (
             <Modals>
                 <ModalContent>
@@ -25,11 +30,32 @@ function VPverifiyModal(props) {
 
                     { !loading && 
                     <ContentContainer>
-                        <div>
-                        
-                        앙 로딩완료 
-                        <h4 style={{color:"white"}}>{data}</h4>
-                        </div>
+                        <FolderNameDiv><FolderName>프로젝트</FolderName></FolderNameDiv>
+                        <VPcontentDiv>
+                            <h4>제목: ㄴㅇㄴㅇㄴㅇㄴㅇ</h4>
+                            <h5>과목: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증자: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증일자: ㄴㅇㄴㅇㄴㅇ</h5>
+                        </VPcontentDiv>
+                        <VPcontentDiv>
+                            <h4>제목: ㄴㅇㄴㅇㄴㅇㄴㅇ</h4>
+                            <h5>과목: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증자: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증일자: ㄴㅇㄴㅇㄴㅇ</h5>
+                        </VPcontentDiv>
+                        <VPcontentDiv>
+                            <h4>제목: ㄴㅇㄴㅇㄴㅇㄴㅇ</h4>
+                            <h5>과목: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증자: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증일자: ㄴㅇㄴㅇㄴㅇ</h5>
+                        </VPcontentDiv>
+                        <FolderNameDiv><FolderName>대회</FolderName></FolderNameDiv>
+                        <VPcontentDiv>
+                            <h4>제목: ㄴㅇㄴㅇㄴㅇㄴㅇ</h4>
+                            <h5>과목: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증자: ㄴㅇㄴㅇㄴㅇ</h5> 
+                            <h5>인증일자: ㄴㅇㄴㅇㄴㅇ</h5>
+                        </VPcontentDiv>
                     </ContentContainer>
                     }
                     <ExitButton onClick={props.onClose}>닫기</ExitButton>
@@ -100,6 +126,31 @@ const ContentContainer = styled.div`
     border-radius: 10px;
     overflow: auto;
     `;
+
+const FolderNameDiv = styled.div`
+    position: relative;
+    width: 100%;
+    height:10%
+`;
+
+const FolderName = styled.h3`
+    position: relative;
+    right: 40%;
+`;
+
+const VPcontentDiv = styled.div`
+    position: relative;
+    left: 2%;
+    width: 90%;
+    height: 30%;   
+    margin: auto; 
+    border-radius: 10px;
+    background-color: #bbbbbb48;
+    overflow: auto;
+    text-align: left;
+`
+
+
 
 const ExitButton = styled.button`
     width: 50px;

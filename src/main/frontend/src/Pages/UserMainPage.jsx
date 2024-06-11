@@ -40,7 +40,7 @@ const handleNavigate = (destination) => {
 
 
 const renderContent = () => {
-    if(vpData.length == 0){
+    if(vpData.length === 0){
         return(
             <ContentsConatiner>
                 <WelcomeTextArea>

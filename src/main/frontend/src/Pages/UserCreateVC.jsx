@@ -33,7 +33,15 @@ function UserCreateVC() {
 
 
     const submit = () => {
-        axios.post()
+        if(file){
+            const formData = new FormData();
+            formData.append('file', file);
+        //첨부파일이 있을때 axios통신
+            
+        }
+        else{
+            // 첨부파일이 없을때, axios 통신 
+        }
 
         setModal(!isModalopen);
     }
