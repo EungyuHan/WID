@@ -1,17 +1,14 @@
 package com.example.wid.entity;
 
+import com.example.wid.entity.enums.Belong;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Entity
-@Getter
-@Setter
-@Table(name="role")
-public class RoleEntity {
+@Entity(name = "belong")
+public class BelongEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String belongName;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Belong belongType;
 }

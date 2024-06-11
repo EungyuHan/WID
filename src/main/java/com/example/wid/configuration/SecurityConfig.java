@@ -41,14 +41,19 @@ public class SecurityConfig {
         http.csrf((auth) ->auth.disable());
         http.formLogin((auth) ->auth.disable());
         http.httpBasic((auth) ->auth.disable());
+        http.headers((headers) -> headers.frameOptions((options) -> options.disable()));
 
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/", "/login", "/register/**", "/error").permitAll() // 해당 경로는 모두 허용
+                .requestMatchers("/h2-console/**").permitAll() // 해당 경로는 모두 허용
+                .requestMatchers("/did/**").permitAll()
+
+                .requestMatchers("/rsa/**", "/folder/**").authenticated() // 해당 경로는 인증된 사용자만 허용
 
                 .requestMatchers("/admin").hasRole("ADMIN") // 해당 경로는 ADMIN 권한만 허용
-                .requestMatchers("/user").hasRole("USER") // 해당 경로는 USER 권한만 허용
-                .requestMatchers("/issuer").hasRole("ISSUER") // 해당 경로는 ISSUER 권한만 허용
-                .requestMatchers("/verifier").hasRole("VERIFIER") // 해당 경로는 VERIFIER 권한만 허용
+                .requestMatchers("/certificate/user/**").hasRole("USER") // 해당 경로는 USER 권한만 허용
+                .requestMatchers("/certificate/issuer/**").hasRole("ISSUER") // 해당 경로는 ISSUER 권한만 허용
+                .requestMatchers("/certificate/verifier/**").hasRole("VERIFIER") // 해당 경로는 VERIFIER 권한만 허용
         );
 
         http.sessionManagement((session) -> session

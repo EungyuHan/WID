@@ -1,4 +1,4 @@
-package com.example.wid.entity;
+package com.example.wid.entity.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
