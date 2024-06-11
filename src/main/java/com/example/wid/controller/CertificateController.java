@@ -1,14 +1,10 @@
 package com.example.wid.controller;
 
 import com.example.wid.dto.ClassCertificateDTO;
-import com.example.wid.dto.ClassCertificateJson;
 import com.example.wid.dto.CompetitionCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateJson;
-import com.example.wid.entity.MemberEntity;
 import com.example.wid.entity.enums.CertificateType;
-import com.example.wid.repository.MemberRepository;
 import com.example.wid.service.CertificateService;
-import com.example.wid.service.FabricService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hyperledger.fabric.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +22,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 
 @RestController
 @RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
-    private final FabricService fabricService;
     @Autowired
-    public CertificateController(CertificateService certificateService, FabricService fabricService) {
+    public CertificateController(CertificateService certificateService) {
         this.certificateService = certificateService;
-        this.fabricService = fabricService;
     }
 
     @PostMapping("/user/class")
@@ -76,14 +69,16 @@ public class CertificateController {
     public ResponseEntity<String> signCertificateUser(@RequestBody Long certificateId) throws EndorseException, CommitException, SubmitException, CommitStatusException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Map<String, String> certificateMap = certificateService.signCertificateUser(certificateId, authentication);
-        fabricService.addNewAssets(certificateMap);
+//        fabricService.addNewAssets(certificateMap);
         return ResponseEntity.ok("증명서 2차 서명 완료");
     }
 
     @GetMapping("/user/certificate/info")
     public ResponseEntity<List<Map<String, String>>> getCertificateJson() throws GatewayException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<Map<String, String>> allCertificates = fabricService.getAllCertificates(authentication);
+        // 임시
+        List<Map<String, String>> allCertificates = null;
+//        List<Map<String, String>> allCertificates = fabricService.getAllCertificates(authentication);
         return ResponseEntity.ok(allCertificates);
     }
 }
