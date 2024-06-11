@@ -2,9 +2,11 @@ package com.example.wid.service;
 
 import com.example.wid.dto.ClassCertificateDTO;
 import com.example.wid.dto.CompetitionCertificateDTO;
+import com.example.wid.dto.base.BaseCertificateJson;
 import com.example.wid.entity.*;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.repository.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +22,7 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -111,7 +114,8 @@ class CertificateServiceTest {
 
         assertEquals(1, classCertificateRepository.findAll().size());
         assertEquals(1, certificateInfoRepository.findAll().size());
-
+        assertEquals(1, userEntity.getUserCertificates().size());
+        assertEquals(1, issuerEntity.getIssuedCertificates().size());
         ClassCertificateEntity classCertificateEntity = classCertificateRepository.findAll().get(0);
         CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
         assertEquals(classCertificateEntity.getCertificateInfo().getId(), certificateInfoEntity.getId());
@@ -142,7 +146,8 @@ class CertificateServiceTest {
 
         assertEquals(1, competitionCertificateRepository.findAll().size());
         assertEquals(1, certificateInfoRepository.findAll().size());
-
+        assertEquals(1, userEntity.getUserCertificates().size());
+        assertEquals(1, issuerEntity.getIssuedCertificates().size());
         CompetitionCertificateEntity classCertificateEntity = competitionCertificateRepository.findAll().get(0);
         CertificateInfoEntity certificateInfoEntity = certificateInfoRepository.findAll().get(0);
         assertEquals(classCertificateEntity.getCertificateInfo().getId(), certificateInfoEntity.getId());
@@ -154,6 +159,7 @@ class CertificateServiceTest {
                 .issuer(issuerEntity)
                 .user(userEntity)
                 .certificateType(CertificateType.CLASS_CERTIFICATE)
+                .isSigned(false)
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
 
@@ -315,5 +321,37 @@ class CertificateServiceTest {
 
         // 테이블에 저장된 20byte와 증명서 암호화 결과의 20byte가 같은지 비교
         assertEquals(encodedRemovedData, entityRemovedByte);
+    }
+
+    @Test
+    @DisplayName("이슈어가 받은 증명요청 목록 조회")
+    void getIssuerCertificate() {
+        CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
+                .issuer(issuerEntity)
+                .user(userEntity)
+                .certificateType(CertificateType.CLASS_CERTIFICATE)
+                .isSigned(false)
+                .build();
+        CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
+
+        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.builder()
+                .certificateInfo(savedCertificateInfo)
+                .name("user")
+                .studentId("201911114")
+                .subject("소프트웨어공학")
+                .professor("김순태")
+                .summary("블록체인 기반 활동내역 증명 서비스")
+                .term("2021.01.01~2021.01.02")
+                .build();
+        ClassCertificateEntity savedClassCertificate = classCertificateRepository.save(classCertificateEntity);
+        userEntity.getUserCertificates().add(savedCertificateInfo);
+        issuerEntity.getIssuedCertificates().add(savedCertificateInfo);
+        assertEquals(1, userEntity.getUserCertificates().size());
+        assertEquals(1, issuerEntity.getIssuedCertificates().size());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(issuerEntity.getUsername(), issuerEntity.getPassword());
+
+        List<BaseCertificateJson> baseCertificateJsons = assertDoesNotThrow(() -> certificateService.getIssuerCertificates(authentication));
+        certificateService.getIssuerCertificates(authentication);
+        assertEquals(1, baseCertificateJsons.size());
     }
 }
