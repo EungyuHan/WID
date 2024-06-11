@@ -1,6 +1,8 @@
 import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 
 function CreateUser(props){
@@ -11,7 +13,7 @@ function CreateUser(props){
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [isCreated, setCreated] = useState(false);
-
+    const [isChecked, setIsChecked]  = useState(true);
 
     const Check = (e) => {
         e.preventDefault();
@@ -28,20 +30,31 @@ function CreateUser(props){
             return alert("사용자의 이름을 적어주세요");
         }
         else {
-            SendUserInfo();    
+            sendUserInfo();    
     };
 
     }
     
-    const SendUserInfo = () => {
-        /* 모두 작성이 완료된 유저 정보를 서버로 전송하는 코드 */ 
+    const sendUserInfo = () => {
         props.UserInfo.name = name;
         props.UserInfo.email = email;
         props.UserInfo.phone = phone;
-        props.UserInfo.username = id;
+        props.UserInfo.id = id;
         props.UserInfo.password = password;
-        console.log(props.UserInfo);
+        axios.post('http://localhost:3001/user', props.UserInfo)
+        getPrivateKey();
         setCreated(true);
+        
+    }
+
+    const getPrivateKey = () => {
+        
+    }
+
+    const closeModal = () => {
+        
+            props.onClose();
+        
     }
     
 
@@ -91,10 +104,23 @@ function CreateUser(props){
             
             {isCreated === true && 
             <ModalContent>
-                <ShowPrivateKey>
-                    개인키입니다 안전한 곳에 보관해주세요
-                    <button onClick={props.onClose}>닫기</button>
-                </ShowPrivateKey>
+                <PrivateKeyModal>
+                    
+                    <h3>'{props.UserInfo.name}' 회원님</h3>
+                    <h3>회원가입을 환영합니다.</h3>
+                    <h5>해당 개인키를 믿을만한 장소에 기록해주세요</h5>
+                    <Instruction>개인키가 타인에게 절대 공개되지 않도록 주의하세요</Instruction>
+                    <PrivateKeyDiv>
+                        <ShowPrivateKey>
+                            123124124124124125153152351235146134631461345345213523512352351235
+                        </ShowPrivateKey>
+                    </PrivateKeyDiv>
+                    <div>
+                    <h5>개인키를 확인했으며 안전한 곳에 저장하였습니다.</h5>
+                    <input type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
+                    </div>
+                    <Button name={"닫기"} onClick={closeModal} disabled={isChecked}></Button>
+                </PrivateKeyModal>
                 
                 
             </ModalContent>
@@ -131,7 +157,6 @@ const ModalContent = styled.div`
     background-color: #cacfd3;
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
-
 `
 const Create = styled.input`
     padding: 10px 25px;
@@ -141,18 +166,57 @@ const Create = styled.input`
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
 `
 
-const ShowPrivateKey = styled.div`
+const PrivateKeyModal = styled.div`
     position: relative;
     top: 10%;
     display: block;
+    justify-content: center;
     width: 50%;
     height: 70%;
     padding: 40px;
     margin: auto;
     text-align: center;
-    background-color: #cacfd3;
+    background: #06345a3d;
     border-radius: 10px;
     box-shadow:0 2px 3px 0 rgba(34,36,38,0.15);
+`
+
+const PrivateKeyDiv = styled.div`
+    background-color: White;
+    display: flex;
+    width: 75%;
+    height: 15%;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    border-radius: 10px;
+`
+
+const ShowPrivateKey = styled.div`
+    position: relative;
+    background-color: White;
+    width: 95%;
+    height: 80%;
+    margin: auto;
+    overflow-x: auto; 
+    white-space: nowrap; 
+`
+
+const colorChange = keyframes`
+    0% {
+        color: red; 
+    }
+    50% {
+        color: white; 
+    }
+    100% {
+        color: red; 
+    }
+`;
+
+const Instruction = styled.h5`
+    animation: ${colorChange} 4s infinite;
 `
 
 
