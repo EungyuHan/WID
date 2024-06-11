@@ -17,23 +17,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.File;
 import java.io.IOException;
 
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+
 
 @Service
 public class CertificateService {
@@ -45,7 +47,11 @@ public class CertificateService {
 
 
     @Autowired
-    public CertificateService(MemberRepository memberRepository, ClassCertificateRepository classCertificateRepository, CompetitionCertificateRepository competitionCertificateRepository, CertificateInfoRepository certificateInfoRepository, EncryptInfoRepository encryptInfoRepository) {
+    public CertificateService(MemberRepository memberRepository,
+                              ClassCertificateRepository classCertificateRepository,
+                              CompetitionCertificateRepository competitionCertificateRepository,
+                              CertificateInfoRepository certificateInfoRepository,
+                              EncryptInfoRepository encryptInfoRepository) {
         this.memberRepository = memberRepository;
         this.classCertificateRepository = classCertificateRepository;
         this.competitionCertificateRepository = competitionCertificateRepository;
@@ -84,16 +90,16 @@ public class CertificateService {
         MultipartFile file = certificateDTO.getFile();
         // 파일 저장 경로 설정
         // 저장경로 상대경로로 수정 요망
-        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + certificateDTO.getStoredFilename();
-        file.transferTo(new File(savePath));
+//        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + certificateDTO.getStoredFilename();
+//        file.transferTo(new File(savePath));
 
         BaseCertificateEntity baseCertificateEntity = certificateDTO.toCertificateEntity();
         if(Boolean.FALSE.equals(saveCertificate(baseCertificateEntity, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
     }
     // issuer가 서명
+    @Transactional
     public void signCertificateIssuer(Long certificateId, Authentication authentication) {
         try{
-
             MemberEntity issuer = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
                 issuer = memberRepository.findByUsername(authentication.getName()).get();
@@ -108,14 +114,6 @@ public class CertificateService {
                             .getDecoder()
                             .decode(issuer.getPrivateKey().getBytes())
                     ));
-            PublicKey publicKey = KeyFactory
-                    .getInstance("RSA")
-                    .generatePublic(new X509EncodedKeySpec(Base64
-                            .getDecoder()
-                            .decode(issuer.getPublicKey().getBytes())
-                    ));
-
-            if(!verifyKey(publicKey, privateKey)) throw new InvalidKeyPairException();
 
             // 인증서 정보 가져오기
             CertificateInfoEntity certificateInfo = null;
@@ -150,9 +148,9 @@ public class CertificateService {
     }
     
     // 사용자가 서명
-    public void signCertificateUser(Long certificateId, Authentication authentication) {
+    @Transactional
+    public Map<String, String> signCertificateUser(Long certificateId, Authentication authentication) {
         try{
-
             MemberEntity user = null;
             if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
                 user = memberRepository.findByUsername(authentication.getName()).get();
@@ -189,6 +187,7 @@ public class CertificateService {
             // 분할된 20byte를 저장
             System.arraycopy(issuerEncrypt, issuerEncrypt.length-20, removedByte, 0, 20);
             certificateInfo.setRemovedByte(Base64.getEncoder().encodeToString(removedByte));
+            certificateInfo.setIsSigned(true);
             certificateInfoRepository.save(certificateInfo);
 
             // 나머지 236byte를 암호화
@@ -200,9 +199,16 @@ public class CertificateService {
 
             // 블록체인 네트워크 연동 후 encryptInfo 삭제하는 코드 추가 필요
             // 블록체인 네트워크에 업로드하는 코드 추가 필요
-            encryptInfo.setUserEncrypt(encodedUserEncrypt);
-            encryptInfoRepository.save(encryptInfo);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+            String didId = "did" + certificateInfo.getId();
+            Map<String, String> certificate = new HashMap<>();
+            certificate.put("assetId", didId);
+            certificate.put("encryptedstring", encodedUserEncrypt);
+            certificate.put("addedstring", certificateInfo.getRemovedByte());
+            certificate.put("type", certificateType.toString());
+            encryptInfoRepository.delete(encryptInfo);
+
+            return certificate;
+        } catch (Exception e) {
             throw new EncryptionException(e.getMessage());
         }
     }
@@ -230,28 +236,6 @@ public class CertificateService {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(data);
-    }
-
-    public byte[] decrypt(byte[] encryptedData, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        return cipher.doFinal(encryptedData);
-    }
-
-    public boolean verifyKey(PublicKey publicKey, PrivateKey privateKey) {
-        try {
-            byte[] testData = new String("test data").getBytes();
-
-            // Encrypt with private key and decrypt with public key
-            byte[] encryptedData = encrypt(testData, publicKey);
-            byte[] decryptedData = decrypt(encryptedData, privateKey);
-
-            // Compare original data with decrypted data
-            return Arrays.equals(testData, decryptedData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
     public boolean saveCertificate(BaseCertificateEntity baseCertificateEntity, CertificateInfoEntity certificateInfoEntity) {
         if(baseCertificateEntity instanceof ClassCertificateEntity classCertificateEntity){

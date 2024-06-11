@@ -40,12 +40,13 @@ public class CompetitionCertificateEntity implements BaseCertificateEntity {
     }
 
     public String serializeCertificateForSignature() {
-        String serializedCompetitionCertificate =
+        String serializedCompetitionCertificate = "{\n" +
                 "\"competitionName\": \"" + competitionName + "\",\n"
                 + "\"achievement\": \"" + achievement + "\",\n"
                 + "\"organizer\": \"" + organizer + "\",\n"
                 + "\"summary\": \"" + summary + "\",\n"
-                + "\"term\": \"" + term + "\"\n";
+                + "\"term\": \"" + term + "\"\n" +
+                "}";
         return serializedCompetitionCertificate;
     }
 }

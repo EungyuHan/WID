@@ -32,7 +32,8 @@ public class ClassCertificateEntity implements BaseCertificateEntity {
     private String storedFilename;
 
     @Builder
-    public ClassCertificateEntity(CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term, String originalFilename, String storedFilename) {
+    public ClassCertificateEntity(Long id, CertificateInfoEntity certificateInfo, String name, String studentId, String subject, String professor, String summary, String term, String originalFilename, String storedFilename) {
+        this.id = id;
         this.certificateInfo = certificateInfo;
         this.name = name;
         this.studentId = studentId;
@@ -46,13 +47,14 @@ public class ClassCertificateEntity implements BaseCertificateEntity {
 
     @Override
     public String serializeCertificateForSignature() {
-        String serializedClassCertificate =
+        String serializedClassCertificate = "{\n" +
                 "\"name\": \"" + name + "\",\n"
                 + "\"studentId\": \"" + studentId + "\",\n"
                 + "\"subject\": \"" + subject + "\",\n"
                 + "\"professor\": \"" + professor + "\",\n"
                 + "\"summary\": \"" + summary + "\",\n"
-                + "\"term\": \"" + term + "\"\n";
+                + "\"term\": \"" + term + "\"\n" +
+                "}";
         return serializedClassCertificate;
     }
 }

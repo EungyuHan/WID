@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,7 +44,8 @@ public class CertificateInfoEntity extends BaseEntity {
     private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
-    public CertificateInfoEntity(MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte, Boolean isSigned) {
+    public CertificateInfoEntity(Long id, MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte) {
+        this.id = id;
         this.user = user;
         this.issuer = issuer;
         this.certificateType = certificateType;
