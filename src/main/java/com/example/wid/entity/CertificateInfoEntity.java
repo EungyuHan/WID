@@ -44,7 +44,7 @@ public class CertificateInfoEntity extends BaseEntity {
     private List<FolderCertificateEntity> folderCertificates;
 
     @Builder
-    public CertificateInfoEntity(Long id, MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte) {
+    public CertificateInfoEntity(Long id, MemberEntity user, MemberEntity issuer, CertificateType certificateType, String removedByte, Boolean isSigned) {
         this.id = id;
         this.user = user;
         this.issuer = issuer;

@@ -33,7 +33,7 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
-    @PostMapping("/user/class")
+    @PostMapping(path = "/user/class", consumes = {"multipart/form-data"})
     public ResponseEntity<String> createClassCertificate(@ModelAttribute ClassCertificateDTO classCertificateDTO) throws IOException{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         certificateService.createCertificate(classCertificateDTO, authentication, CertificateType.CLASS_CERTIFICATE);

@@ -60,6 +60,7 @@ public class CertificateService {
     }
 
     // 증명서 생성
+    @Transactional
     public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) throws IOException {
         // 사용자 인증서 매핑정보 저장
         MemberEntity issuerEntity = null;
