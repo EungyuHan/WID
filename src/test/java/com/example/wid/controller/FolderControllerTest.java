@@ -23,11 +23,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest

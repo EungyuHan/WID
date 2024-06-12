@@ -68,6 +68,6 @@ public class MemberEntity extends BaseEntity {
     }
 
     public String getRole() {
-        return role.name();
+        return role.toString();
     }
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class CertificateController {
     public ResponseEntity<List<Map<String, String>>> getCertificateJson() throws GatewayException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // 임시
-        List<Map<String, String>> allCertificates = null;
+        List<Map<String, String>> allCertificates = new ArrayList<>();
 //        List<Map<String, String>> allCertificates = fabricService.getAllCertificates(authentication);
         return ResponseEntity.ok(allCertificates);
     }
