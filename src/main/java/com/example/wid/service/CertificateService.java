@@ -78,6 +78,7 @@ public class CertificateService {
                 .issuer(issuerEntity)
                 .user(userEntity)
                 .certificateType(certificateType)
+                .isSigned(false)
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
         userEntity.getUserCertificates().add(savedCertificateInfo);
