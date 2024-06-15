@@ -12,8 +12,6 @@ import com.example.wid.entity.*;
 import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.repository.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -32,7 +30,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -214,6 +211,7 @@ public class CertificateService {
         }
     }
 
+    @Transactional
     public List<BaseCertificateJson> getIssuerCertificates(Authentication authentication) {
         MemberEntity issuer = null;
         if (memberRepository.findByUsername(authentication.getName()).isPresent()) {

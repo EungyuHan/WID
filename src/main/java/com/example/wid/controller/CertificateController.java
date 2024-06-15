@@ -53,8 +53,6 @@ public class CertificateController {
     public ResponseEntity<List<BaseCertificateJson>> getCertificateListIssuer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<BaseCertificateJson> issuerCertificates = certificateService.getIssuerCertificates(authentication);
-        if(issuerCertificates.isEmpty())
-            return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(issuerCertificates);
     }
 
