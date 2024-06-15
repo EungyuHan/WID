@@ -2,29 +2,18 @@ package com.example.wid.controller;
 
 import com.example.wid.configuration.JwtIssuerRequestPostProcessor;
 import com.example.wid.configuration.JwtUserRequestPostProcessor;
-import com.example.wid.entity.CertificateInfoEntity;
-import com.example.wid.entity.ClassCertificateEntity;
-import com.example.wid.entity.EncryptInfoEntity;
-import com.example.wid.entity.MemberEntity;
+import com.example.wid.entity.*;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.entity.enums.Role;
-import com.example.wid.repository.CertificateInfoRepository;
-import com.example.wid.repository.ClassCertificateRepository;
-import com.example.wid.repository.EncryptInfoRepository;
-import com.example.wid.repository.MemberRepository;
+import com.example.wid.repository.*;
 import com.example.wid.security.JwtUtil;
-import com.example.wid.service.CertificateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -38,7 +27,8 @@ import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -57,9 +47,9 @@ class CertificateControllerTest {
     @Autowired
     private ClassCertificateRepository classCertificateRepository;
     @Autowired
+    private CompetitionCertificateRepository competitionCertificateRepository;
+    @Autowired
     EncryptInfoRepository encryptInfoRepository;
-    @MockBean
-    private CertificateService certificateService;
 
     private MemberEntity issuerEntity;
     private MemberEntity userEntity;
@@ -178,15 +168,61 @@ class CertificateControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Test
+    @DisplayName("이슈어가 요청받은 인증서 리스트 조회")
+    void getCertificateListIssuer() throws Exception {
+        CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
+                .issuer(issuerEntity)
+                .user(userEntity)
+                .certificateType(CertificateType.CLASS_CERTIFICATE)
+                .isSigned(false)
+                .build();
+        CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
+
+        ClassCertificateEntity classCertificateEntity = ClassCertificateEntity.builder()
+                .certificateInfo(savedCertificateInfo)
+                .name("user")
+                .studentId("201911114")
+                .subject("소프트웨어공학")
+                .professor("김순태")
+                .summary("블록체인 기반 활동내역 증명 서비스")
+                .term("2021.01.01~2021.01.02")
+                .build();
+        classCertificateRepository.save(classCertificateEntity);
+        userEntity.getUserCertificates().add(savedCertificateInfo);
+        issuerEntity.getIssuedCertificates().add(savedCertificateInfo);
+
+        CertificateInfoEntity certificateInfoEntity2 = CertificateInfoEntity.builder()
+                .issuer(issuerEntity)
+                .user(userEntity)
+                .certificateType(CertificateType.COMPETITION_CERTIFICATE)
+                .isSigned(false)
+                .build();
+        CertificateInfoEntity savedCertificateInfo2 = certificateInfoRepository.save(certificateInfoEntity2);
+        CompetitionCertificateEntity competitionCertificateEntity = CompetitionCertificateEntity.builder()
+                .certificateInfo(savedCertificateInfo2)
+                .competitionName("대회")
+                .achievement("우수상")
+                .organizer("주최기관")
+                .summary("블록체인 기반 활동내역 증명 서비스")
+                .term("2021.01.01~2021.01.02")
+                .build();
+        competitionCertificateRepository.save(competitionCertificateEntity);
+        userEntity.getUserCertificates().add(savedCertificateInfo2);
+        issuerEntity.getIssuedCertificates().add(savedCertificateInfo2);
+        memberRepository.save(userEntity);
+        memberRepository.save(issuerEntity);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/certificate/issuer/list")
+                        .with(JwtIssuerRequestPostProcessor.jwtIssuer(jwtUtil, issuerEntity.getUsername(), issuerEntity.getRole()))
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print());
+    }
+
     private byte[] encrypt(byte[] data, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(data);
-    }
-
-    private byte[] decrypt(byte[] encryptedData, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("RSA");
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        return cipher.doFinal(encryptedData);
     }
 }

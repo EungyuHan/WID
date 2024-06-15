@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<MemberEntity> member = memberRepository.findByUsername(username);
         if(member.isPresent()){
             return new CustomUserDetails(member.get());

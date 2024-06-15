@@ -43,13 +43,16 @@ public class MemberEntity extends BaseEntity {
     private String privateKey;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<FolderEntity> folders;
+    private List<FolderEntity> folders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CertificateInfoEntity> userCertificates;
+    private List<CertificateInfoEntity> userCertificates = new ArrayList<>();
 
     @OneToMany(mappedBy = "issuer", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CertificateInfoEntity> issuedCertificates = new ArrayList<>();
+
+    @OneToMany(mappedBy = "verifier", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<SentCertificateEntity> sentCertificates = new ArrayList<>();
 
     @Builder
     public MemberEntity(Role role, BelongEntity belong, String username, String password, String email, String name, String phone, String publicKey, String privateKey) {
@@ -65,6 +68,6 @@ public class MemberEntity extends BaseEntity {
     }
 
     public String getRole() {
-        return role.name();
+        return role.toString();
     }
 }

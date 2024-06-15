@@ -4,7 +4,10 @@ import com.example.wid.controller.exception.EncryptionException;
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.controller.exception.InvalidKeyPairException;
 import com.example.wid.controller.exception.UserNotFoundException;
+import com.example.wid.dto.ClassCertificateJson;
+import com.example.wid.dto.CompetitionCertificateJson;
 import com.example.wid.dto.base.BaseCertificateDTO;
+import com.example.wid.dto.base.BaseCertificateJson;
 import com.example.wid.entity.*;
 import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
@@ -26,6 +29,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
 
 @Service
 public class CertificateService {
@@ -50,6 +57,7 @@ public class CertificateService {
     }
 
     // 증명서 생성
+    @Transactional
     public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) throws IOException {
         // 사용자 인증서 매핑정보 저장
         MemberEntity issuerEntity = null;
@@ -72,6 +80,10 @@ public class CertificateService {
                 .certificateType(certificateType)
                 .build();
         CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfoEntity);
+        userEntity.getUserCertificates().add(savedCertificateInfo);
+        issuerEntity.getIssuedCertificates().add(savedCertificateInfo);
+        memberRepository.save(userEntity);
+        memberRepository.save(issuerEntity);
 
         MultipartFile file = certificateDTO.getFile();
         // 파일 저장 경로 설정
@@ -199,6 +211,24 @@ public class CertificateService {
         }
     }
 
+    @Transactional
+    public List<BaseCertificateJson> getIssuerCertificates(Authentication authentication) {
+        MemberEntity issuer = null;
+        if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
+            issuer = memberRepository.findByUsername(authentication.getName()).get();
+        } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
+
+        List<CertificateInfoEntity> certificateInfoEntities = issuer.getIssuedCertificates();
+        List<BaseCertificateJson> baseCertificateJsons = new ArrayList<>();
+        for(CertificateInfoEntity certificateInfo : certificateInfoEntities){
+            if(certificateInfo.getIsSigned()==false && encryptInfoRepository.findByCertificateInfoId(certificateInfo.getId()).isEmpty()){
+            BaseCertificateJson certificateJson = getCertificateJson(certificateInfo);
+            baseCertificateJsons.add(certificateJson);
+            }
+        }
+        return baseCertificateJsons;
+    }
+
     // 클래스 내부 메소드
     // 테스트를 위해 public으로 선언 , 실제 서비스에서는 private로 변경
     public byte[] encrypt(byte[] data, Key key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -219,6 +249,38 @@ public class CertificateService {
             return true;
         }
         return false;
+    }
+
+    public BaseCertificateJson getCertificateJson(CertificateInfoEntity certificateInfo) {
+        CertificateType certificateType = certificateInfo.getCertificateType();
+        BaseCertificateEntity baseCertificateEntity = getCertificate(certificateInfo.getId(), certificateType);
+        if(baseCertificateEntity == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+        BaseCertificateJson baseCertificateJson = null;
+        if(certificateType == CertificateType.CLASS_CERTIFICATE){
+            ClassCertificateEntity classCertificateEntity = (ClassCertificateEntity) baseCertificateEntity;
+            ClassCertificateJson classCertificateJson = ClassCertificateJson.builder()
+                    .id(certificateInfo.getId())
+                    .name(classCertificateEntity.getName())
+                    .studentId(classCertificateEntity.getStudentId())
+                    .subject(classCertificateEntity.getSubject())
+                    .professor(classCertificateEntity.getProfessor())
+                    .summary(classCertificateEntity.getSummary())
+                    .term(classCertificateEntity.getTerm())
+                    .build();
+            baseCertificateJson = classCertificateJson;
+        } else if(certificateType == CertificateType.COMPETITION_CERTIFICATE){
+            CompetitionCertificateEntity competitionCertificateEntity = (CompetitionCertificateEntity) baseCertificateEntity;
+            CompetitionCertificateJson competitionCertificateJson = CompetitionCertificateJson.builder()
+                    .id(certificateInfo.getId())
+                    .competitionName(competitionCertificateEntity.getCompetitionName())
+                    .achievement(competitionCertificateEntity.getAchievement())
+                    .organizer(competitionCertificateEntity.getOrganizer())
+                    .summary(competitionCertificateEntity.getSummary())
+                    .term(competitionCertificateEntity.getTerm())
+                    .build();
+            baseCertificateJson = competitionCertificateJson;
+        }
+        return baseCertificateJson;
     }
     public BaseCertificateEntity getCertificate(Long certificateId, CertificateType certificateType) {
         if (certificateType == CertificateType.CLASS_CERTIFICATE && classCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {
