@@ -19,9 +19,10 @@ public class ClassCertificateJson implements BaseCertificateJson {
     private String professor;
     private String summary;
     private String term;
+    private String storedFilename;
 
     @Builder
-    public ClassCertificateJson(Long id, String name, String studentId, String subject, String professor, String summary, String term) {
+    public ClassCertificateJson(Long id, String name, String studentId, String subject, String professor, String summary, String term, String storedFilename) {
         this.id = id;
         this.name = name;
         this.studentId = studentId;
@@ -29,5 +30,6 @@ public class ClassCertificateJson implements BaseCertificateJson {
         this.professor = professor;
         this.summary = summary;
         this.term = term;
+        this.storedFilename = storedFilename;
     }
 }

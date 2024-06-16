@@ -36,10 +36,8 @@ public class FolderService {
     }
 
     public void createFolder(String folderName, Authentication authentication) {
-        MemberEntity user = null;
-        if(memberRepository.findByUsername(authentication.getName()).isPresent()){
-            user = memberRepository.findByUsername(authentication.getName()).get();
-        } else throw new UserNotFoundException();
+        MemberEntity user = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
 
         FolderEntity folder = FolderEntity.builder()
                 .folderName(folderName)
@@ -80,7 +78,7 @@ public class FolderService {
 
     public List<CertificateInfoEntity> getCertificatesInFolder(Long folderId, Authentication authenticatoin) {
         FolderEntity folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new InvalidFolderException());
+                .orElseThrow(InvalidFolderException::new);
 
         MemberEntity user = memberRepository.findByUsername(authenticatoin.getName())
                 .orElseThrow(UserNotFoundException::new);
@@ -97,10 +95,10 @@ public class FolderService {
     @Transactional
     public void sendCertificatesToVerifier(Long folderId, Long verifierId, Authentication authentication) {
         FolderEntity folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new InvalidFolderException());
+                .orElseThrow(InvalidFolderException::new);
 
         MemberEntity verifier = memberRepository.findById(verifierId)
-                .orElseThrow(() -> new VerifierNotFoundException());
+                .orElseThrow(VerifierNotFoundException::new);
 
         MemberEntity user = memberRepository.findByUsername(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);

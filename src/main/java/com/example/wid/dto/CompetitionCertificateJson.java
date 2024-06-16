@@ -18,14 +18,16 @@ public class CompetitionCertificateJson implements BaseCertificateJson {
     private String organizer;
     private String summary;
     private String term;
+    private String storedFilename;
 
     @Builder
-    public CompetitionCertificateJson(Long id, String competitionName, String achievement, String organizer, String summary, String term) {
+    public CompetitionCertificateJson(Long id, String competitionName, String achievement, String organizer, String summary, String term, String storedFilename) {
         this.id = id;
         this.competitionName = competitionName;
         this.achievement = achievement;
         this.organizer = organizer;
         this.summary = summary;
         this.term = term;
+        this.storedFilename = storedFilename;
     }
 }

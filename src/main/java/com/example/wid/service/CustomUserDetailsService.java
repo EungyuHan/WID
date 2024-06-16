@@ -4,7 +4,6 @@ import com.example.wid.entity.MemberEntity;
 import com.example.wid.repository.MemberRepository;
 import com.example.wid.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
