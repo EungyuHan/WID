@@ -58,20 +58,15 @@ public class CertificateService {
 
     // 증명서 생성
     @Transactional
-    public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) throws IOException {
+    public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) {
         // 사용자 인증서 매핑정보 저장
-        MemberEntity issuerEntity = null;
-        MemberEntity userEntity = null;
-
         // 이슈어 정보 확인
-        if (memberRepository.findByEmail(certificateDTO.getIssuerEmail()).isPresent()) {
-            issuerEntity = memberRepository.findByEmail(certificateDTO.getIssuerEmail()).get();
-        } else throw new UserNotFoundException("인증서 발급자 정보가 올바르지 않습니다.");
+        MemberEntity issuerEntity = memberRepository.findByEmail(certificateDTO.getIssuerEmail())
+                .orElseThrow(() -> new UserNotFoundException("인증서 발급자 정보가 올바르지 않습니다."));
 
         // 사용자 정보 확인
-        if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
-            userEntity = memberRepository.findByUsername(authentication.getName()).get();
-        } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
+        MemberEntity userEntity = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new UserNotFoundException("사용자 정보가 올바르지 않습니다."));
 
 
         CertificateInfoEntity certificateInfoEntity = CertificateInfoEntity.builder()
@@ -99,12 +94,12 @@ public class CertificateService {
     @Transactional
     public void signCertificateIssuer(Long certificateId, Authentication authentication) {
         try{
-            MemberEntity issuer = null;
-            if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
-                issuer = memberRepository.findByUsername(authentication.getName()).get();
-            } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
+            MemberEntity issuer = memberRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+
             String issuerPrivateKey = issuer.getPrivateKey();
             String issuerPublicKey = issuer.getPublicKey();
+
             if(issuerPrivateKey == null || issuerPublicKey == null) throw new InvalidKeyPairException("키가 존재하지 않습니다.");
             // 인코딩된 개인키와 공개키를 PrivateKey, PublicKey 객체로 변환
             PrivateKey privateKey = KeyFactory
@@ -115,10 +110,8 @@ public class CertificateService {
                     ));
 
             // 인증서 정보 가져오기
-            CertificateInfoEntity certificateInfo = null;
-            if(certificateInfoRepository.findById(certificateId).isPresent()){
-                certificateInfo = certificateInfoRepository.findById(certificateId).get();
-            } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+            CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
             if(encryptInfoRepository.findByCertificateInfoId(certificateId).isPresent()){
                 throw new InvalidCertificateException("이미 서명된 인증서입니다.");
             }
@@ -150,10 +143,8 @@ public class CertificateService {
     @Transactional
     public Map<String, String> signCertificateUser(Long certificateId, Authentication authentication) {
         try{
-            MemberEntity user = null;
-            if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
-                user = memberRepository.findByUsername(authentication.getName()).get();
-            } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
+            MemberEntity user = memberRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
             PublicKey publicKey = KeyFactory
                     .getInstance("RSA")
                     .generatePublic(new X509EncodedKeySpec(Base64
@@ -161,10 +152,8 @@ public class CertificateService {
                             .decode(user.getPublicKey().getBytes())
                     ));
 
-            CertificateInfoEntity certificateInfo = null;
-            if(certificateInfoRepository.findById(certificateId).isPresent()){
-                certificateInfo = certificateInfoRepository.findById(certificateId).get();
-            } else throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
+            CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
 
             CertificateType certificateType = certificateInfo.getCertificateType();
             BaseCertificateEntity baseCertificateEntity = getCertificate(certificateId, certificateType);
@@ -172,10 +161,8 @@ public class CertificateService {
             if(certificateInfo.getUser() != user) throw new InvalidCertificateException("인증서에 대한 권한이 없습니다.");
 
             // 올바른 서명정보인지 확인
-            EncryptInfoEntity encryptInfo = null;
-            if(encryptInfoRepository.findByCertificateInfoId(certificateId).isPresent()){
-                encryptInfo = encryptInfoRepository.findByCertificateInfoId(certificateId).get();
-            } else throw new InvalidCertificateException("발급자 서명 완료되지 않았습니다.");
+            EncryptInfoEntity encryptInfo = encryptInfoRepository.findByCertificateInfoId(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("서명 정보가 존재하지 않습니다."));
 
             // 키사이즈 2048byte = 최대 암호화 가능길이 245byte
             // 1차로 암호화(Issuer 암호화) 시 결과 256byte에서 20byte를 분할
@@ -214,10 +201,8 @@ public class CertificateService {
 
     @Transactional
     public List<BaseCertificateJson> getIssuerCertificates(Authentication authentication) {
-        MemberEntity issuer = null;
-        if (memberRepository.findByUsername(authentication.getName()).isPresent()) {
-            issuer = memberRepository.findByUsername(authentication.getName()).get();
-        } else throw new UserNotFoundException("사용자가 존재하지 않습니다.");
+        MemberEntity issuer = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
 
         List<CertificateInfoEntity> certificateInfoEntities = issuer.getIssuedCertificates();
         List<BaseCertificateJson> baseCertificateJsons = new ArrayList<>();
@@ -237,7 +222,7 @@ public class CertificateService {
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return cipher.doFinal(data);
     }
-    public boolean saveCertificate(BaseCertificateEntity baseCertificateEntity, CertificateInfoEntity certificateInfoEntity) {
+    private boolean saveCertificate(BaseCertificateEntity baseCertificateEntity, CertificateInfoEntity certificateInfoEntity) {
         if(baseCertificateEntity instanceof ClassCertificateEntity classCertificateEntity){
             classCertificateEntity = (ClassCertificateEntity) baseCertificateEntity;
             classCertificateEntity.setCertificateInfo(certificateInfoEntity);
@@ -252,7 +237,7 @@ public class CertificateService {
         return false;
     }
 
-    public BaseCertificateJson getCertificateJson(CertificateInfoEntity certificateInfo) {
+    private BaseCertificateJson getCertificateJson(CertificateInfoEntity certificateInfo) {
         CertificateType certificateType = certificateInfo.getCertificateType();
         BaseCertificateEntity baseCertificateEntity = getCertificate(certificateInfo.getId(), certificateType);
         if(baseCertificateEntity == null) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
@@ -261,6 +246,7 @@ public class CertificateService {
             ClassCertificateEntity classCertificateEntity = (ClassCertificateEntity) baseCertificateEntity;
             ClassCertificateJson classCertificateJson = ClassCertificateJson.builder()
                     .id(certificateInfo.getId())
+                    .storedFilename(classCertificateEntity.getStoredFilename())
                     .name(classCertificateEntity.getName())
                     .studentId(classCertificateEntity.getStudentId())
                     .subject(classCertificateEntity.getSubject())
@@ -273,6 +259,7 @@ public class CertificateService {
             CompetitionCertificateEntity competitionCertificateEntity = (CompetitionCertificateEntity) baseCertificateEntity;
             CompetitionCertificateJson competitionCertificateJson = CompetitionCertificateJson.builder()
                     .id(certificateInfo.getId())
+                    .storedFilename(competitionCertificateEntity.getStoredFilename())
                     .competitionName(competitionCertificateEntity.getCompetitionName())
                     .achievement(competitionCertificateEntity.getAchievement())
                     .organizer(competitionCertificateEntity.getOrganizer())
@@ -283,12 +270,16 @@ public class CertificateService {
         }
         return baseCertificateJson;
     }
-    public BaseCertificateEntity getCertificate(Long certificateId, CertificateType certificateType) {
+    private BaseCertificateEntity getCertificate(Long certificateId, CertificateType certificateType) {
+        BaseCertificateEntity baseCertificateEntity = null;
         if (certificateType == CertificateType.CLASS_CERTIFICATE && classCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {
-            return classCertificateRepository.findByCertificateInfo_Id(certificateId).get();
+            baseCertificateEntity = classCertificateRepository.findByCertificateInfo_Id(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
         } else if (certificateType == CertificateType.COMPETITION_CERTIFICATE && competitionCertificateRepository.findByCertificateInfo_Id(certificateId).isPresent()) {
-            return competitionCertificateRepository.findByCertificateInfo_Id(certificateId).get();
-        } else return null;
+            baseCertificateEntity = competitionCertificateRepository.findByCertificateInfo_Id(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
+        }
+        return baseCertificateEntity;
     }
 }
 
