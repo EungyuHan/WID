@@ -48,16 +48,13 @@ public class FolderService {
         folderRepository.save(folder);
     }
 
+    @Transactional
     public void insertCertificates(FolderCertificatesDTO folderCertificatesDTO, Authentication authentication) {
         FolderEntity folder = folderRepository.findById(folderCertificatesDTO.getFolderId())
                 .orElseThrow(InvalidFolderException::new);
 
         MemberEntity user = memberRepository.findByUsername(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-
-        if (folder.getFolderCertificates() == null) {
-            folder.setFolderCertificates(new ArrayList<>());
-        }
 
         for (Long certificateId : folderCertificatesDTO.getCertificateIds()) {
             CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
