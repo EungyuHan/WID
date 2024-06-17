@@ -1,8 +1,7 @@
 package com.example.wid.service;
 
 import com.example.wid.controller.exception.UserNotFoundException;
-import com.example.wid.entity.CertificateInfoEntity;
-import com.example.wid.entity.MemberEntity;
+import com.example.wid.entity.*;
 import com.example.wid.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,10 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class FabricService {
@@ -72,16 +69,35 @@ public class FabricService {
     }
 
     // 서명된 증명서 정보만 가져오기
-    public List<Map<String, String>> getAllCertificates(Authentication authentication) throws GatewayException, NoSuchAlgorithmException, InvalidKeySpecException, JsonProcessingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        MemberEntity user = null;
-        if(memberRepository.findByUsername(authentication.getName()).isPresent()) {
-            user = memberRepository.findByUsername(authentication.getName()).get();
-        } else throw new UserNotFoundException();
+    public List<Map<String, String>> getAllUserCertificates(Authentication authentication) throws GatewayException, NoSuchAlgorithmException, InvalidKeySpecException, JsonProcessingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        MemberEntity user = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
 
         List<CertificateInfoEntity> certificateInfoEntities = user.getUserCertificates();
+        return getCertificateJsonList(certificateInfoEntities);
+    }
+
+    public List<Map<String, String>> getAllVerifierCertificates(Authentication authentication, Long sentCertificateId) throws GatewayException, NoSuchAlgorithmException, InvalidKeySpecException, JsonProcessingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        MemberEntity verifier = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+
+        SentCertificateEntity sentCertificateEntity = verifier.getSentCertificates().stream()
+                .filter(sentCertificate -> sentCertificate.getId().equals(sentCertificateId))
+                .findAny()
+                .get();
+
+        Stream<FolderCertificateEntity> stream = sentCertificateEntity.getFolder().getFolderCertificates().stream();
+        List<CertificateInfoEntity> certificateInfoEntities = new ArrayList<>();
+        sentCertificateEntity.getFolder().getFolderCertificates().stream()
+                .forEach(folderCertificateEntity -> certificateInfoEntities.add(folderCertificateEntity.getCertificate()));
+        return getCertificateJsonList(certificateInfoEntities);
+    }
+
+    // 내부메소드
+    private List<Map<String, String>> getCertificateJsonList(List<CertificateInfoEntity> certificateInfoEntities) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, JsonProcessingException, GatewayException {
         List<Map<String, String>> certificateJsons = new ArrayList<>();
-        for(CertificateInfoEntity certificateInfoEntity : certificateInfoEntities) {
-            if(certificateInfoEntity.getIsSigned()==false) continue;
+        for(CertificateInfoEntity certificateInfoEntity : certificateInfoEntities){
+            if(!certificateInfoEntity.getIsSigned()) continue;
             String encodedIssuerPrivateKey = certificateInfoEntity.getIssuer().getPrivateKey();
             String encodedUserPublicKey = certificateInfoEntity.getUser().getPublicKey();
 
@@ -118,8 +134,6 @@ public class FabricService {
         }
         return certificateJsons;
     }
-
-    // 내부메소드
     private String readEncryptedCertificate(String assetId) throws GatewayException {
         var evaluateResult = contract.evaluateTransaction("ReadEncryptedAsset", assetId);
         return prettyJson(evaluateResult);

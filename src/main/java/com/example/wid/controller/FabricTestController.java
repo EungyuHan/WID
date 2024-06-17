@@ -28,12 +28,6 @@ public class FabricTestController {
         return "Get All Assets Complete";
     }
 
-    @GetMapping("/addNewAssets")
-    public String addNewAssets() throws EndorseException, CommitException, SubmitException, CommitStatusException {
-//        fabricService.addAsset();
-        return "New Assets Added";
-    }
-
     @PostMapping("/readEncryptedAssets")
     public String readdUCAssets(@RequestParam("didId") Long didId) throws GatewayException {
 //        Long parsedLong = Long.parseLong(didId);
