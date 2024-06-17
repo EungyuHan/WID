@@ -6,6 +6,7 @@ import com.example.wid.controller.exception.InvalidKeyPairException;
 import com.example.wid.controller.exception.UserNotFoundException;
 import com.example.wid.dto.ClassCertificateJson;
 import com.example.wid.dto.CompetitionCertificateJson;
+import com.example.wid.dto.SentCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateJson;
 import com.example.wid.entity.*;
@@ -214,6 +215,27 @@ public class CertificateService {
         }
         return baseCertificateJsons;
     }
+
+    @Transactional
+    public List<SentCertificateDTO> getVerifierCertificates(Authentication authentication) {
+        MemberEntity verifier = memberRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+
+        List<SentCertificateEntity> sentCertificates = verifier.getSentCertificates();
+        List<SentCertificateDTO> sentCertificateDTOs = new ArrayList<>();
+        for(SentCertificateEntity sentCertificate : sentCertificates){
+            FolderEntity folder = sentCertificate.getFolder();
+            SentCertificateDTO sentCertificateDTO = SentCertificateDTO.builder()
+                    .sentCertificateId(sentCertificate.getId())
+                    .folderId(folder.getId())
+                    .userEmail(folder.getUser().getEmail())
+                    .folderName(folder.getFolderName())
+                    .build();
+            sentCertificateDTOs.add(sentCertificateDTO);
+        }
+        return sentCertificateDTOs;
+    }
+
 
     // 클래스 내부 메소드
     // 테스트를 위해 public으로 선언 , 실제 서비스에서는 private로 변경

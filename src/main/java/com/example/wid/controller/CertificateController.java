@@ -2,6 +2,7 @@ package com.example.wid.controller;
 
 import com.example.wid.dto.ClassCertificateDTO;
 import com.example.wid.dto.CompetitionCertificateDTO;
+import com.example.wid.dto.SentCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateJson;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.service.CertificateService;
@@ -76,12 +77,19 @@ public class CertificateController {
         return ResponseEntity.ok("증명서 2차 서명 완료");
     }
 
-    @GetMapping("/user/certificate/info")
+    @GetMapping("/user/list/signed")
     public ResponseEntity<List<Map<String, String>>> getCertificateJson() throws GatewayException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // 임시
         List<Map<String, String>> allCertificates = new ArrayList<>();
 //        List<Map<String, String>> allCertificates = fabricService.getAllCertificates(authentication);
         return ResponseEntity.ok(allCertificates);
+    }
+
+    @GetMapping("/verifier/list/info")
+    public ResponseEntity<List<SentCertificateDTO>> getVerifierCertificateInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<SentCertificateDTO> verifierCertificates = certificateService.getVerifierCertificates(authentication);
+        return ResponseEntity.ok(verifierCertificates);
     }
 }
