@@ -6,6 +6,7 @@ import com.example.wid.dto.SentCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateJson;
 import com.example.wid.entity.enums.CertificateType;
 import com.example.wid.service.CertificateService;
+import com.example.wid.service.FabricService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hyperledger.fabric.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,13 @@ import java.util.Map;
 @RequestMapping("/certificate")
 public class CertificateController {
     private final CertificateService certificateService;
+    private final FabricService fabricService;
     @Autowired
-    public CertificateController(CertificateService certificateService) {
+    public CertificateController(CertificateService certificateService, FabricService fabricService) {
         this.certificateService = certificateService;
+        this.fabricService = fabricService;
     }
+
 
     @PostMapping(path = "/user/class", consumes = {"multipart/form-data"})
     public ResponseEntity<String> createClassCertificate(@ModelAttribute ClassCertificateDTO classCertificateDTO) throws IOException{
@@ -69,7 +73,7 @@ public class CertificateController {
     public ResponseEntity<String> signCertificateUser(@RequestBody Long certificateId) throws EndorseException, CommitException, SubmitException, CommitStatusException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Map<String, String> certificateMap = certificateService.signCertificateUser(certificateId, authentication);
-//        fabricService.addNewAssets(certificateMap);
+        fabricService.addNewAssets(certificateMap);
         return ResponseEntity.ok("증명서 2차 서명 완료");
     }
 
