@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,7 +31,7 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("User Register Test")
-    void registerUser() {
+    void registerUser() throws NoSuchAlgorithmException {
         // given
         RegisterDTO registerDTO = new RegisterDTO();
         registerDTO.setUsername("test");
@@ -44,7 +46,7 @@ class MemberServiceTest {
     }
 
     @Test
-    void registerDuplicatedUser(){
+    void registerDuplicatedUser() throws NoSuchAlgorithmException {
         // given
         RegisterDTO firstRegisterDTO = new RegisterDTO();
         firstRegisterDTO.setUsername("test");
