@@ -14,8 +14,20 @@ function IssuerMainPage(props) {
     const [isOK , setOK] = useState(false);
     const navigate = useNavigate();
 
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         //처음에 요청받은 데이터를 불러오기 위한 axios코드 
+        axios.get('http://localhost:8080/certificate/issuer/list', {
+          headers: {
+              Authorization: `${localStorage.getItem('authToken')}`
+          }
+      }).then(res => {
+        setData(res.data);
+        console.log(res.data);
+        setLoading(!loading);  
+      })
     }, [])
 
     const toggleDropdown = () => {
@@ -37,26 +49,7 @@ function IssuerMainPage(props) {
       };
 
 
-    const mails = [
-        { id: 1, sender: 'qwer1216914@gmail.com', subject: '[소프트웨어공학캡스톤프로젝트] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-01' },
-        { id: 2, sender: 'ivyksy0215@naver.com',  subject: '[데이터베이스] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-02'},
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03'},
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-    ];
+    const mails = data;
 
       const handleNavigate = () => {
         const data = { userId: '싸발', token: 'abc123' };
@@ -66,13 +59,12 @@ function IssuerMainPage(props) {
 
       const filteredMails = useMemo(() => {
         if (selectedCourse === '전체') {
-          return mails;
+          return data;
         } else {
-          return mails.filter(mail => mail.subject.includes(`[${selectedCourse}]`));
+          return data.filter(data => data.subject.includes(`${selectedCourse}`));
         }
       }, [selectedCourse, mails]);
 
-      
 
       const MailList = (props) => {
         return (
@@ -80,13 +72,13 @@ function IssuerMainPage(props) {
             {props.mails.map((mail) => (
               <MailItem key={mail.id} onClick={() => {handleNavigate()}}>
                   <MailInfo>
-                    <Sender>{mail.sender}</Sender>
+                    <Sender>{mail.subject}</Sender>
                   </MailInfo>
                   <MailInfo>
-                    <Subject>{mail.subject}</Subject>
+                    <Subject>{mail.summary}</Subject>
                   </MailInfo>
                   <MailInfo>
-                    <Date>{mail.date}</Date>
+                    <Date>{mail.term}</Date>
                   </MailInfo>
               </MailItem>
             ))}
@@ -94,7 +86,13 @@ function IssuerMainPage(props) {
         );
       };
     
-    
+
+
+    if(loading){
+      return (<div> loading </div>)
+      
+    }
+    else{
       return (
         <BackGround>
           <div style={{ zIndex: 1 }}>
@@ -120,13 +118,13 @@ function IssuerMainPage(props) {
               </CourseDropdownButton>
               <CourseDropdownContent isOpen={isOpen}>
                 <a href="#" onClick={() => handleCourseSelect('전체')}>전체</a>
-                <a href="#" onClick={() => handleCourseSelect('소프트웨어공학캡스톤프로젝트')}>소프트웨어공학캡스톤프로젝트</a>
+                <a href="#" onClick={() => handleCourseSelect('캡스톤 프로젝트')}>캡스톤 프로젝트</a>
                 <a href="#" onClick={() => handleCourseSelect('데이터베이스')}>데이터베이스</a>
                 <a href="#" onClick={() => handleCourseSelect('학부연구생')}>학부연구생</a>
               </CourseDropdownContent>
             </CourseDropdown>
             <Container>
-            <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>전체 요청 <span style={{ color: '#cf242a' }}>{mails.length}</span></span></Text>
+            <Text> <span style={{ borderBottom: '1px solid white', color: 'white' }}>전체 요청 <span style={{ color: '#cf242a' }}>{data.length}</span></span></Text>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '20px', marginTop: '20px' }}>
                 </div>
                 <ContentsContainer>
@@ -145,6 +143,8 @@ function IssuerMainPage(props) {
         <Waves/>
         </BackGround>
       );
+    }
+      
     }
     
 

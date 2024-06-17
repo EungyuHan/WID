@@ -2,7 +2,6 @@ import styled,{keyframes} from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
 import axios from 'axios';
-import { useEffect } from 'react';
 
 
 function CreateUser(props){
@@ -32,32 +31,31 @@ function CreateUser(props){
         else {
             sendUserInfo();    
     };
-
     }
     
     const sendUserInfo = () => {
-        props.UserInfo.name = name;
+        props.UserInfo.username = id;
         props.UserInfo.email = email;
         props.UserInfo.phone = phone;
-        props.UserInfo.id = id;
+        props.UserInfo.name = name;
         props.UserInfo.password = password;
-        axios.post('http://localhost:3001/user', props.UserInfo)
-        getPrivateKey();
+        console.log(props.UserInfo);
+        if(props.UserInfo.Role == "User"){
+            axios.post('http://localhost:8080/register/user', props.UserInfo)
+        }
+        else if(props.UserInfo.Role == "Issuer"){
+            axios.post('http://localhost:8080/register/issuer', props.UserInfo)
+        }
+        else if(props.UserInfo.Role == "Verifier"){
+            axios.post('http://localhost:8080/reigster/verifier', props.UserInfo)
+        }
         setCreated(true);
-        
-    }
-
-    const getPrivateKey = () => {
-        
     }
 
     const closeModal = () => {
-        
             props.onClose();
-        
     }
     
-
     return(
 
         <Modals>
@@ -105,31 +103,19 @@ function CreateUser(props){
             {isCreated === true && 
             <ModalContent>
                 <PrivateKeyModal>
-                    
                     <h3>'{props.UserInfo.name}' 회원님</h3>
                     <h3>회원가입을 환영합니다.</h3>
-                    <h5>해당 개인키를 믿을만한 장소에 기록해주세요</h5>
-                    <Instruction>개인키가 타인에게 절대 공개되지 않도록 주의하세요</Instruction>
-                    <PrivateKeyDiv>
-                        <ShowPrivateKey>
-                            123124124124124125153152351235146134631461345345213523512352351235
-                        </ShowPrivateKey>
-                    </PrivateKeyDiv>
+                    <Instruction>비밀번호가 공개되지 않도록 주의해주세요</Instruction>
                     <div>
-                    <h5>개인키를 확인했으며 안전한 곳에 저장하였습니다.</h5>
+                    <h5>로그인 후 서비스를 이용해주세요.</h5>
                     <input type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
                     </div>
                     <Button name={"닫기"} onClick={closeModal} disabled={isChecked}></Button>
                 </PrivateKeyModal>
                 
-                
             </ModalContent>
-            
-            
             }
-
         </Modals>
-        
     )
 }
 

@@ -1,11 +1,13 @@
 import styled,{keyframes} from 'styled-components';
 import React,{ useState  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import CreateUser from '../Components/CreateUser';
 import SelectUser from '../Components/SelectUser';
 import axios from 'axios';
-
+import base64 from 'base-64';
+import { useAuth } from '../LoginComponent/AuthContext';
 
 function Loginpage(){
     const [id, setID] = useState("");
@@ -14,13 +16,15 @@ function Loginpage(){
     const [isSelected, setSelect] = useState(false);
     const [selectedValue, setSelectedValue] = useState('');
     
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    
     const [userInfo, setUserInfo] = useState({
-        Role:"",
-        name:"",
-        email:"",
-        phone:"",
-        id:"",
-        password:""
+        "username" : null,
+        "password" : null,
+        "name" : null,
+        "email" : null,
+        "phone" : null
     });
 
 
@@ -48,10 +52,28 @@ function Loginpage(){
             return alert("passward를 입력해주세요");
         }
         else {
-            axios.post('http://localhost:3001/Login', {
-                userId : id,
-                userPassword : password
-            })
+            const formData = new FormData();
+            formData.append("username" , id);
+            formData.append("password", password);
+            axios.post('http://localhost:8080/login',formData)
+            .then(res => {
+                login(res.headers.authorization);
+                let token = res.headers.authorization.replace(/^Bearer\s+/, '');
+                let payload = token.substring(token.indexOf('.')+1,token.lastIndexOf('.'));
+                let decoded = base64.decode(payload);
+                let decodedTOJson = JSON.parse(decoded);
+                
+                if(decodedTOJson.role == "ROLE_USER"){
+                    navigate('/MainPage');
+                }
+                else if(decodedTOJson.role == "ROLE_ISSUER"){
+                    navigate('/AdminPage');
+                }
+                else if(decodedTOJson.role == "ROLE_ISSUER"){
+                    navigate('/VerifierPage')
+                }
+            }
+                );
         }
     }
 

@@ -2,7 +2,7 @@ import Button from '../Components/Button';
 import React,{ useState } from 'react';
 import styled from 'styled-components';
 import Waves from '../Components/Waves';
-import {Link} from 'react-router-dom';
+import {Link, useAsyncError} from 'react-router-dom';
 import { pdfjs } from 'react-pdf';
 import PDFpreviewer from '../Components/PDFpreviewer';
 import ConfirmSubmitModal from '../Components/ConfirmSubmitModal';
@@ -11,18 +11,21 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function UserCreateVC() {
     const [name, setName] = useState("");
-    const [school, setSchool] = useState("");
-    const [major, setMajor] = useState("");
     const [subject, setSubject] = useState("");
+    const [professor , setProfessor] = useState("");
     const [issuer, setIssuer] = useState("");
-    const [term, setTerm] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [summary, setSummary] = useState("");
 
     const [file, setFile] = useState(null);
+    const [sendFile, setSendFile] = useState(null);
     const [isModalopen, setModal] = useState(false);
     
     const handleFileChange = (event) =>{
         const inputFile = event.target.files[0];
         if(inputFile) {
+            setSendFile(inputFile);
             const reader = new FileReader();
             reader.onload = function (event) {
                 setFile(event.target.result);
@@ -33,18 +36,26 @@ function UserCreateVC() {
 
 
     const submit = () => {
-        if(file){
-            const formData = new FormData();
-            formData.append('file', file);
-        //첨부파일이 있을때 axios통신
-            
-        }
-        else{
-            // 첨부파일이 없을때, axios 통신 
-        }
 
+        if(sendFile){
+            const formData = new FormData();
+            formData.append('studentID', name);
+            formData.append('subject', subject);
+            formData.append('professor', professor);
+            formData.append('summary', summary);
+            formData.append('startDate', startDate);
+            formData.append('endDate', endDate);
+            formData.append('issuerEmail',issuer);
+            formData.append('file', sendFile);
+            axios.post("http://localhost:8080/certificate/user/class", formData,{
+                headers: {
+                    Authorization: `${localStorage.getItem('authToken')}`
+                }
+            });
         setModal(!isModalopen);
     }
+
+}
 
     return(
         <BackGround>
@@ -69,11 +80,11 @@ function UserCreateVC() {
                 <FormContainer>
                     <form>
                     <FormH4>신청인  <FormInput onChange={(e)=>{setName(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>학교    <FormInput onChange={(e)=>{setSchool(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>전공 <FormInput onChange={(e)=>{setMajor(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>신청교수    <FormInput onChange={(e)=>{setProfessor(e.target.value);}}></FormInput></FormH4>
                     <FormH4>과목 <FormInput onChange={(e)=>{setSubject(e.target.value);}}></FormInput></FormH4>
                     <FormH4>요청대상 <FormInput onChange={(e)=>{setIssuer(e.target.value);}}></FormInput></FormH4>
-                    <FormH4>작업기간 <FormInput onChange={(e)=>{setTerm(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>시작일 <FormInput onChange={(e)=>{setStartDate(e.target.value);}}></FormInput></FormH4>
+                    <FormH4>마감일 <FormInput onChange={(e)=>{setEndDate(e.target.value);}}></FormInput></FormH4>
                     <div style={{background:'white', width:'50%'}}><input type={'file'} 
                     onChange={handleFileChange}></input></div>
                     </form>
@@ -83,7 +94,7 @@ function UserCreateVC() {
     
                 <DescriptionContainer>
                     <FormH4>설명</FormH4>
-                    <DescriptionTextarea></DescriptionTextarea>
+                    <DescriptionTextarea onChange={(e)=>{setSummary(e.target.value);}}></DescriptionTextarea>
                 </DescriptionContainer>
                 
                 <PreviewContainer>
