@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
@@ -21,7 +23,7 @@ public class RegisterController {
 
     // 일반 사용자 회원가입
     @PostMapping("/user")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) throws NoSuchAlgorithmException {
         boolean isRegister = memberService.registerMember(registerDTO, Role.ROLE_USER);
 
         // 회원가입 성공시 200 OK, 실패시 400 Bad Request
@@ -33,7 +35,7 @@ public class RegisterController {
     }
 
     @PostMapping("/issuer")
-    public ResponseEntity<?> registerIssuer(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> registerIssuer(@RequestBody RegisterDTO registerDTO) throws NoSuchAlgorithmException {
         boolean isRegister = memberService.registerMember(registerDTO, Role.ROLE_ISSUER);
 
         // 회원가입 성공시 200 OK, 실패시 400 Bad Request
@@ -45,7 +47,7 @@ public class RegisterController {
     }
 
     @PostMapping("/verifier")
-    public ResponseEntity<?> registerVerifier(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> registerVerifier(@RequestBody RegisterDTO registerDTO) throws NoSuchAlgorithmException {
         boolean isRegister = memberService.registerMember(registerDTO, Role.ROLE_VERIFIER);
 
         // 회원가입 성공시 200 OK, 실패시 400 Bad Request
