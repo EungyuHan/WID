@@ -199,7 +199,7 @@ class FolderServiceTest {
                 .build();
         folderCertificateRepository.save(folderCertificate2);
 
-        folderService.sendCertificatesToVerifier(folder.getId(), verifier.getId(), authentication);
+        folderService.sendCertificatesToVerifier(folder.getId(), verifier.getEmail(), authentication);
 
         assertEquals(2, folderCertificateRepository.findAll().size());
         assertEquals(1, sentCertificateRepository.findAll().size());

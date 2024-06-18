@@ -260,7 +260,7 @@ class CertificateServiceTest {
         classCertificateRepository.save(classCertificate);
 
         Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
-        assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId(), userAuthentication));
+        assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId()));
     }
     @Test
     @DisplayName("대회 인증서 유저 2차 서명 성공")
@@ -302,7 +302,7 @@ class CertificateServiceTest {
         competitionCertificateRepository.save(competitionCertificate);
 
         Authentication userAuthentication = new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
-        assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId(), userAuthentication));
+        assertDoesNotThrow(() -> certificateService.signCertificateUser(savedCertificateInfo.getId()));
 
         EncryptInfoEntity updatedSignatureInfo = encryptInfoRepository.findById(savedEncryptInfo.getId()).get();
         assertNotNull(updatedSignatureInfo.getUserEncrypt());

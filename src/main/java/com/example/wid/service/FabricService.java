@@ -12,6 +12,7 @@ import org.hyperledger.fabric.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -69,6 +71,7 @@ public class FabricService {
     }
 
     // 서명된 증명서 정보만 가져오기
+    @Transactional
     public List<Map<String, String>> getAllUserCertificates(Authentication authentication) throws GatewayException, NoSuchAlgorithmException, InvalidKeySpecException, JsonProcessingException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         MemberEntity user = memberRepository.findByUsername(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
@@ -98,35 +101,40 @@ public class FabricService {
         List<Map<String, String>> certificateJsons = new ArrayList<>();
         for(CertificateInfoEntity certificateInfoEntity : certificateInfoEntities){
             if(!certificateInfoEntity.getIsSigned()) continue;
-            String encodedIssuerPrivateKey = certificateInfoEntity.getIssuer().getPrivateKey();
-            String encodedUserPublicKey = certificateInfoEntity.getUser().getPublicKey();
+            String encodedUserPriavateKey = certificateInfoEntity.getUser().getPrivateKey();
+            String encodedIssuerPublicKey = certificateInfoEntity.getIssuer().getPublicKey();
 
-            PrivateKey issuerPrivateKey = KeyFactory
+            PrivateKey userPrivateKey = KeyFactory
                     .getInstance("RSA")
                     .generatePrivate(new PKCS8EncodedKeySpec(Base64
                             .getDecoder()
-                            .decode(encodedIssuerPrivateKey.getBytes())
+                            .decode(encodedUserPriavateKey.getBytes())
                     ));
-            PublicKey userPublicKey = KeyFactory
+            PublicKey issuerPublicKey = KeyFactory
                     .getInstance("RSA")
-                    .generatePublic(new PKCS8EncodedKeySpec(Base64
+                    .generatePublic(new X509EncodedKeySpec(Base64
                             .getDecoder()
-                            .decode(encodedUserPublicKey.getBytes())
+                            .decode(encodedIssuerPublicKey.getBytes())
                     ));
-
+            System.out.println("===============================");
             Long id = certificateInfoEntity.getId();
             String didId = "did" + id;
             String encryptedCertificate = readEncryptedCertificate(didId);
             Map<String, String> encryptMap = objectMapper.readValue(encryptedCertificate, Map.class);
             byte[] encryptedStrings = Base64.getDecoder().decode(encryptMap.get("encryptedstring"));
-            byte[] decryptByUser = decrypt(encryptedStrings,userPublicKey);
+            System.out.println("블록체인 2차 암호화 값 : " + encryptMap.get("encryptedstring"));
+            byte[] decryptByUser = decrypt(encryptedStrings,userPrivateKey);
+            System.out.println("1차 복호화 값 : " + Base64.getEncoder().encodeToString(decryptByUser));
 
             byte[] originalData = new byte[decryptByUser.length + 20];
             byte[] removedData = Base64.getDecoder().decode(encryptMap.get("addedstring"));
             System.arraycopy(removedData, 0, originalData, 0, 20);
             System.arraycopy(decryptByUser, 0, originalData, 20, decryptByUser.length);
+            System.out.println("블록체인 - 제거된 데이터 : " + encryptMap.get("addedstring"));
+            System.out.println("합쳐진 데이터 : " + Base64.getEncoder().encodeToString(originalData));
 
-            byte[] decryptByIssuer = decrypt(originalData, issuerPrivateKey);
+            byte[] decryptByIssuer = decrypt(originalData, issuerPublicKey);
+            System.out.println(new String(decryptByIssuer));
             Map<String, String> certificateJson = objectMapper.readValue(new String(decryptByIssuer), Map.class);
             certificateJson.put("id", id.toString());
 

@@ -30,11 +30,8 @@ function ConfirmCertificationModal(props) {
                     <InformText>이슈어의 키로 암호화되기 때문에 해당 내용을 증명해준</InformText>
                     <InformText>교수님의 성함이 블록체인 내에 저장이 된다는 사실을 고지합니다.</InformText>
                 </InformDiv>
-                <div>
-                <h4>상기의 내용을 확인하였습니다.</h4>
-                <input style={{background:'white', width:'25px', height:'25px',margin:'auto'}} type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
-                </div>
-                <Button name={'인증완료'}  disabled={!isChecked} onClick={submit}></Button>
+
+                <Button name={'인증완료'}  onClick={submit}></Button>
 
             </ModalContent>
         </Modals>

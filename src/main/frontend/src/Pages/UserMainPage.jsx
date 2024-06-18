@@ -6,19 +6,22 @@ import axios from 'axios';
 import CheckPrivateModal from '../Components/CheckPrivateModal';
 import HelpModal from '../Components/HelpModal';
 
-
 function UserMainPage(props) {
 const [PKchecked, setPKchecked] = useState(false);
 const [isHelpClicked, setHelp] = useState(false);
-const [vpData, setVPdata] = useState([]);
+const [vcData, setVCdata] = useState(null);
 const refs = useRef({});
 const navigate = useNavigate();
 
-
 useEffect(() => {
-    axios.get('http://localhost:3001/VP')
-    .then(response => {
-        setVPdata(response.data);
+    axios.get('http://localhost:8080/certificate/user/list/signed',{
+        headers: {
+            Authorization: `${localStorage.getItem('authToken')}`
+        }
+    })
+    .then(res => {
+        console.log(res);
+        setVCdata(res.data);
     })
 },[])
 
@@ -26,6 +29,7 @@ const goToRef = (index) => {
     if(refs.current[index]){
         refs.current[index].scrollIntoView({ behavior: 'smooth' });
     }
+    console.log("이동완료");
 };
 
 const toggleHelp = () => {
@@ -38,9 +42,27 @@ const handleNavigate = (destination) => {
 }
 
 
+const renderVCList = () => {
+    const dataList = vcData.map((data) => {return data})
+    return(
+        <ContentsConatiner>
+            {dataList.map((data) => (
+                <InformationDiv key={data.id} ref={el => refs.current[data.id] = el}>
+                    <h3>{data.subject}</h3>
+                    <h5>증명서 ID : {data.id}</h5>
+                    <h5>요약 : {data.summary}</h5>
+                    <h5>진행기간 : {data.term}</h5>
+                </InformationDiv>
+            ))
+            }
+        </ContentsConatiner>        
+    )
+
+}
+
 
 const renderContent = () => {
-    if(vpData.length === 0){
+    if(vcData === null || vcData.length === 0){
         return(
             <ContentsConatiner>
                 <WelcomeTextArea>
@@ -51,37 +73,21 @@ const renderContent = () => {
     }
     else{
         return (
-            <ContentsConatiner>
-                    <InformationDiv ref={el => refs.current['personalInfo'] = el}>
-                        <h3 ></h3>
-                        
-                    </InformationDiv>
-                    <InformationDiv>
-                        <h3 ref={el => refs.current['experience'] = el}>Experience</h3>
-
-                    </InformationDiv>
-                    <InformationDiv>
-                        <h3  ref={el => refs.current['education'] = el}>Education</h3>
-                        
-                    </InformationDiv>
-                    <InformationDiv>
-                        <h3 ref={el => refs.current['achievement'] = el} >Achivement</h3>
-                        
-                    </InformationDiv>
-                    <InformationDiv>
-                        <h3 ref={el => refs.current['interest'] = el}>Interests</h3>
-                        
-                    </InformationDiv>
-                </ContentsConatiner>
+            renderVCList()
         )
     }
 }
 
 const renderNavList = () => {
-    const newlistName = vpData.map(item => Object.keys(item)[0]);
-    return newlistName.map((itemName)=> (
-        <NavButton>{itemName}</NavButton>
-    ))
+    if(vcData === null){
+        return (<NavButton/>)
+    }
+    else{
+        return vcData.map((data)=> (
+            <NavButton onClick={() => {goToRef(data.id)}}>{data.subject}</NavButton>
+        ))
+    }
+
 }
 
 return (
@@ -93,9 +99,7 @@ return (
             <LogoBar>
             <img src='img/logo.png' width={`102px`} height={`81px`} alt='Logo'></img>
             </LogoBar>
-            <UserprofileContainer>
-                <UserProfile></UserProfile>
-            </UserprofileContainer>
+
             {renderNavList()}
         </NavBarRight>
         </NavBar>
@@ -144,6 +148,7 @@ const NavBarLeft = styled.div`
     height: 100%;
     background-color: #383838;
     border-right: 3px solid white;
+    
 `
 
 const NavBarRight = styled.div`
@@ -151,6 +156,7 @@ const NavBarRight = styled.div`
     width: 85%;
     height: 100%;
     background-color: #383838;
+    overflow: auto;
 `
 
 const LogoBar = styled.div`

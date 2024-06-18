@@ -1,9 +1,25 @@
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import React,{ useState } from 'react';
 import Button from '../Components/Button';
+import axios from 'axios';
 
 function SetItemNameModal(props) {
     const [itemName, setName] = useState("");
+    const [item, setItem] = useState(null);
+
+    async function sendFolder() {
+        const folderName = { "folderName" : itemName }
+        axios.post('http://localhost:8080/folder/create', folderName , {
+        headers: {
+            Authorization: `${localStorage.getItem('authToken')}`
+        }
+        }).then((res) => {
+            console.log(res.data);
+            const newItem = {itemName : itemName, folderID : res.data};
+            props.getString(newItem);
+        })
+        
+    }
 
     return (  
         <Modals>
@@ -12,9 +28,8 @@ function SetItemNameModal(props) {
                 <ItemNameInput type='text' value={itemName} placeholder='항목명' onChange={(e)=>{
                             setName(e.target.value)
                         }}></ItemNameInput>
-                <Button name="확인" onClick={ ()=>{
-                    props.getString(itemName);
-                    setName("");
+                <Button name="확인" onClick={()=>{
+                    sendFolder();
                     props.onClick();
                 }} ></Button>
             </ModalContent>

@@ -29,6 +29,9 @@ function IssuerMainPage(props) {
         setLoading(!loading);  
       })
     }, [])
+    
+
+    const mails = data;
 
     const toggleDropdown = () => {
       setIsOpen(!isOpen);
@@ -49,11 +52,9 @@ function IssuerMainPage(props) {
       };
 
 
-    const mails = data;
-
-      const handleNavigate = () => {
-        const data = { userId: '싸발', token: 'abc123' };
-        navigate("/AdminCheckPage", { state: data });
+      const handleNavigate = (mail) => {
+        const sendData = mail;
+        navigate("/AdminCheckPage", { state: sendData });
       }
 
 
@@ -70,7 +71,7 @@ function IssuerMainPage(props) {
         return (
           <MailListContainer>
             {props.mails.map((mail) => (
-              <MailItem key={mail.id} onClick={() => {handleNavigate()}}>
+              <MailItem key={mail.id} onClick={() => {handleNavigate(mail)}}>
                   <MailInfo>
                     <Sender>{mail.subject}</Sender>
                   </MailInfo>

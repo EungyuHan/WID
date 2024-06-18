@@ -23,6 +23,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.File;
 import java.io.IOException;
 
 import java.security.*;
@@ -59,7 +60,7 @@ public class CertificateService {
 
     // 증명서 생성
     @Transactional
-    public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) {
+    public void createCertificate(BaseCertificateDTO certificateDTO, Authentication authentication, CertificateType certificateType) throws IOException {
         // 사용자 인증서 매핑정보 저장
         // 이슈어 정보 확인
         MemberEntity issuerEntity = memberRepository.findByEmail(certificateDTO.getIssuerEmail())
@@ -85,15 +86,15 @@ public class CertificateService {
         MultipartFile file = certificateDTO.getFile();
         // 파일 저장 경로 설정
         // 저장경로 상대경로로 수정 요망
-//        String savePath = "C:/Users/SAMSUNG/Desktop/wid/src/main/resources/static/" + certificateDTO.getStoredFilename();
-//        file.transferTo(new File(savePath));
+        String savePath = "/Users/son-yeongbin/Fabric_Sample/fabric-samples/asset-transfer-basic/WID2/src/main/resources/static" + certificateDTO.getStoredFilename();
+        file.transferTo(new File(savePath));
 
         BaseCertificateEntity baseCertificateEntity = certificateDTO.toCertificateEntity();
         if(Boolean.FALSE.equals(saveCertificate(baseCertificateEntity, savedCertificateInfo))) throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
     }
     // issuer가 서명
     @Transactional
-    public void signCertificateIssuer(Long certificateId, Authentication authentication) {
+    public Map<String, String> signCertificateIssuer(Long certificateId, Authentication authentication) {
         try{
             MemberEntity issuer = memberRepository.findByUsername(authentication.getName())
                     .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
@@ -113,9 +114,13 @@ public class CertificateService {
             // 인증서 정보 가져오기
             CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
                     .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
-            if(encryptInfoRepository.findByCertificateInfoId(certificateId).isPresent()){
-                throw new InvalidCertificateException("이미 서명된 인증서입니다.");
-            }
+
+            PublicKey publicKey = KeyFactory
+                    .getInstance("RSA")
+                    .generatePublic(new X509EncodedKeySpec(Base64
+                            .getDecoder()
+                            .decode(certificateInfo.getUser().getPublicKey().getBytes())
+                    ));
 
             // 인증서 정보에 저장된 하위 증명서 가져오기
             CertificateType certificateType = certificateInfo.getCertificateType();
@@ -124,37 +129,51 @@ public class CertificateService {
 
             // 서명 정보 생성
             String serializedClassCertificate = baseCertificateEntity.serializeCertificateForSignature();
+            // 1차 서명
             byte[] encryptData = encrypt(serializedClassCertificate.getBytes(), privateKey);
+            System.out.println("1차 암호화 : " + Base64.getEncoder().encodeToString(encryptData));
+            // 1차 서명 결과에서 앞에서 20byte를 분할하여 저장
+            byte[] removedByte = new byte[20];
+            System.arraycopy(encryptData, 0, removedByte, 0, 20);
+            certificateInfo.setRemovedByte(Base64.getEncoder().encodeToString(removedByte));
+            System.out.println("암호화중 제거된 데이터 : " + Base64.getEncoder().encodeToString(removedByte));
+            certificateInfo.setIsSigned(true);
+            certificateInfoRepository.save(certificateInfo);
 
-            CertificateInfoEntity savedCertificateInfo = certificateInfoRepository.save(certificateInfo);
-            EncryptInfoEntity encryptInfoEntity = EncryptInfoEntity.builder()
-                    .issuerEncrypt(serializedClassCertificate)
-                    .issuerPublicKey(issuer.getPublicKey())
-                    .issuerEncrypt(Base64.getEncoder().encodeToString(encryptData))
-                    .certificateInfo(savedCertificateInfo)
-                    .build();
-            // 서명 정보 저장
-            encryptInfoRepository.save(encryptInfoEntity);
+            // 2차 암호화를 위해 20byte를 제외한 데이터만 추출
+            byte[] compressedEncryptByte = new byte[encryptData.length-20];
+            System.arraycopy(encryptData, 20, compressedEncryptByte, 0, compressedEncryptByte.length);
+            System.out.println("2차 암호화를 위해 압축된 데이터 : " + Base64.getEncoder().encodeToString(compressedEncryptByte));
+            // 2차 암호화
+            byte[] reEncryptData = encrypt(compressedEncryptByte, publicKey);
+            System.out.println("2차 암호화 : " + Base64.getEncoder().encodeToString(reEncryptData));
+            String encodedUserEncrypt = Base64.getEncoder().encodeToString(reEncryptData);
+
+            String didId = "did" + certificateInfo.getId();
+            Map<String, String> certificate = new HashMap<>();
+            certificate.put("assetId", didId);
+            certificate.put("encryptedstring", encodedUserEncrypt);
+            certificate.put("addedstring", certificateInfo.getRemovedByte());
+            certificate.put("type", certificateType.toString());
+
+            return certificate;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new EncryptionException(e.getMessage());
         }
     }
-    
     // 사용자가 서명
     @Transactional
-    public Map<String, String> signCertificateUser(Long certificateId, Authentication authentication) {
+    public Map<String, String> signCertificateUser(Long certificateId) {
         try{
-            MemberEntity user = memberRepository.findByUsername(authentication.getName())
-                    .orElseThrow(() -> new UserNotFoundException("사용자가 존재하지 않습니다."));
+            CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
+                    .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
+            MemberEntity user = certificateInfo.getUser();
             PublicKey publicKey = KeyFactory
                     .getInstance("RSA")
                     .generatePublic(new X509EncodedKeySpec(Base64
                             .getDecoder()
                             .decode(user.getPublicKey().getBytes())
                     ));
-
-            CertificateInfoEntity certificateInfo = certificateInfoRepository.findById(certificateId)
-                    .orElseThrow(() -> new InvalidCertificateException("인증서 정보가 올바르지 않습니다."));
 
             CertificateType certificateType = certificateInfo.getCertificateType();
             BaseCertificateEntity baseCertificateEntity = getCertificate(certificateId, certificateType);

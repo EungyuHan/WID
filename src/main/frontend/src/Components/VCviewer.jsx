@@ -8,20 +8,23 @@ function VCviewer(props) {
     const [loading, setLoading] = useState(true);
     
     useEffect(() => {
-        axios.get('http://localhost:3001/vccontent')
+        axios.get('http://localhost:8080/certificate/user/list/signed',{
+            headers: {
+                Authorization: `${localStorage.getItem('authToken')}`
+            }
+        })
         .then(response => {
             setVCdata(response.data);
-            console.log(vcdata);
-            setLoading(false);
+            setLoading(!loading);
         })
     },[])
 
 
 
-    const addVC = (name,index,) => {
-        const newList = [...props.content, {id: index,  content: name}];
+    const addVC = (name,index,id) => {
+        const newList = [...props.content, {id: index,  content: name , certificateIds : id}];
         props.setContent(newList);
-        console.log(newList);
+        
     }
     
     const deleteVC = (name) => {
@@ -35,7 +38,7 @@ function VCviewer(props) {
                 <VC_List_Container>
                     <VCcontentDiv width={'80%'}>{data.summary}</VCcontentDiv>
                     <VCcontentDiv width={'20%'}>
-                        <AddVCbutton onClick={()=>{addVC(data , props.focusIndex)}}>추가</AddVCbutton>
+                        <AddVCbutton onClick={()=>{addVC(data , props.focusIndex , data.id)}}>추가</AddVCbutton>
                         <DeleteVCbutton onClick={()=>{deleteVC(data.summary)}}>삭제</DeleteVCbutton>
                         
                     </VCcontentDiv>

@@ -3,41 +3,49 @@ import React, { useState } from 'react';
 import Button from './Button';
 
 function CheckCertificationModal(props) {
-  
 
-  return (
-    <Modals>
-      <ModalContent>
-        <h2 style={{ color: 'white' }}>귀하가 인증하고자 하는 내역입니다.</h2>
-        <InformDiv>
-          <InformItem>
-            <InformText>
-              {/* 과목명: {props.selectedRequest[0].subject} */}
-            </InformText>
-          </InformItem>
-          <InformItem>
-            <InformText>
-              {/* 제목: {props.selectedRequest[0].sender} */}
-            </InformText>
-          </InformItem>
-          <InformItem>
-            <InformText>
-              {/* 신청인: {props.selectedRequest[0].date} */}
-            </InformText>
-          </InformItem>
-          <InformItem>
-            <InformText>
-              {/* 일자: {props.selectedRequest[0].date} */}
-            </InformText>
-          </InformItem>
-        </InformDiv>
-        <div>
-          <h4>상기의 내용을 인증하시겠습니까?</h4>
-        </div>
-        <Button onClick = {props.confirmCheck} name="인증하기"/>
-      </ModalContent>99
-    </Modals>
-  );
+
+  if(!props.confirmdata){
+    return (<div>loading</div>)
+  }
+
+  else {
+    return (
+      <Modals>
+        <ModalContent>
+          <h2 style={{ color: 'white' }}>귀하가 인증하고자 하는 내역입니다.</h2>
+          <InformDiv>
+            <InformItem>
+              <InformText>
+                과목명: {props.confirmdata.subject}
+              </InformText>
+            </InformItem>
+            <InformItem>
+              <InformText>
+                종류: {props.confirmdata.type}
+              </InformText>
+            </InformItem>
+            <InformItem>
+              <InformText>
+                인증서 ID: {props.confirmdata.id}
+              </InformText>
+            </InformItem>
+            <InformItem>
+              <InformText>
+                일자: {props.confirmdata.term}
+              </InformText>
+            </InformItem>
+          </InformDiv>
+          <div>
+            <h4>상기의 내용을 인증하시겠습니까?</h4>
+          </div>
+          <Button onClick = {props.confirmCheck} name="인증하기"/>
+          
+        </ModalContent>
+      </Modals>
+    );
+  }
+  
 }
 
 const Modals = styled.div`

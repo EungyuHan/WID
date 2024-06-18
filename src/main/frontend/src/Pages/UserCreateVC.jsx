@@ -105,7 +105,7 @@ function UserCreateVC() {
             </ContentContainer>
             
             </div>
-            { isModalopen && <ConfirmSubmitModal></ConfirmSubmitModal>}
+            { isModalopen && <ConfirmSubmitModal name = {name} professor = {professor}></ConfirmSubmitModal>}
             <Waves></Waves>
         </BackGround>
     )

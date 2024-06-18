@@ -23,7 +23,7 @@ function App() {
           <Route path="/AdminPage" element={<ProtectedRoute component={IssuerMainPage}/>}/ >
           <Route path="/AdminConfirmPage" element={<ProtectedRoute component={IssuerConfirmPage}/>}/>
           <Route path="/AdminCheckPage" element={<ProtectedRoute component={IssuerCheck}/>}/>
-          <Route path="/Working" element={<ProtectedRoute component={VerifierPage} />} />
+          <Route path="/VerifierPage" element={<ProtectedRoute component={VerifierPage} />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

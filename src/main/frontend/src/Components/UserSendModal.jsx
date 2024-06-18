@@ -17,14 +17,20 @@ function UserSendPage(props) {
         const newList = [...selectedCompany, company];
         setSelected(newList);
       }
-        
-
     }
 
     const deleteItem = (companyName) => {
       const newList = selectedCompany.filter(company => company !== companyName);
       setSelected(newList);
-      
+    }
+
+    const sendServer = () => {
+      const sendData = {verifierEmail:"test3@naver.com"}
+      axios.post('http://localhost:8080/folder/1/send',sendData,{
+        headers: {
+            Authorization: `${localStorage.getItem('authToken')}`
+        }
+    })
     }
 
     const renderCompanyList = (search) => {
@@ -74,7 +80,7 @@ function UserSendPage(props) {
             {renderSelectedCompany()}
             </SelectedListDiv>
             
-            <Button name={"제출하기"}></Button>
+            <Button name={"제출하기"} onClick={sendServer}></Button>
           </SelectedDiv>
         </ModalContent>
       </Modals>

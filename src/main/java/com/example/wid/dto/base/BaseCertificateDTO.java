@@ -7,5 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface BaseCertificateDTO {
     String getIssuerEmail();
     MultipartFile getFile();
+    String getStoredFilename();
     BaseCertificateEntity toCertificateEntity();
 }

@@ -47,7 +47,7 @@ function CreateUser(props){
             axios.post('http://localhost:8080/register/issuer', props.UserInfo)
         }
         else if(props.UserInfo.Role == "Verifier"){
-            axios.post('http://localhost:8080/reigster/verifier', props.UserInfo)
+            axios.post('http://localhost:8080/register/verifier', props.UserInfo)
         }
         setCreated(true);
     }
