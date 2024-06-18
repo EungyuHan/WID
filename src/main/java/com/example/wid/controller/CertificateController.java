@@ -62,17 +62,20 @@ public class CertificateController {
     }
 
     @PostMapping("/issuer/sign")
-    public ResponseEntity<String> signCertificateIssuer(@RequestBody Long certificateId) {
+    public ResponseEntity<String> signCertificateIssuer(@RequestBody Map<String, Long> map) throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        Long certificateId = map.get("certificateId");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        certificateService.signCertificateIssuer(certificateId, authentication);
-
+        Map<String, String> certificateMap = certificateService.signCertificateIssuer(certificateId, authentication);
+        fabricService.addNewAssets(certificateMap);
         return ResponseEntity.ok("증명서 1차 서명 완료");
     }
 
-    @PostMapping("/user/sign")
-    public ResponseEntity<String> signCertificateUser(@RequestBody Long certificateId) throws EndorseException, CommitException, SubmitException, CommitStatusException {
+    @PostMapping("/issuer/resign")
+    public ResponseEntity<String> signCertificateUser(@RequestBody Map<String, Long> map) throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        Long certificateId = map.get("certificateId");
+        System.out.println("Certificate ID : " + certificateId);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<String, String> certificateMap = certificateService.signCertificateUser(certificateId, authentication);
+        Map<String, String> certificateMap = certificateService.signCertificateUser(certificateId);
         fabricService.addNewAssets(certificateMap);
         return ResponseEntity.ok("증명서 2차 서명 완료");
     }
@@ -81,8 +84,8 @@ public class CertificateController {
     public ResponseEntity<List<Map<String, String>>> getCertificateJson() throws GatewayException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // 임시
-        List<Map<String, String>> allCertificates = new ArrayList<>();
-//        List<Map<String, String>> allCertificates = fabricService.getAllCertificates(authentication);
+//        List<Map<String, String>> allCertificates = new ArrayList<>();
+        List<Map<String, String>> allCertificates = fabricService.getAllUserCertificates(authentication);
         return ResponseEntity.ok(allCertificates);
     }
 

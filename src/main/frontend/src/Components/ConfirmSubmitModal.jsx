@@ -1,19 +1,18 @@
 import styled from 'styled-components';
 import React,{ useState } from 'react';
 import Button from './Button';
+import { useNavigate } from 'react-router-dom';
 
-
-function ConfirmSubmitModal() {
+function ConfirmSubmitModal(props) {
     const [isChecked,setIsChecked] = useState(false);
-
-
+    const navigate = useNavigate();
 
     return(
         <Modals>
             <ModalContent>
                     <FormH4>인 증 명  <FormInput value='[프로젝트] 소프트웨어공학캡스톤프로젝트'/></FormH4>
-                    <FormH4>신 청 인  <FormInput value='Name'/></FormH4>
-                    <FormH4>만료기한  <FormInput value='2025.09.11'/></FormH4>
+                    <FormH4>신 청 인  <FormInput value={props.name}/></FormH4>
+                    <FormH4>신청 대상  <FormInput value={props.professor}/></FormH4>
             
                 <h3 style={{color:'white'}}>인증 유의사항</h3>
                 <InformDiv>
@@ -30,7 +29,7 @@ function ConfirmSubmitModal() {
                 <input style={{background:'white', width:'25px', height:'25px',margin:'auto'}} type={'checkbox'} onClick={()=>{setIsChecked(!isChecked)}}></input>
                 </div>
                 
-                <Button name={'인증완료'} disabled={!isChecked}></Button>
+                <Button name={'인증완료'} disabled={!isChecked} onClick={()=> {navigate('/MainPage')}}></Button>
             </ModalContent>
         </Modals>
     )

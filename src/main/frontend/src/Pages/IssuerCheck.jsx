@@ -13,94 +13,91 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function IssuerCheck() {
     const location = useLocation();
-    const { userId, token } = location.state || {};
-    const [loading, setLoading] = useState(true);
-    const [requestData, setReqData] = useState([]);
     const [isCheckClicked, setCheck] = useState(false); 
     const [isConfirmClicked, setConfirm] = useState(false);
 
-    useEffect(() => {
-        // 서버로부터 모든 정보를 불러와야함, useLocation을 통해서 받아온 데이터를 이용해서 서버로 http요청을 날린다.
-        axios.get('http://localhost:3001/request')
-        .then(response => {
-            setReqData(response.data);
-            setLoading(false);
-        })
-    }, [])
+    const data = location.state;
 
 
     const handleDownload = () => {
         // PDF 파일 다운로드 로직 구현
         // 예: window.open(pdfUrl, '_blank');
-        console.log(requestData);
+        console.log(location.state);
     };
+
+    const confirmVC = () => {
+        console.log(typeof(data.id));
+        const formData = {certificateId: data.id};
+        axios.post('http://localhost:8080/certificate/issuer/sign', formData ,{
+            headers: {
+                Authorization: `${localStorage.getItem('authToken')}`,
+            }
+        })
+    }
+
 
     const confirmCheck = () => {
         setConfirm(!isConfirmClicked);
     }
 
 
-        if(loading) {
-            return <div>loading</div>
-        }
-
-        else {
-            return(
-                <BackGround>
-            <div div style={{ zIndex: 1 }}>
-                
-                    <LogoContainer>
-                    <img src='img/logo.png' width={`80px`} height={`80px`} alt='Logo'></img>
-                    </LogoContainer>
-                    <HomeContainer>
-                    <Link to="/AdminPage">
-                        <img src='img/Home.png' width={`60px`} height={`60px`} alt='Logo'></img>
-                        </Link>
-                    </HomeContainer>
-                    <HelpContainer>
-                        <Button name = "인증하기" onClick = {()=> {
-                            setCheck(!isCheckClicked);
-                        }}></Button>
-                    </HelpContainer>
-                    
+    return(
+        <BackGround>
+    <div div style={{ zIndex: 1 }}>
+        
+            <LogoContainer>
+            <img src='img/logo.png' width={`80px`} height={`80px`} alt='Logo'></img>
+            </LogoContainer>
+            <HomeContainer>
+            <Link to="/AdminPage">
+                <img src='img/Home.png' width={`60px`} height={`60px`} alt='Logo'></img>
+                </Link>
+            </HomeContainer>
+            <HelpContainer>
+                <Button name = "인증하기" onClick = {()=> {
+                    confirmVC();
+                    setCheck(!isCheckClicked);
+                }}></Button>
+            </HelpContainer>
             
-            <ContentContainer>
-                <FormContainer>
-                    <FormH4>신청인  <FormInput value={requestData[0].name}/></FormH4>
-                    <FormH4>학  번  <FormInput value={requestData[0].studentID}/></FormH4>
-                    <FormH4>제 목 <FormInput value={requestData[0].summary}/></FormH4>
-                    <FormH4>과  목 <FormInput value={requestData[0].subject}/></FormH4>
-                    <FormH4>요청대상 <FormInput value={requestData[0].professor}/></FormH4>
-                    <FormH4>작업기간 <FormInput value={requestData[0].term}/></FormH4>
-                </FormContainer>
     
-                <DescriptionContainer>
-                    <FormH4>설명</FormH4>
-                    <DescriptionTextarea></DescriptionTextarea>
-                </DescriptionContainer>
-            
-                
-                <RightContainer>
-                <div style={{ textAlign: 'right' }}>
-                </div>
-                <PreviewContainer>
-                <RightTopContainer>
-                <FormH4>증명서번호 <FormInput value='12255'/></FormH4>
-                <button onClick={handleDownload}>다운로드</button>  
-                </RightTopContainer>  
-                    <PDFpreviewer></PDFpreviewer>
-                </PreviewContainer>
-                </RightContainer>
-                
-            </ContentContainer>
-            { isCheckClicked && <CheckCertificationModal confirmCheck= {confirmCheck}></CheckCertificationModal> }
-            { isCheckClicked && isConfirmClicked && <ConfirmCertificationModal></ConfirmCertificationModal>}
-            </div>
-            <Waves></Waves>
-        </BackGround>
-   
-            )
-        }
+    <ContentContainer>
+        <FormContainer>
+            <FormH4>신청인  <FormInput value={data.name}/></FormH4>
+            <FormH4>학  번  <FormInput value={data.studentId}/></FormH4>
+            <FormH4>제 목 <FormInput value={data.subject}/></FormH4>
+            <FormH4>과  목 <FormInput value={data.subject}/></FormH4>
+            <FormH4>분류<FormInput value={data.type}/></FormH4>
+            <FormH4>작업기간 <FormInput value={data.term}/></FormH4>
+        </FormContainer>
+
+        <DescriptionContainer>
+            <FormH4>설명</FormH4>
+            <DescriptionTextarea value={data.summary}></DescriptionTextarea>
+        </DescriptionContainer>
+    
+        
+        <RightContainer>
+        <div style={{ textAlign: 'right' }}>
+        </div>
+        <PreviewContainer>
+        <RightTopContainer>
+        <FormH4>증명서번호 <FormInput value='12255'/></FormH4>
+        <button onClick={handleDownload}>다운로드</button>  
+        </RightTopContainer>  
+            <PDFpreviewer></PDFpreviewer>
+        </PreviewContainer>
+        </RightContainer>
+        
+    </ContentContainer>
+    { isCheckClicked && <CheckCertificationModal confirmdata = {data} confirmCheck= {confirmCheck}></CheckCertificationModal> }
+    { isCheckClicked && isConfirmClicked && <ConfirmCertificationModal></ConfirmCertificationModal>}
+    </div>
+    <Waves></Waves>
+</BackGround>
+
+    )
+        
         
 }
 

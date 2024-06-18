@@ -36,24 +36,7 @@ function IssuerConfirmPage(props) {
 
     
     const mails = [
-        { id: 1, sender: 'qwer1216914@gmail.com', subject: '[소프트웨어공학캡스톤프로젝트] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-01' },
-        { id: 2, sender: 'ivyksy0215@naver.com',  subject: '[데이터베이스] 소프트웨어공학과 프로젝트 인증 요청합니다.', date: '2022-05-02' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
-        { id: 3, sender: 'nam4867pp@gmail.com', subject: '[학부연구생] 소프트웨어공학과 논문 작성 자료 제출합니다.', date: '2022-05-03' },
+        
     ];
     
       const handleMailClick = (id) => {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/folder")
@@ -23,28 +24,34 @@ public class FolderController {
     }
 
     @PostMapping("/create")
-    public void createFolder(@RequestBody String folderName) {
+    public ResponseEntity<Long> createFolder(@RequestBody Map<String, String> map) {
+        String folderName = map.get("folderName");
+        System.out.println("folderName : " + folderName);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        folderService.createFolder(folderName, authentication);
+        Long folderId = folderService.createFolder(folderName, authentication);
+        return ResponseEntity.ok(folderId);
     }
 
     @PostMapping("/insert/certificates")
-    public void insertCertificates(@RequestBody FolderCertificatesDTO folderCertificatesDTO) {
+    public ResponseEntity<String> insertCertificates(@RequestBody FolderCertificatesDTO folderCertificatesDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         folderService.insertCertificates(folderCertificatesDTO, authentication);
+        return ResponseEntity.ok("증명서 삽입완료");
     }
 
     @GetMapping("/get/certificates")
-    public ResponseEntity<List<CertificateInfoEntity>> getCertificatesInFolder(@RequestBody Long folderId) {
+    public ResponseEntity<List<CertificateInfoEntity>> getCertificatesInFolder(@RequestBody Map<String, Long> map) {
+        Long folderId = map.get("folderId");
         Authentication authenticatoin = SecurityContextHolder.getContext().getAuthentication();
         List<CertificateInfoEntity> certificates = folderService.getCertificatesInFolder(folderId, authenticatoin);
         return ResponseEntity.ok(certificates);
     }
 
     @PostMapping("/{folderId}/send")
-    public void sendCertificatesToVerifier(@PathVariable Long folderId, @RequestParam Long verifierId) {
+    public ResponseEntity<String> sendCertificatesToVerifier(@PathVariable Long folderId, @RequestBody Map<String, String> map) {
+        String verifierEmail = map.get("verifierEmail");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        folderService.sendCertificatesToVerifier(folderId, verifierId, authentication);
+        folderService.sendCertificatesToVerifier(folderId, verifierEmail, authentication);
+        return ResponseEntity.ok("검증자에게 전송 완료");
     }
-
 }

@@ -69,7 +69,7 @@ function Loginpage(){
                 else if(decodedTOJson.role == "ROLE_ISSUER"){
                     navigate('/AdminPage');
                 }
-                else if(decodedTOJson.role == "ROLE_ISSUER"){
+                else if(decodedTOJson.role == "ROLE_VERIFIER"){
                     navigate('/VerifierPage')
                 }
             }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled,{keyframes} from 'styled-components';
+import styled from 'styled-components';
 import Waves from '../Components/Waves';
 import Button from '../Components/Button';
 import { Link } from 'react-router-dom';
@@ -14,9 +14,13 @@ function UserCreateVP() {
     const [isModalOpen, setIsModalOpen] = useState(false); 
     const [contentsList , setContentList] = useState([]);
     const [show, setShow] = useState(false);
-    const [content, setContent] = useState([]);
+    const [content, setContent] = useState([]); // 현재 추가된 certificatedID 번호가 들어있음.
     const [focusIndex, setFocus] = useState(0);
     const [isSubmitClicked, setSubmit] = useState(false);
+    const [fileIDs , setFileIDs] = useState([]); // 만든 파일의 고유 ID가 들어있음.
+    const [sendData, setData] = useState([]);
+
+    
 
     const toggleDiv = (focus) => {
     setShow(!show);
@@ -31,9 +35,11 @@ function UserCreateVP() {
         setIsModalOpen(!isModalOpen);
     }
 
-    const getItemName = (name) => {
-        const newName = name;
+    const getItemName = (folder) => {
+        console.log(folder);
+        const newName = folder.itemName;
         const newItemID = item+1;
+        console.log(folder.fileID);
         setItem(newItemID);
         const newItemList = [...itemList, { id: newItemID, name: newName }];
         const newContentsList = [...contentsList, {id: newItemID, name: newName}];
@@ -69,18 +75,16 @@ function UserCreateVP() {
 
     const renderMatchingContent = (id) => {
         const matchedContents = content.filter(item => item.id === id-1);
-
         return matchedContents.length > 0 ? (
                 matchedContents.map((item, idx) => (
                     <div>
                         <h4 key={idx}>{item.content.summary}</h4>
                         <div key={idx}>{"진행일자 :"+ item.content.term}</div>
-                        <div key={idx}>{"이슈어:" + item.content.professor}</div>
-                        <div key={idx}>{item.content.organizer}</div>
+                        <div key={idx}>{"이슈어 :" + item.content.professor}</div>
+                        <div key={idx}>{"인증서 ID :"+ item.content.id}</div>
                     </div>
-                    
-                    
                 ))) : null;
+
     };
 
     const submit = () => {
@@ -134,7 +138,7 @@ function UserCreateVP() {
             </div>
             
             <Waves/>
-            {isModalOpen && <SetItemNameModal onClick={setModal} getString={getItemName}></SetItemNameModal>}
+            {isModalOpen && <SetItemNameModal fileIDs = {fileIDs} setFileIDs = {setFileIDs} onClick={setModal} getString={getItemName}></SetItemNameModal>}
             {isSubmitClicked && <UserSendModal></UserSendModal>}
         </BackGround>
     )

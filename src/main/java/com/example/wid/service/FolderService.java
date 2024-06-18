@@ -35,7 +35,7 @@ public class FolderService {
         this.sentCertificateRepository = sentCertificateRepository;
     }
 
-    public void createFolder(String folderName, Authentication authentication) {
+    public Long createFolder(String folderName, Authentication authentication) {
         MemberEntity user = memberRepository.findByUsername(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
 
@@ -43,7 +43,9 @@ public class FolderService {
                 .folderName(folderName)
                 .user(user)
                 .build();
-        folderRepository.save(folder);
+        FolderEntity savedFolder = folderRepository.save(folder);
+
+        return savedFolder.getId();
     }
 
     @Transactional
@@ -90,11 +92,11 @@ public class FolderService {
     }
 
     @Transactional
-    public void sendCertificatesToVerifier(Long folderId, Long verifierId, Authentication authentication) {
+    public void sendCertificatesToVerifier(Long folderId, String verifierEmail, Authentication authentication) {
         FolderEntity folder = folderRepository.findById(folderId)
                 .orElseThrow(InvalidFolderException::new);
 
-        MemberEntity verifier = memberRepository.findById(verifierId)
+        MemberEntity verifier = memberRepository.findByEmail(verifierEmail)
                 .orElseThrow(VerifierNotFoundException::new);
 
         MemberEntity user = memberRepository.findByUsername(authentication.getName())
