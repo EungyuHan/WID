@@ -35,3 +35,13 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Setting ###
+*.yml
+
+### TestFile ###
+*.txt
+.DS_Store
+src/.DS_Store
+src/main/.DS_Store
+src/main/resources/

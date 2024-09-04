@@ -1,12 +1,13 @@
 import styled,{keyframes} from 'styled-components';
-import React,{ useState } from 'react';
+import React,{ useState  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../Components/Button';
 import Waves from '../Components/Waves';
 import CreateUser from '../Components/CreateUser';
 import SelectUser from '../Components/SelectUser';
-
-/* 스타일드 컴포넌트 양식을 사용할 것, 따라서 스타일드 컴포넌트에 대한 개념 공부 필요함*/
-/* 스타일드 컴포넌트 관련 코드는 모두 리액트 코드 아래에 작성할 것 (로직 먼저, CSS는 차후)*/
+import axios from 'axios';
+import base64 from 'base-64';
+import { useAuth } from '../LoginComponent/AuthContext';
 
 function Loginpage(){
     const [id, setID] = useState("");
@@ -15,14 +16,15 @@ function Loginpage(){
     const [isSelected, setSelect] = useState(false);
     const [selectedValue, setSelectedValue] = useState('');
     
+    const { login } = useAuth();
+    const navigate = useNavigate();
     
     const [userInfo, setUserInfo] = useState({
-        Role:"",
-        name:"",
-        email:"",
-        phone:"",
-        username:"",
-        password:""
+        "username" : null,
+        "password" : null,
+        "name" : null,
+        "email" : null,
+        "phone" : null
     });
 
 
@@ -49,6 +51,30 @@ function Loginpage(){
         else if (!password) {
             return alert("passward를 입력해주세요");
         }
+        else {
+            const formData = new FormData();
+            formData.append("username" , id);
+            formData.append("password", password);
+            axios.post('http://localhost:8080/login',formData)
+            .then(res => {
+                login(res.headers.authorization);
+                let token = res.headers.authorization.replace(/^Bearer\s+/, '');
+                let payload = token.substring(token.indexOf('.')+1,token.lastIndexOf('.'));
+                let decoded = base64.decode(payload);
+                let decodedTOJson = JSON.parse(decoded);
+                
+                if(decodedTOJson.role == "ROLE_USER"){
+                    navigate('/MainPage');
+                }
+                else if(decodedTOJson.role == "ROLE_ISSUER"){
+                    navigate('/AdminPage');
+                }
+                else if(decodedTOJson.role == "ROLE_VERIFIER"){
+                    navigate('/VerifierPage')
+                }
+            }
+                );
+        }
     }
 
     return(
@@ -61,10 +87,10 @@ function Loginpage(){
                             setID(e.target.value)
                         }}></InputID>
                         
-                        <InputPW type='text' value={password} placeholder='PW' onChange={(e) => {
+                        <InputPW type='password' value={password} placeholder='PW' onChange={(e) => {
                             setPassword(e.target.value)
                         }}></InputPW>
-                        <Button name="로그인"><input type='submit'></input></Button>  
+                        <Button name="로그인" onClick={LoginFunc}></Button>  
                 </form>
             
                 <CreateUserButton onClick={makeUser}>WID가 처음이세요?</CreateUserButton>
@@ -76,15 +102,11 @@ function Loginpage(){
 
         </BackGround>
 
-        
-            
     )
 }
 
-
-
 const BackGround = styled.div`
-    position: relative;
+    position: fixed;
     background: linear-gradient(to right, #FFFFFF, #0083b0);
     width: 100%;
     height: 100vh;
@@ -105,8 +127,7 @@ const Welcometext = styled.h3`
     color: white;
     letter-spacing: 1px;
     font-size: 17px;
-    font-family: 'Arial', sans-serif;
-    
+    font-family: 'Arial', sans-serif; 
 `
 
 const InputID = styled.input`
@@ -114,6 +135,7 @@ padding: 10px 25px;
 margin: 5px 10px;
 border-radius: 5px;
 border: none;
+box-shadow: 0.5px 0.5px 2px black;
 `
 
 const InputPW = styled.input`
@@ -121,6 +143,7 @@ padding: 10px 25px;
 margin: 5px 10px;
 border-radius: 5px;
 border: none;
+box-shadow: 0.5px 0.5px 2px black;
 `
 
 const CreateUserButton = styled.button`
@@ -131,10 +154,10 @@ const CreateUserButton = styled.button`
     transition: background-color 0.3s ease;
     box-shadow: 0.5px 1px 3px black;
 
-  &:hover {
+&:hover {
     background-color: White;
     color:black;
-  }
-
+}
 `
+
 export default Loginpage;
