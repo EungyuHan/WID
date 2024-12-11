@@ -4,57 +4,64 @@ import com.example.wid.controller.exception.EncryptionException;
 import com.example.wid.controller.exception.InvalidCertificateException;
 import com.example.wid.controller.exception.InvalidKeyPairException;
 import com.example.wid.controller.exception.UserNotFoundException;
-import com.example.wid.dto.ClassCertificateJson;
-import com.example.wid.dto.CompetitionCertificateJson;
 import com.example.wid.dto.SentCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateDTO;
 import com.example.wid.dto.base.BaseCertificateJson;
-import com.example.wid.entity.*;
+import com.example.wid.entity.CertificateInfoEntity;
+import com.example.wid.entity.EncryptInfoEntity;
+import com.example.wid.entity.FolderEntity;
+import com.example.wid.entity.MemberEntity;
+import com.example.wid.entity.SentCertificateEntity;
 import com.example.wid.entity.base.BaseCertificateEntity;
 import com.example.wid.entity.enums.CertificateType;
-import com.example.wid.repository.*;
+import com.example.wid.repository.CertificateInfoRepository;
+import com.example.wid.repository.EncryptInfoRepository;
+import com.example.wid.repository.MemberRepository;
 import com.example.wid.service.strategy.CertificateStrategy;
+import com.example.wid.util.CertificateStrategyFinder;
+import java.io.File;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.File;
-import java.io.IOException;
-
-import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-
 
 @Service
 public class CertificateService {
-    private final Map<CertificateType, CertificateStrategy> strategyMap = new HashMap<>();
     private final MemberRepository memberRepository;
     private final CertificateInfoRepository certificateInfoRepository;
     private final EncryptInfoRepository encryptInfoRepository;
+    private final CertificateStrategyFinder finder;
 
     @Autowired
     public CertificateService(MemberRepository memberRepository,
                               CertificateInfoRepository certificateInfoRepository,
                               EncryptInfoRepository encryptInfoRepository
-            , List<CertificateStrategy> strategies) {
+            , List<CertificateStrategy> strategies, CertificateStrategyFinder finder) {
         this.memberRepository = memberRepository;
         this.certificateInfoRepository = certificateInfoRepository;
         this.encryptInfoRepository = encryptInfoRepository;
-        for (CertificateStrategy strategy : strategies) {
-            strategyMap.put(strategy.getType(), strategy);
-        }
+        this.finder = finder;
     }
 
     // 증명서 생성
@@ -66,7 +73,7 @@ public class CertificateService {
         // 이슈어 정보 확인
         MemberEntity issuerEntity = memberRepository.findByEmail(certificateDTO.getIssuerEmail())
                 .orElseThrow(() -> new UserNotFoundException("인증서 발급자 정보가 올바르지 않습니다."));
-        CertificateStrategy certificateStrategy = strategyMap.get(certificateType);
+        CertificateStrategy certificateStrategy = finder.find(certificateType);
         // 사용자 정보 확인
         MemberEntity userEntity = memberRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("사용자 정보가 올바르지 않습니다."));
@@ -129,7 +136,7 @@ public class CertificateService {
 
             // 인증서 정보에 저장된 하위 증명서 가져오기
             CertificateType certificateType = certificateInfo.getCertificateType();
-            CertificateStrategy certificateStrategy = strategyMap.get(certificateType);
+            CertificateStrategy certificateStrategy = finder.find(certificateType);
             BaseCertificateEntity baseCertificateEntity = certificateStrategy.getCertificate(certificateId);
             if (baseCertificateEntity == null) {
                 throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
@@ -182,7 +189,7 @@ public class CertificateService {
                     ));
 
             CertificateType certificateType = certificateInfo.getCertificateType();
-            CertificateStrategy certificateStrategy = strategyMap.get(certificateType);
+            CertificateStrategy certificateStrategy = finder.find(certificateType);
             BaseCertificateEntity baseCertificateEntity = certificateStrategy.getCertificate(certificateId);
             if (baseCertificateEntity == null) {
                 throw new InvalidCertificateException("인증서 정보가 올바르지 않습니다.");
@@ -240,7 +247,7 @@ public class CertificateService {
         for (CertificateInfoEntity certificateInfo : certificateInfoEntities) {
             if (certificateInfo.getIsSigned() == false && encryptInfoRepository.findByCertificateInfoId(
                     certificateInfo.getId()).isEmpty()) {
-                CertificateStrategy certificateStrategy = strategyMap.get(certificateInfo.getCertificateType());
+                CertificateStrategy certificateStrategy = finder.find(certificateInfo.getCertificateType());
                 BaseCertificateJson certificateJson = certificateStrategy.getCertificateJson(certificateInfo);
                 baseCertificateJsons.add(certificateJson);
             }
